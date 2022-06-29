@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ImageEditorGL</string>
+
+    <string name="picker_picture">picker image</string>
+</resources>
