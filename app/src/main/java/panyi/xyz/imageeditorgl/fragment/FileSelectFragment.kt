@@ -41,7 +41,7 @@ class FileSelectFragment : Fragment() {
         mFileItemList.addAll(queryPictureData())
     }
 
-    private fun onClickItem(pos: Int, fileItem: SelectFileItem) {
+    private fun onClickItem(fileItem: SelectFileItem) {
         val result = Intent()
         result.putExtra("data", fileItem)
         requireActivity().setResult(Activity.RESULT_OK, result)
@@ -100,7 +100,7 @@ class FileSelectFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: FileItemViewHolder, position: Int) {
-            holder.refresh(position, mFileItemList.get(position))
+            holder.refresh(mFileItemList.get(position))
         }
 
         override fun getItemCount(): Int {
@@ -117,14 +117,11 @@ class FileSelectFragment : Fragment() {
             descTextView = itemView.findViewById(R.id.file_desc)
         }
 
-        fun refresh(pos: Int, itemData: SelectFileItem) {
+        fun refresh(itemData: SelectFileItem) {
             descTextView.text = itemData.name
-            Glide.with(requireActivity()).load(Uri.fromFile(File(itemData.path))).into(imgView)
-            itemView.setOnClickListener { v: View? ->
-                onClickItem(
-                    pos,
-                    itemData
-                )
+            Glide.with(requireActivity()).load(Uri.fromFile(File(itemData.path?:""))).into(imgView)
+            itemView.setOnClickListener {
+                onClickItem(itemData)
             }
         }
     } //end inner class

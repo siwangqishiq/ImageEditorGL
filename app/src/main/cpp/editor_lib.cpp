@@ -9,8 +9,7 @@ Java_panyi_xyz_imageeditorgl_MainActivity_stringFromJNI(
     return env->NewStringUTF(hello.c_str());
 }
 
-extern "C"
-JNIEXPORT jstring JNICALL
+extern "C" JNIEXPORT jstring JNICALL
 Java_panyi_xyz_imageeditorgl_NativeBridge_sayHello(JNIEnv *env, jobject thiz) {
     std::string hello = "Hello World";
     return env->NewStringUTF(hello.c_str());

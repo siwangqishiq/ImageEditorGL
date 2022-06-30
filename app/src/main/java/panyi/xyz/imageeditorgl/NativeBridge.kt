@@ -6,6 +6,4 @@ object NativeBridge {
     }
 
     external fun sayHello() : String
-
-
 }
