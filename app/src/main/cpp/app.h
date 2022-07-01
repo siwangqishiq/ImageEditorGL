@@ -2,8 +2,7 @@
 // Created by panyi on 2022/6/30.
 //
 
-#ifndef IMAGEEDITORGL_APP_H
-#define IMAGEEDITORGL_APP_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -31,5 +30,3 @@ private:
     unsigned int imgWidth;
     unsigned int imgHeight;
 };
-
-#endif //IMAGEEDITORGL_APP_H

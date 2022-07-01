@@ -8,6 +8,7 @@ add_library( # Sets the name of the library.
         imageeditorgl
         SHARED
         editor_lib.cpp
+        shader.cpp
         app.cpp)
 
 find_library(opengl-lib GLESv3)

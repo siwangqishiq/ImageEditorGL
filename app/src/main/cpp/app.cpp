@@ -8,21 +8,21 @@
 void App::onResize(unsigned int width, unsigned int height) {
     this->viewWidth = width;
     this->viewHeight = height;
-    logi("on onResize ");
+    Logi("on onResize ");
 }
 
 void App::setImageContent(std::string path, unsigned int imgWidth, unsigned int imgHeight) {
     this->filePath = path;
     this->imgWidth = imgWidth;
     this->imgHeight = imgHeight;
-    logi("on setImageContent %s size: %d x %d" , path.c_str() , imgWidth , imgHeight);
+    Logi("on setImageContent %s size: %d x %d" , path.c_str() , imgWidth , imgHeight);
 
 
 }
 
 void App::onInit() {
-    logi("on init");
-    logi("prepare gl config!");
+    Logi("on init");
+    Logi("prepare gl config!");
     glViewport(0 , 0, viewWidth , viewHeight);
     glClearColor(0.0f , 0.0f , 0.0f , 1.0f);
     glEnable(GL_DEPTH);
@@ -38,6 +38,6 @@ void App::onRender() {
 }
 
 void App::onDestroy() {
-    logi("destroy");
+    Logi("destroy");
 }
 
