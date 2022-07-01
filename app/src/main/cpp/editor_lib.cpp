@@ -1,17 +1,33 @@
 #include <jni.h>
 #include <string>
+#include "app.h"
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_panyi_xyz_imageeditorgl_MainActivity_stringFromJNI(
-        JNIEnv* env,
-        jobject /* this */) {
-    std::string hello = "Hello from C++";
-    return env->NewStringUTF(hello.c_str());
+static App app;
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_panyi_xyz_imageeditorgl_NativeBridge_onResize(JNIEnv *env, jobject thiz, jint view_width,jint view_height) {
+    app.onResize(view_width , view_height);
+    app.onInit();
 }
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_panyi_xyz_imageeditorgl_NativeBridge_sayHello(JNIEnv *env, jobject thiz) {
-    std::string hello = "Hello World";
-    return env->NewStringUTF(hello.c_str());
+extern "C"
+JNIEXPORT void JNICALL
+Java_panyi_xyz_imageeditorgl_NativeBridge_onRender(JNIEnv *env, jobject thiz) {
+    app.onRender();
 }
 
+extern "C"
+JNIEXPORT void JNICALL
+Java_panyi_xyz_imageeditorgl_NativeBridge_onDestroy(JNIEnv *env, jobject thiz) {
+    app.onDestroy();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_panyi_xyz_imageeditorgl_NativeBridge_setImageContent(JNIEnv *env, jobject thiz, jstring path,
+                                                          jint img_w, jint img_h) {
+    jboolean copy;
+    auto str = env->GetStringUTFChars(path , &copy);
+    app.setImageContent(str , img_w , img_h);
+}

@@ -7,6 +7,7 @@ import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.util.AttributeSet
 import androidx.appcompat.app.AppCompatActivity
+import panyi.xyz.imageeditorgl.NativeBridge
 import panyi.xyz.imageeditorgl.model.SelectFileItem
 import panyi.xyz.imageeditorgl.util.LogUtil
 import javax.microedition.khronos.egl.EGLConfig
@@ -36,16 +37,19 @@ class EditorActivity : AppCompatActivity() {
         mainView.setContent(fileData.path?:"" , fileData.width , fileData.height)
     }
 
+    override fun onDestroy() {
+        mainView.onDestroy()
+        super.onDestroy()
+    }
+
     inner class MainView : GLSurfaceView , GLSurfaceView.Renderer{
         constructor(context : Context, attr : AttributeSet?) :super(context , attr)
         constructor(context : Context) :super(context , null)
 
-        lateinit var imgPath : String
-        var imgWidth : Int = 0
-        var imgHeight : Int = 0
-
         init {
             LogUtil.d(TAG,"MainView init")
+            setEGLContextClientVersion(3)
+            setEGLConfigChooser(8,8 ,8 , 8, 16 , 0)
         }
 
         override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
@@ -54,18 +58,21 @@ class EditorActivity : AppCompatActivity() {
 
         override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
             LogUtil.d(TAG,"MainView onSurfaceChanged $width x $height")
+            NativeBridge.onResize(width , height)
         }
 
         override fun onDrawFrame(gl: GL10?) {
-            LogUtil.d(TAG,"MainView onDrawFrame")
+            // LogUtil.d(TAG,"MainView onDrawFrame")
+            NativeBridge.onRender()
         }
 
         fun setContent(path : String , imgWidth : Int  , imgHeight : Int){
-            imgPath = path
-            this.imgWidth = imgWidth
-            this.imgHeight = imgHeight
-
+            NativeBridge.setImageContent(path , imgWidth , imgHeight)
             setRenderer(this)
+        }
+
+        fun onDestroy(){
+            NativeBridge.onDestroy()
         }
     }//inner class end
 }
