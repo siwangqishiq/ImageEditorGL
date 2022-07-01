@@ -18,6 +18,17 @@ GLuint CreateGPUProgram(const char* vsShaderSource, const char* fsShaderSource) 
     glAttachShader(program, vsShader);
     glAttachShader(program, fsShader);
 
+    GLint compileResult = GL_TRUE;
+    glGetProgramiv(program, GL_COMPILE_STATUS, &compileResult);
+    if(compileResult == GL_FALSE){
+        char szLog[1024] = { 0 };
+        GLsizei logLen = 0;
+        glGetProgramInfoLog(program, 1024, &logLen, szLog);
+        Loge("Compile program fail error log: %s \nvs shader code:\n%s\nfs shader code:\n%s\n" , szLog , vsShaderSource , fsShaderSource);
+        glDeleteShader(program);
+        program = 0;
+    }
+
     //Link
     glLinkProgram(program);
 
@@ -34,8 +45,8 @@ GLuint CreateGPUProgram(const char* vsShaderSource, const char* fsShaderSource) 
         char szLog[1024] = { 0 };
         GLsizei logLen = 0;
         glGetProgramInfoLog(program, 1024, &logLen, szLog);
-        printf("Link program fail error log: %s \nvs shader code:\n%s\nfs shader code:\n%s\n",
-               szLog, "vertexSource", "fragmentSource");
+        Loge("LogLen : %d" , logLen);
+        Loge("Link program fail error log: %s \nvs shader code:\n%s\nfs shader code:\n%s\n" , szLog , vsShaderSource , fsShaderSource);
         glDeleteShader(program);
         program = 0;
     }
@@ -67,6 +78,13 @@ GLuint CreateGPUProgramFromFile(std::string vertexShaderPath , std::string fragS
     std::string fragSrc = ReadFileAsText(fragShaderPath);
 
     return CreateGPUProgram(vertexSrc.c_str() , fragSrc.c_str());
+}
+
+Shader Shader::buildGPUProgram(std::string vtxSrc , std::string frgSrc){
+    Shader shader;
+    auto  pid = CreateGPUProgram(vtxSrc.c_str() , frgSrc.c_str());
+    shader.programId = pid;
+    return shader;
 }
 
 GLuint CompileShader(GLenum shaderType, const char* shaderSource) {

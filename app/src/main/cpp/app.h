@@ -9,6 +9,7 @@
 
 #include <GLES3/gl3.h>
 #include <GLES2/gl2ext.h>
+#include "shader.h"
 
 
 class App{
@@ -29,4 +30,14 @@ private:
     unsigned int viewHeight;
     unsigned int imgWidth;
     unsigned int imgHeight;
+
+    GLuint vao;
+    GLuint vbo;
+    Shader shader;
+
+    float vertices[3 * 2] = {
+            -0.5f , -0.5f,
+            0.5f , -0.5f,
+            0.0f ,  0.5f
+    };
 };

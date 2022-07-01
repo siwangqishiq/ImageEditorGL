@@ -19,7 +19,7 @@ std::string ReadFileAsText(std::string path);
 
 class Shader{
 public:
-    static Shader buildGPUProgramFromFile(std::string vertexShaderPath , std::string fragShaderPath);
+    static Shader buildGPUProgram(std::string vtxSrc , std::string frgSrc);
 
     //使用shader
     void useShader();

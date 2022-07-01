@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.ViewModelProvider
 import panyi.xyz.imageeditorgl.R
 import panyi.xyz.imageeditorgl.model.SelectFileItem
+import panyi.xyz.imageeditorgl.model.UserViewModel
 
 /**
  * MainActivity
@@ -35,6 +37,9 @@ class MainActivity : AppCompatActivity() {
                 pickImageContent.launch(1)
             }
         }
+
+        val userModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        userModel.pullData()
     }
 
     /**
