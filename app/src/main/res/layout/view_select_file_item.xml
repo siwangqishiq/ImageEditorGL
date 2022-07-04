@@ -9,11 +9,18 @@
     android:layout_margin="4dp"
     android:gravity="center" >
 
-    <panyi.xyz.imageeditorgl.util.SquareImageView
-        android:id="@+id/file_image"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop" />
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/file_image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:scaleType="centerCrop" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/file_desc"
