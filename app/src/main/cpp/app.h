@@ -35,11 +35,11 @@ private:
     unsigned int textureId;
     Shader shader;
 
-    float vertexData[4 * 4] = {
-            -1.0f , -1.0f ,0.0f , 1.0f,
-            -1.0f , 1.0f , 0.0f , 0.0f,
-            1.0f , 1.0f,  1.0f , 0.0f,
-            1.0f , -1.0f, 1.0f , 1.0f
+    float vertexData[4 * 5] = {
+            -1.0f , -1.0f , 1.0f , 0.0f , 1.0f,
+            -1.0f , 1.0f , 1.0f , 0.0f , 0.0f,
+            1.0f , 1.0f,  1.0f , 1.0f , 0.0f,
+            1.0f , -1.0f, 1.0f ,1.0f , 1.0f
     };
 
     void createShader();

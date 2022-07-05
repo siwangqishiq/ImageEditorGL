@@ -38,7 +38,7 @@ void App::onInit() {
     vbo = bufferIds[0];
 
     glBindBuffer(GL_ARRAY_BUFFER , vbo);
-    glBufferData(GL_ARRAY_BUFFER ,  4 * 4 * sizeof(float) , vertexData , GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER ,  4 *5 * sizeof(float) , vertexData , GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER , 0);
 
     loadTexture();
@@ -50,9 +50,9 @@ void App::onRender() {
     //do render
     shader.useShader();
     glBindBuffer(GL_ARRAY_BUFFER ,vbo);
-    glVertexAttribPointer(0 , 2 , GL_FLOAT , false , 4 * sizeof(float) , 0);
+    glVertexAttribPointer(0 , 3 , GL_FLOAT , false , 5 * sizeof(float) , 0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1 , 2 , GL_FLOAT , false , 4 * sizeof(float) , (void*)(2 * sizeof(float)));
+    glVertexAttribPointer(1 , 2 , GL_FLOAT , false , 5 * sizeof(float) , (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
     glActiveTexture(GL_TEXTURE0);
@@ -81,13 +81,13 @@ void App::onDestroy() {
 void App::createShader() {
     std::string vtxSrc = std::string("#version 300 es\n"
                                      "\n"
-                                     "layout(location = 0) in vec2 a_position;\n"
+                                     "layout(location = 0) in vec3 a_position;\n"
                                      "layout(location = 1) in vec2 a_texture;\n"
                                      "\n"
                                      "out vec2 vUv;\n"
                                      "\n"
                                      "void main(){\n"
-                                     "    gl_Position = vec4(a_position.xy, 0.0f ,1.0f);\n"
+                                     "    gl_Position = vec4(a_position.xyz ,1.0f);\n"
                                      "    vUv = a_texture;\n"
                                      "}");
     std::string frgSrc = std::string("#version 300 es\n"
@@ -132,8 +132,10 @@ void App::loadTexture() {
         format = GL_RGB;
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imgWidth, imgHeight, 0, format, GL_UNSIGNED_BYTE, data);
+    Logi("send texture to GPU");
+    glTexImage2D(GL_TEXTURE_2D, 0, format, imgWidth, imgHeight, 0, format, GL_UNSIGNED_BYTE, data);
     stbi_image_free(data);
+    Logi("send GPU success!");
 
     glBindTexture(GL_TEXTURE_2D , 0);
 }
