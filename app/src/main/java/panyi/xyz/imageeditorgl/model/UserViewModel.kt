@@ -14,7 +14,7 @@ class UserViewModel : ViewModel() {
 
     fun pullData(){
         LogUtil.d("pull data ...")
-        viewModelScope.launch(){
+        viewModelScope.launch{
 
         }
     }

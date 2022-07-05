@@ -10,6 +10,8 @@ import androidx.lifecycle.ViewModelProvider
 import panyi.xyz.imageeditorgl.R
 import panyi.xyz.imageeditorgl.model.SelectFileItem
 import panyi.xyz.imageeditorgl.model.UserViewModel
+import java.io.File
+import java.io.FileInputStream
 
 /**
  * MainActivity
@@ -29,7 +31,9 @@ class MainActivity : AppCompatActivity() {
 
         pickImageBtn = findViewById(R.id.sample_text)
         val pickImageContent = registerForActivityResult(SelectFileActivity.PickImageActivityContent()){
-            handlePickImage(it)
+            it?.let {
+                handlePickImage(it)
+            }
         }
 
         pickImageBtn.apply {

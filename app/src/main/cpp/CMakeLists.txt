@@ -9,6 +9,7 @@ add_library( # Sets the name of the library.
         SHARED
         editor_lib.cpp
         shader.cpp
+        stb_image.cpp
         app.cpp)
 
 find_library(opengl-lib GLESv3)
@@ -18,4 +19,5 @@ target_link_libraries( # Specifies the target library.
         imageeditorgl
         android
         ${opengl-lib}
-        ${log-lib})
+        ${log-lib}
+        jnigraphics)

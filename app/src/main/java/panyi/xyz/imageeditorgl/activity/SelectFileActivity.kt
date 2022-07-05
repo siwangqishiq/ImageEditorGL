@@ -1,5 +1,6 @@
 package panyi.xyz.imageeditorgl.activity
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -16,14 +17,17 @@ class SelectFileActivity :  AppCompatActivity() {
         supportFragmentManager.beginTransaction().replace(R.id.container, FileSelectFragment()).commitNow()
     }
 
-    class PickImageActivityContent : ActivityResultContract<Int, SelectFileItem>() {
+    class PickImageActivityContent : ActivityResultContract<Int, SelectFileItem?>() {
         override fun createIntent(context: Context, reqCode: Int?): Intent {
             return Intent(context , SelectFileActivity::class.java)
         }
 
-        override fun parseResult(resultCode: Int, retData: Intent?): SelectFileItem {
-            val fileData : SelectFileItem = retData?.getSerializableExtra("data") as SelectFileItem
-            return fileData
+        override fun parseResult(resultCode: Int, retData: Intent?): SelectFileItem? {
+            if (resultCode != Activity.RESULT_OK) {
+                return null
+            }
+
+            return retData?.getSerializableExtra("data") as SelectFileItem
         }
     }
 }

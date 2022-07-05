@@ -28,16 +28,21 @@ private:
 
     unsigned int viewWidth;
     unsigned int viewHeight;
-    unsigned int imgWidth;
-    unsigned int imgHeight;
+    int imgWidth;
+    int imgHeight;
 
-    GLuint vao;
-    GLuint vbo;
+    unsigned int vbo;
+    unsigned int textureId;
     Shader shader;
 
-    float vertices[3 * 2] = {
-            -0.5f , -0.5f,
-            0.5f , -0.5f,
-            0.0f ,  0.5f
+    float vertexData[4 * 4] = {
+            -1.0f , -1.0f ,0.0f , 1.0f,
+            -1.0f , 1.0f , 0.0f , 0.0f,
+            1.0f , 1.0f,  1.0f , 0.0f,
+            1.0f , -1.0f, 1.0f , 1.0f
     };
+
+    void createShader();
+
+    void loadTexture();
 };

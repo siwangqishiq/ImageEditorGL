@@ -69,6 +69,7 @@ class EditorActivity : AppCompatActivity() {
         fun setContent(path : String , imgWidth : Int  , imgHeight : Int){
             NativeBridge.setImageContent(path , imgWidth , imgHeight)
             setRenderer(this)
+            renderMode = RENDERMODE_CONTINUOUSLY
         }
 
         fun onDestroy(){
