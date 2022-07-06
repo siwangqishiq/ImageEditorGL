@@ -16,7 +16,7 @@ class App{
 public:
     void setImageContent(std::string path , unsigned  int imgWdith , unsigned int imgHeight);
 
-    void onResize(unsigned int width , unsigned int height);
+    void onResize(int width , int height);
 
     void onInit();
 
@@ -26,8 +26,8 @@ public:
 private:
     std::string filePath;
 
-    unsigned int viewWidth;
-    unsigned int viewHeight;
+    int viewWidth;
+    int viewHeight;
     int imgWidth;
     int imgHeight;
 
@@ -35,14 +35,25 @@ private:
     unsigned int textureId;
     Shader shader;
 
+    float x = 0;
+    float y = 0;
+    float w = 1.0f;
+    float h = 1.0f;
+
     float vertexData[4 * 5] = {
-            -1.0f , -1.0f , 1.0f , 0.0f , 1.0f,
-            -1.0f , 1.0f , 1.0f , 0.0f , 0.0f,
-            1.0f , 1.0f,  1.0f , 1.0f , 0.0f,
-            1.0f , -1.0f, 1.0f ,1.0f , 1.0f
+            x       ,    y       , 1.0f , 0.0f , 1.0f,
+            x        , y + h   , 1.0f , 0.0f , 0.0f,
+            x + w , y + h   , 1.0f , 1.0f , 0.0f,
+            x+ w  , y          ,1.0f , 1.0f , 1.0f
     };
+
+    glm::mat3 normalMatrix = glm::mat3(1.0f);
 
     void createShader();
 
     void loadTexture();
+
+    void resetPositionData();
+
+    void updateVertexData();
 };

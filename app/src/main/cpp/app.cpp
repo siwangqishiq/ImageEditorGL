@@ -9,18 +9,74 @@
 //#include <android/bitmap.h>
 
 #include "stb_image.h"
+#include "glm/matrix.hpp"
 
-void App::onResize(unsigned int width, unsigned int height) {
+void App::onResize(int width,int height) {
     this->viewWidth = width;
     this->viewHeight = height;
-    Logi("on onResize ");
+    Logi("on onResize : %d x %d" , viewWidth , viewHeight);
+
+    //重置归一化矩阵
+    normalMatrix[0][0] = 2.0f/(float)viewWidth;
+    normalMatrix[0][1] = 0.0f;
+    normalMatrix[0][2] = 0.0f;
+
+    normalMatrix[1][0] = 0.0f;
+    normalMatrix[1][1] = 2.0f / (float)viewHeight;
+    normalMatrix[1][2] = 0.0f;
+
+    normalMatrix[2][0] = -1.0f;
+    normalMatrix[2][1] = -1.0f;
+    normalMatrix[2][2] = 1.0f;
+
+    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[0][0],normalMatrix[0][1],normalMatrix[0][2]);
+    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[1][0],normalMatrix[1][1],normalMatrix[1][2]);
+    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[2][0],normalMatrix[2][1],normalMatrix[2][2]);
 }
 
 void App::setImageContent(std::string path, unsigned int imgWidth, unsigned int imgHeight) {
-    this->filePath = path;
+    filePath = path;
     this->imgWidth = imgWidth;
     this->imgHeight = imgHeight;
     Logi("on setImageContent %s size: %d x %d" , path.c_str() , imgWidth , imgHeight);
+}
+
+void App::resetPositionData() {
+    const float ratio = (float)imgWidth / imgHeight;
+    if(imgWidth >= imgHeight){
+        w = viewWidth;
+        x = 0.0f;
+
+        h = w / ratio;
+        y = viewHeight / 2.0f - h / 2.0f;
+    }else{
+        h = viewHeight;
+        y = 0.0f;
+        w = ratio * h;
+        x = viewWidth / 2.0f - w / 2.0f;
+    }
+
+    Logi("x = %f , y = %f , w = %f , h = %f" , x, y, w ,h);
+    updateVertexData();
+}
+
+void App::updateVertexData() {
+    vertexData[0 * 5 + 0] = x;
+    vertexData[0 * 5 + 1] = y;
+
+    vertexData[1 * 5 + 0] = x;
+    vertexData[1 * 5 + 1] = y + h;
+
+    vertexData[2 * 5 + 0] = x + w;
+    vertexData[2 * 5 + 1] = y + h;
+
+    vertexData[3 * 5 + 0] = x + w;
+    vertexData[3 * 5 + 1] = y;
+
+//    Logi("vertex : %.2f\t%.2f\t%.2f\t" ,vertexData[0 * 5 + 0],vertexData[0 * 5 + 1],vertexData[0 * 5 + 2]);
+//    Logi("vertex : %.2f\t%.2f\t%.2f\t" ,vertexData[1 * 5 + 0],vertexData[1 * 5 + 1],vertexData[1 * 5 + 2]);
+//    Logi("vertex : %.2f\t%.2f\t%.2f\t" ,vertexData[2 * 5 + 0],vertexData[2 * 5 + 1],vertexData[2 * 5 + 2]);
+//    Logi("vertex : %.2f\t%.2f\t%.2f\t" ,vertexData[3 * 5 + 0],vertexData[3 * 5 + 1],vertexData[3 * 5 + 2]);
 }
 
 void App::onInit() {
@@ -33,6 +89,8 @@ void App::onInit() {
 
     createShader();
 
+    loadTexture();
+
     GLuint bufferIds[1];
     glGenBuffers(1 , bufferIds);
     vbo = bufferIds[0];
@@ -40,8 +98,6 @@ void App::onInit() {
     glBindBuffer(GL_ARRAY_BUFFER , vbo);
     glBufferData(GL_ARRAY_BUFFER ,  4 *5 * sizeof(float) , vertexData , GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER , 0);
-
-    loadTexture();
 }
 
 void App::onRender() {
@@ -49,6 +105,8 @@ void App::onRender() {
 
     //do render
     shader.useShader();
+    shader.setIUniformMat3("normalMat", normalMatrix);
+
     glBindBuffer(GL_ARRAY_BUFFER ,vbo);
     glVertexAttribPointer(0 , 3 , GL_FLOAT , false , 5 * sizeof(float) , 0);
     glEnableVertexAttribArray(0);
@@ -84,10 +142,12 @@ void App::createShader() {
                                      "layout(location = 0) in vec3 a_position;\n"
                                      "layout(location = 1) in vec2 a_texture;\n"
                                      "\n"
+                                     "uniform mat3 normalMat;\n"
+                                     "\n"
                                      "out vec2 vUv;\n"
                                      "\n"
                                      "void main(){\n"
-                                     "    gl_Position = vec4(a_position.xyz ,1.0f);\n"
+                                     "    gl_Position = vec4( normalMat * a_position ,1.0f);\n"
                                      "    vUv = a_texture;\n"
                                      "}");
     std::string frgSrc = std::string("#version 300 es\n"
@@ -115,6 +175,8 @@ void App::loadTexture() {
         Logi("read image data error!");
     }
 
+    resetPositionData();
+
     GLuint textureIds[1];
     glGenTextures(1 , textureIds);
     this->textureId = textureIds[0];
@@ -139,4 +201,6 @@ void App::loadTexture() {
 
     glBindTexture(GL_TEXTURE_2D , 0);
 }
+
+
 
