@@ -10,7 +10,9 @@ add_library( # Sets the name of the library.
         editor_lib.cpp
         shader.cpp
         stb_image.cpp
-        app.cpp)
+        math.hpp
+        app.cpp
+        )
 
 find_library(opengl-lib GLESv3)
 find_library(log-lib log)

@@ -12,4 +12,6 @@ object NativeBridge {
     external fun onRender()
 
     external fun onDestroy()
+
+    external fun scale(scale:Float)
 }

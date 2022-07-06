@@ -31,3 +31,9 @@ Java_panyi_xyz_imageeditorgl_NativeBridge_setImageContent(JNIEnv *env, jobject t
     auto str = env->GetStringUTFChars(path , &copy);
     app.setImageContent(str , img_w , img_h);
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_panyi_xyz_imageeditorgl_NativeBridge_scale(JNIEnv *env, jobject thiz, jfloat scale) {
+    app.scale(scale);
+}

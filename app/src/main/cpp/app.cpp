@@ -10,10 +10,12 @@
 
 #include "stb_image.h"
 #include "glm/matrix.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "math.hpp"
 
 void App::onResize(int width,int height) {
-    this->viewWidth = width;
-    this->viewHeight = height;
+    viewWidth = width;
+    viewHeight = height;
     Logi("on onResize : %d x %d" , viewWidth , viewHeight);
 
     //重置归一化矩阵
@@ -77,6 +79,8 @@ void App::updateVertexData() {
 //    Logi("vertex : %.2f\t%.2f\t%.2f\t" ,vertexData[1 * 5 + 0],vertexData[1 * 5 + 1],vertexData[1 * 5 + 2]);
 //    Logi("vertex : %.2f\t%.2f\t%.2f\t" ,vertexData[2 * 5 + 0],vertexData[2 * 5 + 1],vertexData[2 * 5 + 2]);
 //    Logi("vertex : %.2f\t%.2f\t%.2f\t" ,vertexData[3 * 5 + 0],vertexData[3 * 5 + 1],vertexData[3 * 5 + 2]);
+
+
 }
 
 void App::onInit() {
@@ -106,6 +110,11 @@ void App::onRender() {
     //do render
     shader.useShader();
     shader.setIUniformMat3("normalMat", normalMatrix);
+    float scaleX = scaleVal;
+    float scaleY =scaleX / ((float)imgWidth / imgHeight);
+    transMatrix = math_scale_mat3(viewWidth / 2.0f , viewHeight / 2.0f, scaleX , scaleY);
+
+    shader.setIUniformMat3("transMat" , transMatrix);
 
     glBindBuffer(GL_ARRAY_BUFFER ,vbo);
     glVertexAttribPointer(0 , 3 , GL_FLOAT , false , 5 * sizeof(float) , 0);
@@ -143,13 +152,15 @@ void App::createShader() {
                                      "layout(location = 1) in vec2 a_texture;\n"
                                      "\n"
                                      "uniform mat3 normalMat;\n"
+                                     "uniform mat3 transMat;\n"
                                      "\n"
                                      "out vec2 vUv;\n"
                                      "\n"
                                      "void main(){\n"
-                                     "    gl_Position = vec4( normalMat * a_position ,1.0f);\n"
+                                     "    gl_Position = vec4( normalMat * transMat * a_position ,1.0f);\n"
                                      "    vUv = a_texture;\n"
                                      "}");
+
     std::string frgSrc = std::string("#version 300 es\n"
                                      "\n"
                                      "precision mediump float;\n"
@@ -200,6 +211,10 @@ void App::loadTexture() {
     Logi("send GPU success!");
 
     glBindTexture(GL_TEXTURE_2D , 0);
+}
+
+void App::scale(float scale) {
+    scaleVal = scale;
 }
 
 

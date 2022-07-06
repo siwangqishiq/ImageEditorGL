@@ -23,6 +23,8 @@ public:
     void onRender();
 
     void onDestroy();
+
+    void scale(float scale);
 private:
     std::string filePath;
 
@@ -39,6 +41,7 @@ private:
     float y = 0;
     float w = 1.0f;
     float h = 1.0f;
+    float scaleVal = 1.0f;
 
     float vertexData[4 * 5] = {
             x       ,    y       , 1.0f , 0.0f , 1.0f,
@@ -48,6 +51,7 @@ private:
     };
 
     glm::mat3 normalMatrix = glm::mat3(1.0f);
+    glm::mat3 transMatrix = glm::mat3 (1.0f);
 
     void createShader();
 
