@@ -6,6 +6,7 @@ import android.content.Intent
 import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.util.AttributeSet
+import android.view.View
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import panyi.xyz.imageeditorgl.MainView
@@ -32,6 +33,8 @@ class EditorActivity : AppCompatActivity() {
     private lateinit var mainView : MainView
     private lateinit var seekBar:SeekBar
 
+    private lateinit var resetBtn : View
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editor)
@@ -56,6 +59,13 @@ class EditorActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
             }
         })
+
+        resetBtn = findViewById<View?>(R.id.reset_btn).apply {
+            setOnClickListener {
+                NativeBridge.scale(1.0f)
+                mainView.requestRender()
+            }
+        }
     }
 
     fun convertScaleValue(progress: Int) : Float{

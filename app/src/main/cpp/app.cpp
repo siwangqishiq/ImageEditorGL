@@ -109,12 +109,17 @@ void App::onRender() {
 
     //do render
     shader.useShader();
-    shader.setIUniformMat3("normalMat", normalMatrix);
-    float scaleX = scaleVal;
-    float scaleY =scaleX / ((float)imgWidth / imgHeight);
-    transMatrix = math_scale_mat3(viewWidth / 2.0f , viewHeight / 2.0f, scaleX , scaleY);
+//    shader.setIUniformMat3("normalMat", normalMatrix);
+    Logi("scaleValue : %f" , scaleVal);
 
-    shader.setIUniformMat3("transMat" , transMatrix);
+    transMatrix = math_scale_mat3(scaleVal , scaleVal);
+    auto matrix = transMatrix * normalMatrix;
+
+    Logi("transMat : %f\t %f\t %f\t" ,matrix[0][0],matrix[0][1],matrix[0][2]);
+    Logi("transMat : %f\t %f\t %f\t" ,matrix[1][0],matrix[1][1],matrix[1][2]);
+    Logi("transMat : %f\t %f\t %f\t" ,matrix[2][0],matrix[2][1],matrix[2][2]);
+
+    shader.setIUniformMat3("transMat" , matrix);
 
     glBindBuffer(GL_ARRAY_BUFFER ,vbo);
     glVertexAttribPointer(0 , 3 , GL_FLOAT , false , 5 * sizeof(float) , 0);
@@ -151,13 +156,12 @@ void App::createShader() {
                                      "layout(location = 0) in vec3 a_position;\n"
                                      "layout(location = 1) in vec2 a_texture;\n"
                                      "\n"
-                                     "uniform mat3 normalMat;\n"
                                      "uniform mat3 transMat;\n"
                                      "\n"
                                      "out vec2 vUv;\n"
                                      "\n"
                                      "void main(){\n"
-                                     "    gl_Position = vec4( normalMat * transMat * a_position ,1.0f);\n"
+                                     "    gl_Position = vec4(transMat * a_position ,1.0f);\n"
                                      "    vUv = a_texture;\n"
                                      "}");
 
