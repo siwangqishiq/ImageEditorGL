@@ -115,9 +115,17 @@ void App::onRender() {
     transMatrix = math_scale_mat3(scaleVal , scaleVal);
     auto matrix = transMatrix * normalMatrix;
 
-    Logi("transMat : %f\t %f\t %f\t" ,matrix[0][0],matrix[0][1],matrix[0][2]);
-    Logi("transMat : %f\t %f\t %f\t" ,matrix[1][0],matrix[1][1],matrix[1][2]);
-    Logi("transMat : %f\t %f\t %f\t" ,matrix[2][0],matrix[2][1],matrix[2][2]);
+    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[0][0],normalMatrix[0][1],normalMatrix[0][2]);
+    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[1][0],normalMatrix[1][1],normalMatrix[1][2]);
+    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[2][0],normalMatrix[2][1],normalMatrix[2][2]);
+
+    Logi("transMatrix : %f\t %f\t %f\t" ,transMatrix[0][0],transMatrix[0][1],transMatrix[0][2]);
+    Logi("transMatrix : %f\t %f\t %f\t" ,transMatrix[1][0],transMatrix[1][1],transMatrix[1][2]);
+    Logi("transMatrix : %f\t %f\t %f\t" ,transMatrix[2][0],transMatrix[2][1],transMatrix[2][2]);
+
+    Logi("matrix : %f\t %f\t %f\t" ,matrix[0][0],matrix[0][1],matrix[0][2]);
+    Logi("matrix : %f\t %f\t %f\t" ,matrix[1][0],matrix[1][1],matrix[1][2]);
+    Logi("matrix : %f\t %f\t %f\t" ,matrix[2][0],matrix[2][1],matrix[2][2]);
 
     shader.setIUniformMat3("transMat" , matrix);
 

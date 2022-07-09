@@ -6,6 +6,8 @@ import android.content.Intent
 import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.util.AttributeSet
+import android.view.GestureDetector
+import android.view.ScaleGestureDetector
 import android.view.View
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
@@ -34,6 +36,8 @@ class EditorActivity : AppCompatActivity() {
     private lateinit var seekBar:SeekBar
 
     private lateinit var resetBtn : View
+
+    private lateinit var scaleDetect : ScaleGestureDetector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
