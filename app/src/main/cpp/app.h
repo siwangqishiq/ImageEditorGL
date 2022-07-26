@@ -11,14 +11,41 @@
 #include <GLES2/gl2ext.h>
 #include <jni.h>
 #include "shader.h"
+#include "paint.h"
+#include "image.h"
+#include <memory>
 
 const int ACTION_DOWN = 0;
 const int ACTION_UP = 1;
 const int ACTION_MOVE = 2;
 const int ACTION_CANCEL = 3;
 
+enum Mode{
+    IDLE,//空闲态
+    PAINT,//绘制
+};
+
+struct Point{
+    float x;
+    float y;
+};
+
+class Paint;
+class Image;
+
 class App{
 public:
+    JNIEnv *env = nullptr;
+
+    int viewWidth;
+    int viewHeight;
+
+    Mode mode = IDLE;
+
+    glm::mat3 normalMatrix = glm::mat3(1.0f);
+    std::shared_ptr<Image> baseImage;
+    std::shared_ptr<Paint> paint;
+
     void setImageContent(std::string path , unsigned  int imgWdith , unsigned int imgHeight);
 
     void onResize(int width , int height);
@@ -29,49 +56,8 @@ public:
 
     void onDestroy();
 
-    void scale(float scale);
-
     bool onTouch(int action ,float x , float y);
 
     void setImageBitmap(JNIEnv *env , jobject image_bitmap);
 
-private:
-    std::string filePath;
-
-    jobject imageBitmap;
-
-    int viewWidth;
-    int viewHeight;
-    int imgWidth;
-    int imgHeight;
-
-    unsigned int vbo;
-    unsigned int textureId;
-    Shader shader;
-
-    float x = 0;
-    float y = 0;
-    float w = 1.0f;
-    float h = 1.0f;
-    float scaleVal = 1.0f;
-
-    float vertexData[4 * 5] = {
-            x       ,    y       , 1.0f , 0.0f , 1.0f,
-            x        , y + h   , 1.0f , 0.0f , 0.0f,
-            x + w , y + h   , 1.0f , 1.0f , 0.0f,
-            x+ w  , y          ,1.0f , 1.0f , 1.0f
-    };
-
-    glm::mat3 normalMatrix = glm::mat3(1.0f);
-    glm::mat3 transMatrix = glm::mat3 (1.0f);
-
-    void createShader();
-
-    void loadTexture();
-
-    void resetPositionData();
-
-    void updateVertexData();
-
-    void loadTextureFromImageBitmap(JNIEnv *env);
 };

@@ -54,7 +54,6 @@ class EditorActivity : AppCompatActivity() {
         fileData = intent.getSerializableExtra(INTENT_DATA) as SelectFileItem
         val path = fileData.path?:""
         mainView.setContent(path , fileData.width , fileData.height , null)
-        readImageConfig(fileData.path!!)
 
 //        resetBtn = findViewById<View?>(R.id.reset_btn).apply {
 //            setOnClickListener {

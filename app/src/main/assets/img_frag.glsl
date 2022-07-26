@@ -5,8 +5,9 @@ precision mediump float;
 uniform sampler2D sTexture;
 
 in vec2 vUv;
-out vec4 out_color;
+out vec4 outColor;
 
 void main(){
-    out_color = texture(sTexture , vUv);
+    vec4 originColor = texture(sTexture , vUv);
+    outColor = originColor.rrra;
 }

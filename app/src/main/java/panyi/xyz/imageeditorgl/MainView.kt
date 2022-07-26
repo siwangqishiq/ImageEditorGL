@@ -50,9 +50,8 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
     fun setContent(path : String , imgWidth : Int  , imgHeight : Int , bitmap : Bitmap?){
         this.path = path
 
-        NativeBridge.setImageContent(path , imgWidth , imgHeight)
         setRenderer(this)
-        renderMode = RENDERMODE_WHEN_DIRTY
+        renderMode = RENDERMODE_CONTINUOUSLY
     }
 
     fun readImageBitmap(path : String) : Bitmap {
