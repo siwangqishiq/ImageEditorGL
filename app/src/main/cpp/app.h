@@ -9,8 +9,13 @@
 
 #include <GLES3/gl3.h>
 #include <GLES2/gl2ext.h>
+#include <jni.h>
 #include "shader.h"
 
+const int ACTION_DOWN = 0;
+const int ACTION_UP = 1;
+const int ACTION_MOVE = 2;
+const int ACTION_CANCEL = 3;
 
 class App{
 public:
@@ -18,15 +23,22 @@ public:
 
     void onResize(int width , int height);
 
-    void onInit();
+    void onInit(JNIEnv *env);
 
     void onRender();
 
     void onDestroy();
 
     void scale(float scale);
+
+    bool onTouch(int action ,float x , float y);
+
+    void setImageBitmap(JNIEnv *env , jobject image_bitmap);
+
 private:
     std::string filePath;
+
+    jobject imageBitmap;
 
     int viewWidth;
     int viewHeight;
@@ -60,4 +72,6 @@ private:
     void resetPositionData();
 
     void updateVertexData();
+
+    void loadTextureFromImageBitmap(JNIEnv *env);
 };

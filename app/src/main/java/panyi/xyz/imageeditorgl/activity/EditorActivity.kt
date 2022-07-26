@@ -3,6 +3,8 @@ package panyi.xyz.imageeditorgl.activity
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.util.AttributeSet
@@ -19,6 +21,10 @@ import panyi.xyz.imageeditorgl.util.LogUtil
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
+/**
+ *  just for fun
+ *
+ */
 class EditorActivity : AppCompatActivity() {
     companion object{
         const val INTENT_DATA = "_data"
@@ -45,31 +51,24 @@ class EditorActivity : AppCompatActivity() {
 
         mainView = findViewById(R.id.editor_view)
 
-        seekBar = findViewById(R.id.seek_bar)
-
         fileData = intent.getSerializableExtra(INTENT_DATA) as SelectFileItem
-        mainView.setContent(fileData.path?:"" , fileData.width , fileData.height)
+        val path = fileData.path?:""
+        mainView.setContent(path , fileData.width , fileData.height , null)
+        readImageConfig(fileData.path!!)
 
-        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                LogUtil.d(TAG , "progress = $progress")
-                NativeBridge.scale(convertScaleValue(progress))
-                mainView.requestRender()
-            }
+//        resetBtn = findViewById<View?>(R.id.reset_btn).apply {
+//            setOnClickListener {
+//                NativeBridge.scale(1.0f)
+//                mainView.requestRender()
+//            }
+//        }
+    }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-            }
-        })
-
-        resetBtn = findViewById<View?>(R.id.reset_btn).apply {
-            setOnClickListener {
-                NativeBridge.scale(1.0f)
-                mainView.requestRender()
-            }
-        }
+    private fun readImageConfig(path : String){
+        val options = BitmapFactory.Options()
+        options.inJustDecodeBounds = false
+        BitmapFactory.decodeFile(path , options)
+        LogUtil.d(TAG , "read image $path config : ${options.outConfig}")
     }
 
     fun convertScaleValue(progress: Int) : Float{

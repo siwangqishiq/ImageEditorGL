@@ -12,6 +12,7 @@
 #include "glm/matrix.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "math.hpp"
+#include <android/bitmap.h>
 
 void App::onResize(int width,int height) {
     viewWidth = width;
@@ -83,27 +84,6 @@ void App::updateVertexData() {
 
 }
 
-void App::onInit() {
-    Logi("on init");
-    Logi("prepare gl config!");
-
-    glViewport(0 , 0, viewWidth , viewHeight);
-    glClearColor(0.0f , 0.0f , 0.0f , 1.0f);
-    glEnable(GL_DEPTH);
-
-    createShader();
-
-    loadTexture();
-
-    GLuint bufferIds[1];
-    glGenBuffers(1 , bufferIds);
-    vbo = bufferIds[0];
-
-    glBindBuffer(GL_ARRAY_BUFFER , vbo);
-    glBufferData(GL_ARRAY_BUFFER ,  4 *5 * sizeof(float) , vertexData , GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER , 0);
-}
-
 void App::onRender() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -115,17 +95,17 @@ void App::onRender() {
     transMatrix = math_scale_mat3(scaleVal , scaleVal);
     auto matrix = transMatrix * normalMatrix;
 
-    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[0][0],normalMatrix[0][1],normalMatrix[0][2]);
-    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[1][0],normalMatrix[1][1],normalMatrix[1][2]);
-    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[2][0],normalMatrix[2][1],normalMatrix[2][2]);
-
-    Logi("transMatrix : %f\t %f\t %f\t" ,transMatrix[0][0],transMatrix[0][1],transMatrix[0][2]);
-    Logi("transMatrix : %f\t %f\t %f\t" ,transMatrix[1][0],transMatrix[1][1],transMatrix[1][2]);
-    Logi("transMatrix : %f\t %f\t %f\t" ,transMatrix[2][0],transMatrix[2][1],transMatrix[2][2]);
-
-    Logi("matrix : %f\t %f\t %f\t" ,matrix[0][0],matrix[0][1],matrix[0][2]);
-    Logi("matrix : %f\t %f\t %f\t" ,matrix[1][0],matrix[1][1],matrix[1][2]);
-    Logi("matrix : %f\t %f\t %f\t" ,matrix[2][0],matrix[2][1],matrix[2][2]);
+//    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[0][0],normalMatrix[0][1],normalMatrix[0][2]);
+//    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[1][0],normalMatrix[1][1],normalMatrix[1][2]);
+//    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[2][0],normalMatrix[2][1],normalMatrix[2][2]);
+//
+//    Logi("transMatrix : %f\t %f\t %f\t" ,transMatrix[0][0],transMatrix[0][1],transMatrix[0][2]);
+//    Logi("transMatrix : %f\t %f\t %f\t" ,transMatrix[1][0],transMatrix[1][1],transMatrix[1][2]);
+//    Logi("transMatrix : %f\t %f\t %f\t" ,transMatrix[2][0],transMatrix[2][1],transMatrix[2][2]);
+//
+//    Logi("matrix : %f\t %f\t %f\t" ,matrix[0][0],matrix[0][1],matrix[0][2]);
+//    Logi("matrix : %f\t %f\t %f\t" ,matrix[1][0],matrix[1][1],matrix[1][2]);
+//    Logi("matrix : %f\t %f\t %f\t" ,matrix[2][0],matrix[2][1],matrix[2][2]);
 
     shader.setIUniformMat3("transMat" , matrix);
 
@@ -214,7 +194,7 @@ void App::loadTexture() {
     if(picChannel == 4){
         format = GL_RGBA;
     }else if(picChannel == 3){
-        format = GL_RGB;
+        format = GL_RGBA;
     }
 
     Logi("send texture to GPU");
@@ -227,6 +207,77 @@ void App::loadTexture() {
 
 void App::scale(float scale) {
     scaleVal = scale;
+}
+
+bool App::onTouch(int action, float x, float y) {
+    Logi("touch %d , (%f , %f)" , action , x , y);
+    return true;
+}
+
+void App::setImageBitmap(JNIEnv *env ,jobject image_bitmap) {
+    imageBitmap = env->NewGlobalRef(image_bitmap);
+}
+
+void App::loadTextureFromImageBitmap(JNIEnv *env) {
+    Logi("load bitmap texture");
+    AndroidBitmapInfo info;
+    if(int getInfoResult = AndroidBitmap_getInfo(env , imageBitmap , &info) < 0){
+        Loge("get bitmap info error : %d" , getInfoResult);
+        return;
+    }
+    Logi("bitmap width %d , height %d , format %d stride %d" , info.width , info.height , info.format , info.stride);
+
+   imgWidth = info.width;
+   imgHeight = info.height;
+
+   void *dataBuf;
+    if(int readPixelsResult = AndroidBitmap_lockPixels(env , imageBitmap , &dataBuf) < 0){
+        Loge("readPixelsResult error : %d" , readPixelsResult);
+        AndroidBitmap_unlockPixels(env , imageBitmap);
+        return;
+    }
+    AndroidBitmap_unlockPixels(env , imageBitmap);
+
+    resetPositionData();
+
+    GLuint textureIds[1];
+    glGenTextures(1 , textureIds);
+    textureId = textureIds[0];
+
+    glBindTexture(GL_TEXTURE_2D , this->textureId);
+    glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER , GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_MAG_FILTER , GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_WRAP_S , GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_WRAP_T , GL_CLAMP_TO_EDGE);
+
+    int format = GL_RGBA;
+    Logi("send texture to GPU");
+    glTexImage2D(GL_TEXTURE_2D, 0, format, imgWidth, imgHeight, 0, format, GL_UNSIGNED_BYTE, dataBuf);
+    Logi("send GPU success!");
+
+    glBindTexture(GL_TEXTURE_2D , 0);
+}
+
+void App::onInit(JNIEnv *env) {
+    Logi("on init");
+    Logi("prepare gl config!");
+
+    glViewport(0 , 0, viewWidth , viewHeight);
+    glClearColor(0.0f , 0.0f , 0.0f , 1.0f);
+    glEnable(GL_DEPTH);
+
+    createShader();
+
+    // loadTexture();
+    loadTextureFromImageBitmap(env);
+
+    GLuint bufferIds[1];
+    glGenBuffers(1 , bufferIds);
+    vbo = bufferIds[0];
+
+    glBindBuffer(GL_ARRAY_BUFFER , vbo);
+    glBufferData(GL_ARRAY_BUFFER ,  4 *5 * sizeof(float) , vertexData , GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER , 0);
 }
 
 
