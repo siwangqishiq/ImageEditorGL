@@ -25,9 +25,10 @@ enum Mode{
     PAINT,//绘制
 };
 
-struct Point{
+struct EditorPoint{
     float x;
     float y;
+    float z;
 };
 
 class Paint;

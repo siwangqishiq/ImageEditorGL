@@ -50,12 +50,27 @@ void App::onRender() {
 
 void App::onDestroy() {
     baseImage->onDestroy();
+    paint->onDestory();
     Logi("destroy");
 }
 
 bool App::onTouch(int action, float x, float y) {
-    // Logi("touch %d , (%f , %f)" , action , x , y);
-    return true;
+     // Logi("touch %d , (%f , %f)" , action , x , y);
+     y = viewHeight - y;
+    bool ret = false;
+    switch (action) {
+        case ACTION_DOWN:
+            ret = true;
+            paint->addPaintPoint(x , y);
+            break;
+        case ACTION_MOVE:
+            ret = true;
+            paint->addPaintPoint(x , y);
+            break;
+        default:
+            break;
+    }
+    return ret;
 }
 
 void App::setImageBitmap(JNIEnv *env ,jobject image_bitmap) {
@@ -72,6 +87,7 @@ void App::onInit(JNIEnv *env) {
     glViewport(0 , 0, viewWidth , viewHeight);
     glClearColor(0.0f , 0.0f , 0.0f , 1.0f);
     glEnable(GL_DEPTH);
+//    glEnable(GL_PROGRAM_POINT_SIZE);
 
     baseImage->onInit();
     paint->onInit();

@@ -25,8 +25,11 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
 
     var path : String?= null
 
-    override fun onTouchEvent(event: MotionEvent?) : Boolean
-        = NativeBridge.onTouch(event?.actionMasked?:MotionEvent.ACTION_CANCEL , event?.x?:0.0f , event?.y?:0.0f)
+    override fun onTouchEvent(event: MotionEvent?) : Boolean{
+        val ret = NativeBridge.onTouch(event?.actionMasked?:MotionEvent.ACTION_CANCEL , event?.x?:0.0f , event?.y?:0.0f)
+        requestRender()
+        return ret
+    }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         LogUtil.d(EditorActivity.TAG,"MainView onSurfaceCreated")
@@ -51,7 +54,7 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
         this.path = path
 
         setRenderer(this)
-        renderMode = RENDERMODE_CONTINUOUSLY
+        renderMode = RENDERMODE_WHEN_DIRTY
     }
 
     fun readImageBitmap(path : String) : Bitmap {

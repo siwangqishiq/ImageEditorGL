@@ -28,10 +28,6 @@ void Image::render() {
 //    transMatrix = math_scale_mat3(scaleVal , scaleVal);
 
     auto matrix = transMatrix * (appContext->normalMatrix);
-
-//    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[0][0],normalMatrix[0][1],normalMatrix[0][2]);
-//    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[1][0],normalMatrix[1][1],normalMatrix[1][2]);
-//    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[2][0],normalMatrix[2][1],normalMatrix[2][2]);
 //
 //    Logi("transMatrix : %f\t %f\t %f\t" ,transMatrix[0][0],transMatrix[0][1],transMatrix[0][2]);
 //    Logi("transMatrix : %f\t %f\t %f\t" ,transMatrix[1][0],transMatrix[1][1],transMatrix[1][2]);
@@ -84,7 +80,7 @@ void Image::createShader(){
                                      "\n"
                                      "void main(){\n"
                                      "    vec4 originColor = texture(sTexture , vUv);\n"
-                                     "    outColor = originColor.rrra;\n"
+                                     "    outColor = originColor.rgba;\n"
                                      "}");
 
     shader = Shader::buildGPUProgram(vtxSrc , frgSrc);
