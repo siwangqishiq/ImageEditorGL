@@ -13,7 +13,7 @@ void Paint::onInit() {
     glGenBuffers(1 , bufferIds);
     vbo = bufferIds[0];
 
-    Logi("vector size : %ld" , pointList.size());
+    Logi("vector size : %u" , pointList.size());
     glBindBuffer(GL_ARRAY_BUFFER , vbo);
     glBufferData(GL_ARRAY_BUFFER ,  BUFFER_SIZE * sizeof(EditorPoint), 0 , GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER , 0);
@@ -44,7 +44,6 @@ void Paint::onDestory() {
     GLuint bufferIds[1];
     bufferIds[0] = vbo;
     glDeleteBuffers(1 , bufferIds);
-    glDeleteShader(shader.programId);
 }
 
 void Paint::createShader(){
@@ -71,15 +70,18 @@ void Paint::createShader(){
                                      "void main(){\n"
                                      "    outColor = pointColor;\n"
                                      "}");
-    shader = Shader::buildGPUProgram(vtxSrc , frgSrc);
+
+    shader = ShaderManager::getInstance().fetchShader("paint_shader" , vtxSrc , frgSrc);
 }
 
 void Paint::addPaintPoint(float x, float y) {
-    bufferOffset = sizeof(EditorPoint) * pointList.size();
-
     EditorPoint p;
     p.x = x;
     p.y = y;
     p.z = 1.0f;
     pointList.push_back(p);
+
+//    glBindBuffer(GL_ARRAY_BUFFER , vbo);
+//    glBufferSubData(GL_ARRAY_BUFFER , 0 , sizeof(EditorPoint) * pointList.size() , pointList.data());
+//    glBindBuffer(GL_ARRAY_BUFFER , 0);
 }

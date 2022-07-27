@@ -2,10 +2,12 @@
 // Created by panyi on 2022/7/1.
 //
 #pragma once
+
 #include <GLES3/gl3.h>
 #include <string>
 #include "glm/glm.hpp"
 #include <unordered_map>
+#include <map>
 
 
 //编译shader源码
@@ -55,3 +57,14 @@ protected:
     std::unordered_map<std::string , int> unifromLocs; //unifrom变量loccation
 };
 
+class ShaderManager{
+private:
+    std::map<std::string , Shader> shaderMap;
+
+public:
+    static ShaderManager& getInstance();
+
+    Shader fetchShader(std::string shaderName , std::string vertexSrc , std::string frgSrc);
+
+    void clear();
+};

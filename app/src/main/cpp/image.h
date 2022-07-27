@@ -2,8 +2,7 @@
 // Created by panyi on 2022/7/26.
 //
 
-#ifndef IMAGEEDITORGL_IMAGE_H
-#define IMAGEEDITORGL_IMAGE_H
+#pragma once
 
 #include "shader.h"
 #include "jni.h"
@@ -39,7 +38,7 @@ private:
     unsigned int textureId;
 
     float vertexData[4 * 5] = {
-            x       ,    y       , 1.0f , 0.0f , 1.0f,
+            x       ,  y         , 1.0f , 0.0f , 1.0f,
             x        , y + h   , 1.0f , 0.0f , 0.0f,
             x + w , y + h   , 1.0f , 1.0f , 0.0f,
             x+ w  , y          ,1.0f , 1.0f , 1.0f
@@ -57,5 +56,3 @@ private:
 
     void setImageBitmap(JNIEnv *env ,jobject image_bitmap);
 };
-
-#endif //IMAGEEDITORGL_IMAGE_H

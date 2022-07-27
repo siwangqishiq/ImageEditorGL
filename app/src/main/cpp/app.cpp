@@ -41,16 +41,26 @@ void App::onResize(int width,int height) {
 }
 
 void App::onRender() {
+    pumpMessageQueue();
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //do render
     baseImage->render();
-    paint->render();
+
+    for(auto &pPaint : paintList){
+        pPaint->render();
+    }//end for each
 }
 
 void App::onDestroy() {
     baseImage->onDestroy();
-    paint->onDestory();
+
+    for(auto &pPaint : paintList){
+        pPaint->onDestory();
+    }//end for each
+
+    ShaderManager::getInstance().clear();
     Logi("destroy");
 }
 
@@ -61,15 +71,18 @@ bool App::onTouch(int action, float x, float y) {
     switch (action) {
         case ACTION_DOWN:
             ret = true;
-            paint->addPaintPoint(x , y);
             break;
         case ACTION_MOVE:
             ret = true;
-            paint->addPaintPoint(x , y);
+            break;
+        case ACTION_UP:
+        case ACTION_CANCEL:
             break;
         default:
             break;
     }
+    ActionMessage msg = {action , x ,y};
+    messageQueue.push_back(msg);
     return ret;
 }
 
@@ -79,19 +92,80 @@ void App::setImageBitmap(JNIEnv *env ,jobject image_bitmap) {
 
 void App::onInit(JNIEnv *env) {
     Logi("on init");
-    Logi("prepare gl config!");
+
     this->env = env;
 
-    paint = std::make_shared<Paint>(this);
+    Logi("prepare gl config!");
+    ShaderManager::getInstance();
 
     glViewport(0 , 0, viewWidth , viewHeight);
     glClearColor(0.0f , 0.0f , 0.0f , 1.0f);
     glEnable(GL_DEPTH);
-//    glEnable(GL_PROGRAM_POINT_SIZE);
+//    glEnable(GL_PROGRAM_POINT_SIZE); no found in opengl es version
 
     baseImage->onInit();
-    paint->onInit();
 }
+
+void App::handleDownAction(float x, float y) {
+    std::shared_ptr<Paint> newPaint = std::make_shared<Paint>(this);
+    paintList.push_back(newPaint);
+
+    auto curPaint = fetchCurrentPaint();
+    if(curPaint != nullptr){
+        curPaint->addPaintPoint(x , y);
+    }
+}
+
+void App::handleMoveAction(float x, float y) {
+    auto curPaint = fetchCurrentPaint();
+    if(curPaint != nullptr){
+        curPaint->addPaintPoint(x , y);
+    }
+}
+
+void App::handleUpCancelAction(float x, float y) {
+    auto curPaint = fetchCurrentPaint();
+    if(curPaint != nullptr){
+        curPaint->addPaintPoint(x , y);
+    }
+}
+
+std::shared_ptr<Paint> App::fetchCurrentPaint() {
+    if(paintList.empty()){
+        return nullptr;
+    }
+
+    return paintList[paintList.size() - 1];
+}
+
+//消费事件队列
+void App::pumpMessageQueue() {
+    while(!messageQueue.empty()){
+        handleTouchEvent(messageQueue.front());
+        messageQueue.pop_back();
+    }//end while
+}
+
+void App::handleTouchEvent(ActionMessage &msg) {
+    float x = msg.x;
+    float y = msg.y;
+    switch (msg.action) {
+        case ACTION_DOWN:
+            handleDownAction(x , y);
+            break;
+        case ACTION_MOVE:
+            handleMoveAction(x , y);
+            break;
+        case ACTION_UP:
+        case ACTION_CANCEL:
+            handleUpCancelAction(x , y);
+            break;
+        default:
+            break;
+    }//end switch
+}
+
+
 
 
 

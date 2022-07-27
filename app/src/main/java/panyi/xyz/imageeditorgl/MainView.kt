@@ -40,7 +40,7 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
         NativeBridge.onResize(width , height)
 
         val imgBitmap = readImageBitmap(path!!)
-        NativeBridge.setImageBitmap(imgBitmap!!)
+        NativeBridge.setImageBitmap(imgBitmap)
 
         NativeBridge.onInit()
     }

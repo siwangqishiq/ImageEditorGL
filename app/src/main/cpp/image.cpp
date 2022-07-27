@@ -7,6 +7,7 @@
 #include <GLES3/gl3.h>
 #include <GLES2/gl2ext.h>
 #include <android/bitmap.h>
+#include "shader.h"
 
 void Image::onInit() {
     createShader();
@@ -26,7 +27,6 @@ void Image::render() {
     shader.useShader();
 
 //    transMatrix = math_scale_mat3(scaleVal , scaleVal);
-
     auto matrix = transMatrix * (appContext->normalMatrix);
 //
 //    Logi("transMatrix : %f\t %f\t %f\t" ,transMatrix[0][0],transMatrix[0][1],transMatrix[0][2]);
@@ -85,7 +85,7 @@ void Image::createShader(){
                                      "    outColor = originColor.rgba;\n"
                                      "}");
 
-    shader = Shader::buildGPUProgram(vtxSrc , frgSrc);
+    shader = ShaderManager::getInstance().fetchShader("image_shader" , vtxSrc , frgSrc);
 }
 
 void Image::updateVertexData() {
@@ -169,8 +169,6 @@ void Image::onDestroy() {
     GLuint textureIds[1];
     textureIds[0] = textureId;
     glDeleteTextures(1 , textureIds);
-
-    glDeleteShader(shader.programId);
 }
 
 void Image::setImageBitmap(JNIEnv *env ,jobject image_bitmap) {

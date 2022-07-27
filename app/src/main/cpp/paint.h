@@ -1,22 +1,21 @@
 //
 // Created by panyi on 2022/7/26.
 //
-
-#ifndef IMAGEEDITORGL_PAINT_H
-#define IMAGEEDITORGL_PAINT_H
+#pragma once
 
 #include <vector>
 #include "app.h"
+#include "common.h"
 
 class App;
-
-struct EditorPoint;
 
 class Paint {
 public:
     const int BUFFER_SIZE = 2 * 1024; //2K
 
-    Paint(App *app) : appContext(app){}
+    Paint(App *app) : appContext(app){
+        onInit();
+    }
 
     void onInit();
 
@@ -40,7 +39,6 @@ private:
 
     unsigned int vbo;
 
-    int bufferOffset = 0;
+    EditorPoint p;
 };
 
-#endif //IMAGEEDITORGL_PAINT_H
