@@ -6,12 +6,6 @@
 #include "log.h"
 
 void Paint::onInit() {
-//    EditorPoint p;
-//    p.x = appContext->viewWidth / 2.0f;
-//    p.y = appContext->viewHeight / 2.0f;
-//    p.z = 1.0f;
-//    pointList.push_back(p);
-
     Logi("paint init start");
     createShader();
 
@@ -20,10 +14,9 @@ void Paint::onInit() {
     vbo = bufferIds[0];
 
     Logi("vector size : %ld" , pointList.size());
-
-//    glBindBuffer(GL_ARRAY_BUFFER , vbo);
-//    glBufferData(GL_ARRAY_BUFFER ,  1024 * sizeof(EditorPoint) , pointList.data() , GL_DYNAMIC_DRAW);
-//    glBindBuffer(GL_ARRAY_BUFFER , 0);
+    glBindBuffer(GL_ARRAY_BUFFER , vbo);
+    glBufferData(GL_ARRAY_BUFFER ,  BUFFER_SIZE * sizeof(EditorPoint), 0 , GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER , 0);
 }
 
 void Paint::render() {
@@ -35,17 +28,16 @@ void Paint::render() {
     shader.setUniformFloat("pointSize" , pointSize);
     shader.setUniformVec4("pointColor" , pointColor);
 
-//    Logi("Paintmatrix : %f\t %f\t %f\t" ,matrix[0][0],matrix[0][1],matrix[0][2]);
-//    Logi("Paintmatrix : %f\t %f\t %f\t" ,matrix[1][0],matrix[1][1],matrix[1][2]);
-//    Logi("Paintmatrix : %f\t %f\t %f\t" ,matrix[2][0],matrix[2][1],matrix[2][2]);
-
-//    glBindBuffer(GL_ARRAY_BUFFER ,vbo);
-    glVertexAttribPointer(0 , 3 , GL_FLOAT , false , sizeof(EditorPoint) , pointList.data());
-
+    glBindBuffer(GL_ARRAY_BUFFER , vbo);
+    glBufferSubData(GL_ARRAY_BUFFER , 0 , sizeof(EditorPoint) * pointList.size() , pointList.data());
+//    glBufferData(GL_ARRAY_BUFFER , pointList.size() * sizeof(EditorPoint) ,pointList.data(), GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0 , 3 , GL_FLOAT , false , sizeof(EditorPoint) , 0);
     glEnableVertexAttribArray(0);
 //    Logi("point size : %ld" , pointList.size());
     glDrawArrays(GL_POINTS , 0 , pointList.size());
     glDisableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER ,0);
 }
 
 void Paint::onDestory() {
@@ -83,14 +75,11 @@ void Paint::createShader(){
 }
 
 void Paint::addPaintPoint(float x, float y) {
+    bufferOffset = sizeof(EditorPoint) * pointList.size();
+
     EditorPoint p;
     p.x = x;
     p.y = y;
     p.z = 1.0f;
     pointList.push_back(p);
-    Logi("push point %f , %f" , pointList[pointList.size() - 1].x , pointList[pointList.size() - 1].y);
-    //map range buffer opt?
-//    glBindBuffer(GL_ARRAY_BUFFER , vbo);
-//    glBufferData(GL_ARRAY_BUFFER ,  pointList.size() * sizeof(EditorPoint) , pointList.data() , GL_DYNAMIC_DRAW);
-//    glBindBuffer(GL_ARRAY_BUFFER , 0);
 }
