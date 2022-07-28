@@ -15,7 +15,7 @@ void Paint::onInit() {
 
     Logi("vector size : %u" , pointList.size());
     glBindBuffer(GL_ARRAY_BUFFER , vbo);
-    glBufferData(GL_ARRAY_BUFFER ,  BUFFER_SIZE * sizeof(EditorPoint), 0 , GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER ,  BUFFER_SIZE * sizeof(glm::vec3), 0 , GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER , 0);
 }
 
@@ -29,12 +29,17 @@ void Paint::render() {
     shader.setUniformVec4("pointColor" , pointColor);
 
     glBindBuffer(GL_ARRAY_BUFFER , vbo);
-    glBufferSubData(GL_ARRAY_BUFFER , 0 , sizeof(EditorPoint) * pointList.size() , pointList.data());
+    glBufferSubData(GL_ARRAY_BUFFER , 0 , sizeof(glm::vec3) * pointList.size() , pointList.data());
 //    glBufferData(GL_ARRAY_BUFFER , pointList.size() * sizeof(EditorPoint) ,pointList.data(), GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0 , 3 , GL_FLOAT , false , sizeof(EditorPoint) , 0);
+    glVertexAttribPointer(0 , 3 , GL_FLOAT , false , sizeof(glm::vec3) , 0);
     glEnableVertexAttribArray(0);
 //    Logi("point size : %ld" , pointList.size());
     glDrawArrays(GL_POINTS , 0 , pointList.size());
+//    GLfloat lineWidthRange[2] = {0.0f, 0.0f};
+//    glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
+//    Logi("line %f , %f" , lineWidthRange[0] , lineWidthRange[1]);
+//    glLineWidth( lineWidthRange[1]);
+//    glDrawArrays(GL_LINE_STRIP , 0 , pointList.size());
     glDisableVertexAttribArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER ,0);
@@ -75,10 +80,20 @@ void Paint::createShader(){
 }
 
 void Paint::addPaintPoint(float x, float y) {
-    EditorPoint p;
-    p.x = x;
-    p.y = y;
-    p.z = 1.0f;
+    glm::vec3 p(x, y , 1.0f);
+    if(!pointList.empty()){
+        glm::vec3 lastPoint = pointList.back();
+
+        glm::vec3 diff(p.x - lastPoint.x,  p.y - lastPoint.y , 1.0f);
+        glm::vec3  dirVec = glm::normalize(diff);
+
+        while(glm::distance(pointList.back() , p) >= 2.0f){
+            glm::vec3  addPointVec = pointList.back() + dirVec * 1.0f;
+            pointList.push_back(addPointVec);
+
+            Logi("distance %f" , glm::distance(addPointVec , p));
+        }
+    }
     pointList.push_back(p);
 
 //    glBindBuffer(GL_ARRAY_BUFFER , vbo);

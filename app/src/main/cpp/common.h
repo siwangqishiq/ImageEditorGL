@@ -4,12 +4,6 @@
 
 #pragma once
 
-struct EditorPoint{
-    float x;
-    float y;
-    float z;
-};
-
 const int ACTION_DOWN = 0;
 const int ACTION_UP = 1;
 const int ACTION_MOVE = 2;

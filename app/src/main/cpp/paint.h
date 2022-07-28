@@ -27,7 +27,7 @@ public:
 private:
     App *appContext;
 
-    std::vector<EditorPoint> pointList = std::vector<EditorPoint>();
+    std::vector<glm::vec3> pointList = std::vector<glm::vec3>();
 
     float pointSize = 16.0f;
     glm::vec4 pointColor =  glm::vec4(1.0f , 0.0f ,0.0f ,1.0f);
@@ -39,6 +39,6 @@ private:
 
     unsigned int vbo;
 
-    EditorPoint p;
+    glm::vec3 p;
 };
 
