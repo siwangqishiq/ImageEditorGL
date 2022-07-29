@@ -33,8 +33,8 @@ private:
     //顶点列表
     std::vector<glm::vec3> vertexList = std::vector<glm::vec3>();
 
-    float lineWidth = 16.0f;
-    glm::vec4 pointColor =  glm::vec4(1.0f , 0.0f ,0.0f ,1.0f);
+    float lineWidth = 100.0f;
+    glm::vec4 pointColor =  glm::vec4(1.0f , 0.0f ,1.0f ,1.0f);
     glm::mat3 transMatrix = glm::mat3 (1.0f);
 
     Shader shader;

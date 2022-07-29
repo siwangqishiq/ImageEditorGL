@@ -27,7 +27,7 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
 
     override fun onTouchEvent(event: MotionEvent?) : Boolean{
         val ret = NativeBridge.onTouch(event?.actionMasked?:MotionEvent.ACTION_CANCEL , event?.x?:0.0f , event?.y?:0.0f)
-        requestRender()
+//        requestRender()
         return ret
     }
 
@@ -54,7 +54,7 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
         this.path = path
 
         setRenderer(this)
-        renderMode = RENDERMODE_WHEN_DIRTY
+        renderMode = RENDERMODE_CONTINUOUSLY
     }
 
     fun readImageBitmap(path : String) : Bitmap {
