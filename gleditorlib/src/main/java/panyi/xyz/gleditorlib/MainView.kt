@@ -55,6 +55,10 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
         NativeBridge.onRender()
     }
 
+//    override fun onDetachedFromWindow() {
+//        super.onDetachedFromWindow()
+//    }
+
     fun setContent(path : String , imgWidth : Int  , imgHeight : Int , bitmap : Bitmap?){
         this.path = path
 
@@ -67,7 +71,5 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
         return BitmapFactory.decodeFile(path , options)
     }
 
-    fun onDestroy(){
-        NativeBridge.onDestroy()
-    }
+
 }

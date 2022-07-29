@@ -46,12 +46,15 @@ public:
 
     bool onTouch(int action ,float x , float y);
 
-    void handleTouchEvent(ActionMessage &msg);
+    bool handleActionEvent(EventMessage &msg);
 
     void setImageBitmap(JNIEnv *env , jobject image_bitmap);
+
+    //主动退出应用
+    void exitApp();
 private:
     //事件消息队列
-    std::vector<ActionMessage> messageQueue = std::vector<ActionMessage>();
+    std::vector<EventMessage> messageQueue = std::vector<EventMessage>();
 
     //绘制组件集合
     std::vector<std::shared_ptr<Paint>> paintList = std::vector<std::shared_ptr<Paint>>();
@@ -68,7 +71,7 @@ private:
     std::shared_ptr<Paint> fetchCurrentPaint();
 
     //处理事件消息队列
-    void pumpMessageQueue();
+    bool pumpMessageQueue();
 
     int exportBitmap();
 };

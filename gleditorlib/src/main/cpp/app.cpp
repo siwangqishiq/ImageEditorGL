@@ -35,13 +35,15 @@ void App::onResize(int width,int height) {
     normalMatrix[2][1] = -1.0f;
     normalMatrix[2][2] = 1.0f;
 
-    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[0][0],normalMatrix[0][1],normalMatrix[0][2]);
-    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[1][0],normalMatrix[1][1],normalMatrix[1][2]);
-    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[2][0],normalMatrix[2][1],normalMatrix[2][2]);
+//    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[0][0],normalMatrix[0][1],normalMatrix[0][2]);
+//    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[1][0],normalMatrix[1][1],normalMatrix[1][2]);
+//    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[2][0],normalMatrix[2][1],normalMatrix[2][2]);
 }
 
 void App::onRender() {
-    pumpMessageQueue();
+    if(!pumpMessageQueue()){//事件处理
+        return;
+    }
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -68,20 +70,23 @@ bool App::onTouch(int action, float x, float y) {
      // Logi("touch %d , (%f , %f)" , action , x , y);
      y = viewHeight - y;
     bool ret = false;
+    EventMessage msg(EVENT_ACTION_DOWN , x , y);
     switch (action) {
-        case ACTION_DOWN:
+        case 0:
+            msg.action = EVENT_ACTION_DOWN;
             ret = true;
             break;
-        case ACTION_MOVE:
+        case 1:
+            msg.action = EVENT_ACTION_MOVE;
             ret = true;
             break;
-        case ACTION_UP:
-        case ACTION_CANCEL:
+        case 2:
+        case 3:
+            msg.action = EVENT_ACTION_UP;
             break;
         default:
             break;
     }
-    ActionMessage msg = {action , x ,y};
     messageQueue.push_back(msg);
     return ret;
 }
@@ -147,30 +152,50 @@ std::shared_ptr<Paint> App::fetchCurrentPaint() {
 }
 
 //消费事件队列
-void App::pumpMessageQueue() {
+bool App::pumpMessageQueue() {
+    Logi("action queue size : %d" , messageQueue.size());
     while(!messageQueue.empty()){
-        handleTouchEvent(messageQueue.front());
+        bool continueRunning = handleActionEvent(messageQueue.front());
+        Logi("continueRunning : %d" , continueRunning);
+        if(!continueRunning){
+            messageQueue.clear();
+            return false;
+        }
         messageQueue.pop_back();
     }//end while
+
+    return true;
 }
 
-void App::handleTouchEvent(ActionMessage &msg) {
-    float x = msg.x;
-    float y = msg.y;
+/**
+ * 事件处理  return 返回值
+ *
+ * @param msg
+ * @return
+ */
+bool App::handleActionEvent(EventMessage &msg) {
+    Logi("action : %d" , msg.action);
+    if(msg.action == EVENT_EXIT){//退出事件
+        Logi("action exit!!!!");
+        onDestroy();
+        return false;
+    }
+
     switch (msg.action) {
-        case ACTION_DOWN:
-            handleDownAction(x , y);
+        case EVENT_ACTION_DOWN:
+            handleDownAction(msg.x , msg.y);
             break;
-        case ACTION_MOVE:
-            handleMoveAction(x , y);
+        case EVENT_ACTION_MOVE:
+            handleMoveAction(msg.x , msg.y);
             break;
-        case ACTION_UP:
-        case ACTION_CANCEL:
-            handleUpCancelAction(x , y);
+        case EVENT_ACTION_UP:
+        case EVENT_ACTION_CANCEL:
+            handleUpCancelAction(msg.x , msg.y);
             break;
         default:
             break;
     }//end switch
+    return true;
 }
 
 int App::exportBitmap() {
@@ -179,6 +204,12 @@ int App::exportBitmap() {
                  GL_RGBA , GL_UNSIGNED_BYTE , buf);
 
     return 0;
+}
+
+void App::exitApp() {
+    EventMessage msg(EVENT_EXIT);
+    messageQueue.push_back(msg);
+    Logi("exitApp event");
 }
 
 

@@ -7,6 +7,7 @@ import android.view.ScaleGestureDetector
 import android.view.View
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
+import panyi.xyz.gleditorlib.NativeBridge
 import panyi.xyz.gleditorlib.R
 
 /**
@@ -44,8 +45,16 @@ class EditorActivity : AppCompatActivity() {
         mainView.setContent(path , -1 , -1 , null)
     }
 
+    override fun onBackPressed() {
+        NativeBridge.onDestroy()
+        super.onBackPressed()
+    }
+
+    override fun onStop() {
+        super.onStop()
+    }
+
     override fun onDestroy() {
-        mainView.onDestroy()
         super.onDestroy()
     }
 }
