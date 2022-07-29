@@ -11,7 +11,7 @@ class App;
 
 class Paint {
 public:
-    const int BUFFER_SIZE = 2 * 1024; //2K
+    const int BUFFER_SIZE = 4 * 1024; //4K
 
     Paint(App *app) : appContext(app){
         onInit();
@@ -27,18 +27,21 @@ public:
 private:
     App *appContext;
 
+    //
     std::vector<glm::vec3> pointList = std::vector<glm::vec3>();
 
-    float pointSize = 16.0f;
-    glm::vec4 pointColor =  glm::vec4(1.0f , 0.0f ,0.0f ,1.0f);
+    //顶点列表
+    std::vector<glm::vec3> vertexList = std::vector<glm::vec3>();
 
+    float lineWidth = 16.0f;
+    glm::vec4 pointColor =  glm::vec4(1.0f , 0.0f ,0.0f ,1.0f);
     glm::mat3 transMatrix = glm::mat3 (1.0f);
 
     Shader shader;
     void createShader();
 
-    unsigned int vbo;
+    std::vector<glm::vec3> genVertexByPoint(glm::vec3 startPoint , glm::vec3 endPoint);
 
-    glm::vec3 p;
+    unsigned int vbo;
 };
 

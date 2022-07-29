@@ -13,7 +13,7 @@ void Paint::onInit() {
     glGenBuffers(1 , bufferIds);
     vbo = bufferIds[0];
 
-    Logi("vector size : %u" , pointList.size());
+//    Logi("vector size : %u" , pointList.size());
     glBindBuffer(GL_ARRAY_BUFFER , vbo);
     glBufferData(GL_ARRAY_BUFFER ,  BUFFER_SIZE * sizeof(glm::vec3), 0 , GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER , 0);
@@ -25,21 +25,17 @@ void Paint::render() {
     auto matrix = transMatrix * (appContext->normalMatrix);
     shader.setIUniformMat3("transMat" , matrix);
 
-    shader.setUniformFloat("pointSize" , pointSize);
+    shader.setUniformFloat("pointSize" , lineWidth);
     shader.setUniformVec4("pointColor" , pointColor);
 
     glBindBuffer(GL_ARRAY_BUFFER , vbo);
-    glBufferSubData(GL_ARRAY_BUFFER , 0 , sizeof(glm::vec3) * pointList.size() , pointList.data());
-//    glBufferData(GL_ARRAY_BUFFER , pointList.size() * sizeof(EditorPoint) ,pointList.data(), GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER , 0 , sizeof(glm::vec3) * vertexList.size() , vertexList.data());
+//    glBufferData(GL_ARRAY_BUFFER , vertexList.size() * sizeof(glm::vec3) ,vertexList.data(), GL_DYNAMIC_DRAW);
     glVertexAttribPointer(0 , 3 , GL_FLOAT , false , sizeof(glm::vec3) , 0);
     glEnableVertexAttribArray(0);
 //    Logi("point size : %ld" , pointList.size());
-    glDrawArrays(GL_POINTS , 0 , pointList.size());
-//    GLfloat lineWidthRange[2] = {0.0f, 0.0f};
-//    glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
-//    Logi("line %f , %f" , lineWidthRange[0] , lineWidthRange[1]);
-//    glLineWidth( lineWidthRange[1]);
-//    glDrawArrays(GL_LINE_STRIP , 0 , pointList.size());
+    glDrawArrays(GL_TRIANGLE_FAN ,  0 ,vertexList.size() / 4);
+//    glDrawArrays(GL_POINTS , 0 , vertexList.size());
     glDisableVertexAttribArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER ,0);
@@ -80,23 +76,39 @@ void Paint::createShader(){
 }
 
 void Paint::addPaintPoint(float x, float y) {
-    glm::vec3 p(x, y , 1.0f);
-    if(!pointList.empty()){
-        glm::vec3 lastPoint = pointList.back();
-
-        glm::vec3 diff(p.x - lastPoint.x,  p.y - lastPoint.y , 1.0f);
-        glm::vec3  dirVec = glm::normalize(diff);
-
-        while(glm::distance(pointList.back() , p) >= 2.0f){
-            glm::vec3  addPointVec = pointList.back() + dirVec * 1.0f;
-            pointList.push_back(addPointVec);
-
-            Logi("distance %f" , glm::distance(addPointVec , p));
-        }
+    glm::vec3 endPoint = glm::vec3(x , y ,1.0f);
+    if(pointList.empty()){
+        pointList.push_back(endPoint);
+        return;
     }
-    pointList.push_back(p);
 
-//    glBindBuffer(GL_ARRAY_BUFFER , vbo);
-//    glBufferSubData(GL_ARRAY_BUFFER , 0 , sizeof(EditorPoint) * pointList.size() , pointList.data());
-//    glBindBuffer(GL_ARRAY_BUFFER , 0);
+    std::vector<glm::vec3> verts = genVertexByPoint(pointList.back() , endPoint);
+    vertexList.insert(vertexList.end(), verts.begin() , verts.end());
+    Logi("vertex list size %d   %f , %f" , vertexList.size() ,verts[2][0], verts[2][1]);
+
+    pointList.push_back(endPoint);
+}
+
+//依据线段起始点 插入顶点数据
+std::vector<glm::vec3> Paint::genVertexByPoint(glm::vec3 startPoint, glm::vec3 endPoint) {
+//    Logi("startPoint   %f , %f , %f" , startPoint.x , startPoint.y, startPoint.z);
+//    Logi("endPoint   %f , %f , %f" , endPoint.x , endPoint.y, endPoint.z);
+    std::vector<glm::vec3> vertList = std::vector<glm::vec3>();
+    glm::vec2 dir = glm::vec2(endPoint.x - startPoint.x , endPoint.y - startPoint.y);
+    glm::vec2 dirNormalVec = glm::normalize(dir);
+    glm::vec2 rotate90DirVec(-dirNormalVec.y , dirNormalVec.x);
+    glm::vec2 rotate180DirVec(-rotate90DirVec.x , rotate90DirVec.y);
+
+    glm::vec3 p1 = glm::vec3(startPoint.x + lineWidth * rotate90DirVec.x , startPoint.y + lineWidth * rotate90DirVec.y , 1.0f);
+    glm::vec3 p2 = endPoint;
+    glm::vec3 p3 = glm::vec3(p1.x + lineWidth * rotate180DirVec.x , p1.y + lineWidth * rotate180DirVec.y , 1.0f);;
+
+//    Logi("dirVec   %f , %f , len = %f" , dirVec.x , dirVec.y, glm::length(dirVec));
+//    Logi("rotate90DirVec   %f , %f , len = %f" , rotate90DirVec.x , rotate90DirVec.y, glm::length(rotate90DirVec));
+
+    vertList.push_back(p1);
+    vertList.push_back(p2);
+    vertList.push_back(p3);
+    vertList.push_back(p3);
+    return vertList;
 }

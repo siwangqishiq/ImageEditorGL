@@ -194,6 +194,8 @@ void ShaderManager::clear() {
         Shader shader = pair.second;
         glDeleteShader(shader.programId);
     }
+
+    shaderMap.clear();
 }
 
 ShaderManager& ShaderManager::getInstance() {
