@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import panyi.xyz.imageeditorgl.R
 import panyi.xyz.imageeditorgl.model.SelectFileItem
-import panyi.xyz.imageeditorgl.util.LogUtil
+import panyi.xyz.gleditorlib.util.LogUtil
 import java.io.File
 
 class FileSelectFragment : Fragment() {

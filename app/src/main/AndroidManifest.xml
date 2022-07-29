@@ -29,7 +29,6 @@
         </activity>
 
         <activity android:name=".activity.SelectFileActivity" />
-        <activity android:name=".activity.EditorActivity" />
     </application>
 
 </manifest>

@@ -7,11 +7,10 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
+import panyi.xyz.gleditorlib.activity.EditorActivity
 import panyi.xyz.imageeditorgl.R
 import panyi.xyz.imageeditorgl.model.SelectFileItem
 import panyi.xyz.imageeditorgl.model.UserViewModel
-import java.io.File
-import java.io.FileInputStream
 
 /**
  * MainActivity
@@ -50,7 +49,7 @@ class MainActivity : AppCompatActivity() {
      *  open gl image editor
      */
     private fun handlePickImage(data : SelectFileItem){
-        EditorActivity.start(this , data)
+        EditorActivity.start(this , data.path?:"")
     }
 
     /**

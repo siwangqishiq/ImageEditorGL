@@ -3,7 +3,7 @@ package panyi.xyz.imageeditorgl.model
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import panyi.xyz.imageeditorgl.util.LogUtil
+import panyi.xyz.gleditorlib.util.LogUtil
 
 class UserViewModel : ViewModel() {
     companion object {
