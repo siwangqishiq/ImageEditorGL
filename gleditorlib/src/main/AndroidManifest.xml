@@ -3,6 +3,6 @@
     package="panyi.xyz.gleditorlib">
 
     <application>
-        <activity android:name=".activity.EditorActivity" />
+        <activity android:name="panyi.xyz.gleditorlib.activity.EditorActivity" />
     </application>
 </manifest>

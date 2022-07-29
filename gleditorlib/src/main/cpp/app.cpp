@@ -47,12 +47,17 @@ void App::onRender() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    //限定显示范围
+    glScissor(baseImage->x, baseImage->y, baseImage->w , baseImage->h);
+    glEnable(GL_SCISSOR_TEST);
+
     //do render
     baseImage->render();
 
     for(auto &pPaint : paintList){
         pPaint->render();
     }//end for each
+    glDisable(GL_SCISSOR_TEST);
 }
 
 void App::onDestroy() {

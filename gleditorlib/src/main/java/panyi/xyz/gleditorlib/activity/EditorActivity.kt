@@ -3,10 +3,9 @@ package panyi.xyz.gleditorlib.activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.ScaleGestureDetector
-import android.view.View
-import android.widget.SeekBar
+
 import androidx.appcompat.app.AppCompatActivity
+import panyi.xyz.gleditorlib.MainView
 import panyi.xyz.gleditorlib.NativeBridge
 import panyi.xyz.gleditorlib.R
 
@@ -27,12 +26,7 @@ class EditorActivity : AppCompatActivity() {
     }
 
     private lateinit var fileData : String
-    private lateinit var mainView : panyi.xyz.gleditorlib.MainView
-    private lateinit var seekBar:SeekBar
-
-    private lateinit var resetBtn : View
-
-    private lateinit var scaleDetect : ScaleGestureDetector
+    private lateinit var mainView : MainView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,13 +42,5 @@ class EditorActivity : AppCompatActivity() {
     override fun onBackPressed() {
         NativeBridge.onDestroy()
         super.onBackPressed()
-    }
-
-    override fun onStop() {
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 }

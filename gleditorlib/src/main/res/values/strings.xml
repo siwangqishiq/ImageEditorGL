@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">ImageEditorGL</string>
-
     <string name="picker_picture">选择图片</string>
+    <string name="complete">完成</string>
 </resources>
