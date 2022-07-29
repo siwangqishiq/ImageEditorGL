@@ -106,12 +106,12 @@ void App::onInit(JNIEnv *env) {
     baseImage->onInit();
 
     //test code
-    std::shared_ptr<Paint> newPaint = std::make_shared<Paint>(this);
-    paintList.push_back(newPaint);
-    float x = viewWidth / 2.0f;
-    float y = viewHeight / 2.0f;
-    fetchCurrentPaint()->addPaintPoint(x , y);
-    fetchCurrentPaint()->addPaintPoint(x+ 300.0f , y);
+//    std::shared_ptr<Paint> newPaint = std::make_shared<Paint>(this);
+//    paintList.push_back(newPaint);
+//    float x = viewWidth / 2.0f;
+//    float y = viewHeight / 2.0f;
+//    fetchCurrentPaint()->addPaintPoint(x , y);
+//    fetchCurrentPaint()->addPaintPoint(x+ 300.0f , y);
 }
 
 void App::handleDownAction(float x, float y) {

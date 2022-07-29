@@ -27,21 +27,29 @@ void Paint::render() {
 
     auto matrix = transMatrix * (appContext->normalMatrix);
     shader.setIUniformMat3("transMat" , matrix);
-
     shader.setUniformFloat("pointSize" , lineWidth);
     shader.setUniformVec4("pointColor" , pointColor);
 
-    glBindBuffer(GL_ARRAY_BUFFER , vbo);
-    glBufferSubData(GL_ARRAY_BUFFER , 0 , sizeof(glm::vec3) * vertexList.size() , vertexList.data());
+    if(paintMode == Line){
+        glBindBuffer(GL_ARRAY_BUFFER , vbo);
+        glBufferSubData(GL_ARRAY_BUFFER , 0 , sizeof(glm::vec3) * vertexList.size() , vertexList.data());
 //    glBufferData(GL_ARRAY_BUFFER , vertexList.size() * sizeof(glm::vec3) ,vertexList.data(), GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0 , 3 , GL_FLOAT , false , sizeof(glm::vec3) , 0);
-    glEnableVertexAttribArray(0);
-//    Logi("point size : %ld" , pointList.size());
-    glDrawArrays(GL_TRIANGLE_STRIP ,  0 , vertexList.size());
-//    glDrawArrays(GL_POINTS , 0 , vertexList.size());
-    glDisableVertexAttribArray(0);
+        glVertexAttribPointer(0 , 3 , GL_FLOAT , false , sizeof(glm::vec3) , 0);
+        glEnableVertexAttribArray(0);
+        glDrawArrays(GL_TRIANGLE_STRIP ,  0 , vertexList.size());
+        glDisableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER ,0);
+    }else if(paintMode == Point){
+        glBindBuffer(GL_ARRAY_BUFFER , vbo);
+        glBufferSubData(GL_ARRAY_BUFFER , 0 , sizeof(glm::vec3) * pointList.size() , pointList.data());
+        glVertexAttribPointer(0 , 3 , GL_FLOAT , false , sizeof(glm::vec3) , 0);
 
-    glBindBuffer(GL_ARRAY_BUFFER ,0);
+        glEnableVertexAttribArray(0);
+        glDrawArrays(GL_POINTS , 0 , pointList.size());
+        glDisableVertexAttribArray(0);
+
+        glBindBuffer(GL_ARRAY_BUFFER ,0);
+    }
 }
 
 void Paint::onDestory() {
@@ -85,16 +93,32 @@ void Paint::addPaintPoint(float x, float y) {
         return;
     }
 
-    glm::vec3 startPoint = pointList.back();
+    const glm::vec3 startPoint = pointList.back();
     if(glm::distance(startPoint , endPoint) < 1.0f){
         return ;
     }
 
-    std::vector<glm::vec3> verts = genVertexByPoint(pointList.back() , endPoint);
-    vertexList.insert(vertexList.end(), verts.begin() , verts.end());
-    pointList.push_back(endPoint);
+    if(paintMode == Line){
+        std::vector<glm::vec3> verts = genVertexByPoint(startPoint , endPoint);
+        vertexList.insert(vertexList.end(), verts.begin() , verts.end());
+    }else if(paintMode == Point){
+        const float distance = glm::distance(startPoint , endPoint);
+        Logi("distance : %f" , distance);
+        if(distance >2.0f){
+            glm::vec2 dir =glm::vec2(endPoint.x - startPoint.x , endPoint.y - startPoint.y);
+            glm::vec2 dirNormal = glm::normalize(dir);
+            float step = 1.0f;
+            while (step <= distance){
+                glm::vec2 insertPoint = glm::vec2(startPoint.x + step * dirNormal.x, startPoint.y + step * dirNormal.y);
+                step += 1.0f;
 
-    Logi("pointList list size %d   %f , %f" , pointList.size() ,pointList.back().x, pointList.back().y);
+                pointList.push_back(glm::vec3(insertPoint.x , insertPoint.y , 1.0f));
+            }//end while
+        }
+    }
+
+    pointList.push_back(endPoint);
+    // Logi("pointList list size %d   %f , %f" , pointList.size() ,pointList.back().x, pointList.back().y);
 }
 
 //依据线段起始点 插入顶点数据
@@ -118,11 +142,6 @@ std::vector<glm::vec3> Paint::genVertexByPoint(glm::vec3 startPoint, glm::vec3 e
 //    Logi("dirVec   %f , %f , len = %f" , dirVec.x , dirVec.y, glm::length(dirVec));
 //    Logi("rotate90DirVec   %f , %f , len = %f" , rotate90DirVec.x , rotate90DirVec.y, glm::length(rotate90DirVec));
 
-    vertList.push_back(p1);
-    vertList.push_back(p2);
-    vertList.push_back(p3);
-//    vertList.push_back(p3);
-//    vertList.push_back(p2);
-    vertList.push_back(p4);
+    vertList.insert(vertList.end() , {p1, p2 ,p3 , p4});
     return vertList;
 }
