@@ -24,6 +24,11 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
         setEGLConfigChooser(8,8 ,8 , 8, 16 , 0)
     }
 
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        LogUtil.d(TAG , "measure width height $measuredWidth $measuredHeight");
+    }
+
     var path : String?= null
 
     override fun onTouchEvent(event: MotionEvent?) : Boolean{

@@ -3,11 +3,13 @@ package panyi.xyz.gleditorlib.activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 
 import androidx.appcompat.app.AppCompatActivity
 import panyi.xyz.gleditorlib.MainView
 import panyi.xyz.gleditorlib.NativeBridge
 import panyi.xyz.gleditorlib.R
+import panyi.xyz.gleditorlib.util.LogUtil
 
 /**
  *  just for fun
@@ -32,8 +34,12 @@ class EditorActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editor)
 
-        mainView = findViewById(R.id.editor_view)
+        val btn = findViewById<Button>(R.id.complete_btn)
+        btn.setOnClickListener{
+            onBackPressed()
+        }
 
+        mainView = findViewById(R.id.editor_view)
         fileData = intent.getStringExtra(INTENT_DATA)?:""
         val path = fileData
         mainView.setContent(path , -1 , -1 , null)

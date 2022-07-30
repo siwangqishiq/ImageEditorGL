@@ -16,7 +16,7 @@ enum PaintMode{//绘制模式
 
 class Paint {
 public:
-    const int BUFFER_SIZE = 4 * 1024; //4K
+    const int BUFFER_SIZE = 16 * 1024; //16K
 
     PaintMode paintMode = Point;
 

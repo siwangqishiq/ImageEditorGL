@@ -6,44 +6,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-<!--    <androidx.appcompat.widget.AppCompatSeekBar-->
-<!--        android:id="@+id/seek_bar"-->
-<!--        android:layout_marginTop="20dp"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        android:max="100"-->
-<!--        android:min="0"-->
-<!--        android:progress="44"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        />-->
-
-<!--    <Button-->
-<!--        android:id="@+id/reset_btn"-->
-<!--        android:text="reset"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        />-->
-
     <panyi.xyz.gleditorlib.MainView
         android:id="@+id/editor_view"
+        android:layout_gravity="top"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
     <LinearLayout
+        android:background="#3fffffff"
         android:layout_gravity="bottom"
         android:orientation="horizontal"
         android:padding="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ImageView
+            android:id="@+id/paint_action"
             android:src="@drawable/ic_paint"
             android:layout_width="40dp"
             android:layout_height="40dp" />
 
         <Button
+            android:id="@+id/complete_btn"
             android:text="@string/complete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
