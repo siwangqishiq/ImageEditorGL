@@ -22,4 +22,6 @@ object NativeBridge {
     external fun scale(scale:Float)
 
     external fun onTouch(action:Int , x :Float , y : Float) : Boolean
+
+    external fun exportBitmap(output : Bitmap) : Int
 }

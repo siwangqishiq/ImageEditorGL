@@ -59,3 +59,21 @@ JNIEXPORT void JNICALL
 Java_panyi_xyz_gleditorlib_NativeBridge_onInit(JNIEnv *env, jobject thiz) {
     app->onInit(env);
 }
+
+//extern "C"
+//JNIEXPORT jobject JNICALL
+//Java_panyi_xyz_gleditorlib_NativeBridge_exportBitmap(JNIEnv *env, jobject thiz) {
+//    if(app != nullptr){
+//        return app->exportBitmap();
+//    }
+//    return env->NewGlobalRef(nullptr);
+//}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_panyi_xyz_gleditorlib_NativeBridge_exportBitmap(JNIEnv *env, jobject thiz, jobject output) {
+   if(app != nullptr){
+       return app->exportBitmap(output);
+   }
+   return -1;
+}

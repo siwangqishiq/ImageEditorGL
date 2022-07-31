@@ -52,6 +52,9 @@ public:
 
     //主动退出应用
     void exitApp();
+
+    //导出bitmap
+    int exportBitmap(jobject outputBitmap);
 private:
     //事件消息队列
     std::vector<EventMessage> messageQueue = std::vector<EventMessage>();
@@ -72,6 +75,4 @@ private:
 
     //处理事件消息队列
     bool pumpMessageQueue();
-
-    int exportBitmap();
 };

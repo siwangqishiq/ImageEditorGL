@@ -16,7 +16,7 @@
         android:background="#3fffffff"
         android:layout_gravity="bottom"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:padding="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ImageView
@@ -24,6 +24,13 @@
             android:src="@drawable/ic_paint"
             android:layout_width="40dp"
             android:layout_height="40dp" />
+
+        <Button
+            android:id="@+id/export_btn"
+            android:text="@string/export"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
 
         <Button
             android:id="@+id/complete_btn"

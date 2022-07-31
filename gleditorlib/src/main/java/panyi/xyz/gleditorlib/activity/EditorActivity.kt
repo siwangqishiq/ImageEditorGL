@@ -1,7 +1,9 @@
 package panyi.xyz.gleditorlib.activity
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.widget.Button
 
@@ -10,6 +12,9 @@ import panyi.xyz.gleditorlib.MainView
 import panyi.xyz.gleditorlib.NativeBridge
 import panyi.xyz.gleditorlib.R
 import panyi.xyz.gleditorlib.util.LogUtil
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 /**
  *  just for fun
@@ -39,14 +44,56 @@ class EditorActivity : AppCompatActivity() {
             onBackPressed()
         }
 
+
+        val exportBtn = findViewById<Button>(R.id.export_btn)
+        exportBtn.setOnClickListener{
+            exportMainViewBitmap()
+        }
+
         mainView = findViewById(R.id.editor_view)
         fileData = intent.getStringExtra(INTENT_DATA)?:""
         val path = fileData
         mainView.setContent(path , -1 , -1 , null)
     }
 
+    fun exportMainViewBitmap(){
+        val bitWidth = mainView.width
+        val bitHeight = mainView.height
+        LogUtil.d(TAG , "mainView $bitWidth , $bitHeight ")
+
+        mainView.queueEvent{
+            val outputBitmap = Bitmap.createBitmap(bitWidth , bitHeight , Bitmap.Config.ARGB_8888)
+            val result = NativeBridge.exportBitmap(outputBitmap)
+            if(result < 0){
+                LogUtil.d(TAG , "bitmap copy error")
+                return@queueEvent
+            }
+            saveBitmap(outputBitmap , this@EditorActivity)
+        }
+    }
+
     override fun onBackPressed() {
         NativeBridge.onDestroy()
         super.onBackPressed()
+    }
+
+    private fun saveBitmap(bitmap:Bitmap, ctx:Context) {
+        val savePath:String = "${ctx.cacheDir.absolutePath}/${System.currentTimeMillis()}_img.jpg"
+        LogUtil.d(TAG , "savePath : $savePath")
+        try {
+            val filePic = File(savePath)
+            if (!filePic.exists()) {
+                filePic.getParentFile().mkdirs()
+                filePic.createNewFile()
+            }
+            val fos = FileOutputStream(filePic);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+            LogUtil.d(TAG , "save file success! ${filePic.absolutePath}")
+        } catch (e: IOException) {
+            LogUtil.d(TAG , e.message)
+            return;
+        }
     }
 }

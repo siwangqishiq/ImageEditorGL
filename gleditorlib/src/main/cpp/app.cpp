@@ -48,8 +48,8 @@ void App::onRender() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //限定显示范围
-    glScissor(baseImage->x, baseImage->y, baseImage->w , baseImage->h);
-    glEnable(GL_SCISSOR_TEST);
+//    glScissor(baseImage->x, baseImage->y, baseImage->w , baseImage->h);
+//    glEnable(GL_SCISSOR_TEST);
 
     //do render
     baseImage->render();
@@ -57,7 +57,7 @@ void App::onRender() {
     for(auto &pPaint : paintList){
         pPaint->render();
     }//end for each
-    glDisable(GL_SCISSOR_TEST);
+//    glDisable(GL_SCISSOR_TEST);
 }
 
 void App::onDestroy() {
@@ -158,7 +158,7 @@ std::shared_ptr<Paint> App::fetchCurrentPaint() {
 
 //消费事件队列
 bool App::pumpMessageQueue() {
-    Logi("action queue size : %d" , messageQueue.size());
+//    Logi("action queue size : %d" , messageQueue.size());
     while(!messageQueue.empty()){
         bool continueRunning = handleActionEvent(messageQueue.front());
         Logi("continueRunning : %d" , continueRunning);
@@ -203,18 +203,44 @@ bool App::handleActionEvent(EventMessage &msg) {
     return true;
 }
 
-int App::exportBitmap() {
-    unsigned char *buf = new unsigned char[4 * baseImage->imgWidth * baseImage->imgHeight];
-    glReadPixels(baseImage->x , baseImage->y , baseImage->imgWidth , baseImage->imgHeight ,
-                 GL_RGBA , GL_UNSIGNED_BYTE , buf);
-
-    return 0;
-}
-
 void App::exitApp() {
     EventMessage msg(EVENT_EXIT);
     messageQueue.push_back(msg);
     Logi("exitApp event");
+}
+
+int App::exportBitmap(jobject outputBitmap) {
+    Logi("export bitmap");
+
+    AndroidBitmapInfo info;
+    if(int getInfoResult = AndroidBitmap_getInfo(env , outputBitmap , &info) < 0){
+        Loge("get bitmap info error : %d" , getInfoResult);
+        return -1;
+    }
+    Logi("bitmap width %d , height %d , format %d stride %d" , info.width , info.height , info.format , info.stride);
+
+    int outWidth = info.width;
+    int outHeight = info.height;
+
+    const int len = 4 * outWidth * outHeight;
+    unsigned char *buf = new unsigned char[len];
+    glReadPixels(0 , 0 , outWidth , outHeight,
+                 GL_RGBA , GL_UNSIGNED_BYTE , buf);
+
+    unsigned char *dataBuf;
+    if(int readPixelsResult = AndroidBitmap_lockPixels(env , outputBitmap , (void **)&dataBuf) < 0){
+        Loge("readPixelsResult error : %d" , readPixelsResult);
+        AndroidBitmap_unlockPixels(env , outputBitmap);
+        return -1;
+    }
+
+    for(int i = 0 ; i < len ;i++){
+        dataBuf[i] = buf[i];
+    }//end for i
+
+    AndroidBitmap_unlockPixels(env , outputBitmap);
+    Logi("export bitmap end");
+    return 0;
 }
 
 

@@ -24,6 +24,10 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
         setEGLConfigChooser(8,8 ,8 , 8, 16 , 0)
     }
 
+    override fun queueEvent(r: Runnable?) {
+        super.queueEvent(r)
+    }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         LogUtil.d(TAG , "measure width height $measuredWidth $measuredHeight");

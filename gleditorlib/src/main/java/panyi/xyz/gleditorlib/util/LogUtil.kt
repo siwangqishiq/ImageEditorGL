@@ -8,4 +8,6 @@ object LogUtil {
     fun d(tag : String , msg : String?) = Log.d(tag , "${Thread.currentThread().name} - ${msg?:""}")
 
     fun d(msg : String?) = d(DEF_TAG , msg)
+
+    fun e(tag:String , msg : String?) = Log.e(tag , "${Thread.currentThread().name} - ${msg?:""}")
 }
