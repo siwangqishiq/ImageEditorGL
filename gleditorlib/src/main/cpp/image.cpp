@@ -85,7 +85,7 @@ void Image::createShader(){
                                      "\n"
                                      "void main(){\n"
                                      "    gl_Position = vec4(transMat * a_position ,1.0f);\n"
-                                     "    vUv = a_texture;\n"
+                                     "    vUv = vec2(a_texture.x , 1.0 - a_texture.y);\n"
                                      "}");
 
     std::string frgSrc = std::string("#version 300 es\n"
