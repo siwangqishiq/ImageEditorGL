@@ -7,7 +7,7 @@
     tools:context=".activity.MainActivity">
 
     <ImageView
-        android:src="@drawable/ic_paint"
+        android:id="@+id/preview"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -17,12 +17,11 @@
 
     <Button
         android:id="@+id/sample_text"
+        app:layout_constraintTop_toBottomOf="@id/preview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/picker_picture"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

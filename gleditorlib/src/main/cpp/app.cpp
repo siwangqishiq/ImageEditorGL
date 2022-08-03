@@ -16,28 +16,44 @@
 #include <memory>
 
 void App::onResize(int width,int height) {
-    baseImage = std::make_shared<Image>(this);
-
     viewWidth = width;
     viewHeight = height;
-    Logi("on onResize : %d x %d" , viewWidth , viewHeight);
+//    resetNormalMatrix();
+
+    baseImage = std::make_shared<Image>(this);
+    originImage = std::make_shared<OriginImage>(this);
+
+    Logi("viewWidth %d x %d" ,viewWidth ,viewHeight);
+    Logi("on onResize : %f , %f , %f x %f" ,x ,y , w , h);
+
+    updateVertexData();
+}
+
+
+void App::onInit(JNIEnv *env) {
+    Logi("on init");
+    this->env = env;
+
+    Logi("prepare gl config!");
+    ShaderManager::getInstance();
+    createShader();
+
+    glViewport(0 , 0, viewWidth , viewHeight);
+    glClearColor(0.0f , 0.0f , 0.0f , 1.0f);
+    glEnable(GL_DEPTH);
+
+    baseImage->onInit();
+    float width = static_cast<float>(baseImage->imgWidth);
+    float height = static_cast<float>(baseImage->imgHeight);
+    originImage->init(width , height);
 
     //重置归一化矩阵
-    normalMatrix[0][0] = 2.0f/(float)viewWidth;
-    normalMatrix[0][1] = 0.0f;
-    normalMatrix[0][2] = 0.0f;
+    resetNormalMatrix(width , height);
 
-    normalMatrix[1][0] = 0.0f;
-    normalMatrix[1][1] = 2.0f / (float)viewHeight;
-    normalMatrix[1][2] = 0.0f;
-
-    normalMatrix[2][0] = -1.0f;
-    normalMatrix[2][1] = -1.0f;
-    normalMatrix[2][2] = 1.0f;
-
-//    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[0][0],normalMatrix[0][1],normalMatrix[0][2]);
-//    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[1][0],normalMatrix[1][1],normalMatrix[1][2]);
-//    Logi("normalMatrix : %f\t %f\t %f\t" ,normalMatrix[2][0],normalMatrix[2][1],normalMatrix[2][2]);
+    w = width;
+    h = height;
+    updateVertexData();
+    initVertex();
 }
 
 void App::onRender() {
@@ -45,27 +61,31 @@ void App::onRender() {
         return;
     }
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     //限定显示范围
 //    glScissor(baseImage->x, baseImage->y, baseImage->w , baseImage->h);
 //    glEnable(GL_SCISSOR_TEST);
+//    glDisable(GL_SCISSOR_TEST);
 
     //do render
-    baseImage->render();
+    originImage->renderToFrameBuffer();
 
-    for(auto &pPaint : paintList){
-        pPaint->render();
-    }//end for each
-//    glDisable(GL_SCISSOR_TEST);
+    //将离屏缓冲区内容作为纹理 渲染到屏幕
+    glViewport(0 , 0, viewWidth , viewHeight);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    renderMainView();
 }
 
 void App::onDestroy() {
+    originImage->destroy();
     baseImage->onDestroy();
 
     for(auto &pPaint : paintList){
         pPaint->onDestory();
     }//end for each
+
+    GLuint bufferIds[] = {vbo};
+    glDeleteBuffers(1 , bufferIds);
 
     ShaderManager::getInstance().clear();
     Logi("destroy");
@@ -100,29 +120,6 @@ void App::setImageBitmap(JNIEnv *env ,jobject image_bitmap) {
     baseImage->setImageBitmap(env , image_bitmap);
 }
 
-void App::onInit(JNIEnv *env) {
-    Logi("on init");
-
-    this->env = env;
-
-    Logi("prepare gl config!");
-    ShaderManager::getInstance();
-
-    glViewport(0 , 0, viewWidth , viewHeight);
-    glClearColor(0.0f , 0.0f , 0.0f , 1.0f);
-    glEnable(GL_DEPTH);
-//    glEnable(GL_PROGRAM_POINT_SIZE); no found in opengl es version
-
-    baseImage->onInit();
-
-    //test code
-//    std::shared_ptr<Paint> newPaint = std::make_shared<Paint>(this);
-//    paintList.push_back(newPaint);
-//    float x = viewWidth / 2.0f;
-//    float y = viewHeight / 2.0f;
-//    fetchCurrentPaint()->addPaintPoint(x , y);
-//    fetchCurrentPaint()->addPaintPoint(x+ 300.0f , y);
-}
 
 void App::handleDownAction(float x, float y) {
     std::shared_ptr<Paint> newPaint = std::make_shared<Paint>(this);
@@ -241,6 +238,108 @@ int App::exportBitmap(jobject outputBitmap) {
     AndroidBitmap_unlockPixels(env , outputBitmap);
     Logi("export bitmap end");
     return 0;
+}
+
+void App::resetNormalMatrix(float width , float height) {
+    normalMatrix[0][0] = 2.0f/width;
+    normalMatrix[0][1] = 0.0f;
+    normalMatrix[0][2] = 0.0f;
+
+    normalMatrix[1][0] = 0.0f;
+    normalMatrix[1][1] = 2.0f / height;
+    normalMatrix[1][2] = 0.0f;
+
+    normalMatrix[2][0] = -1.0f;
+    normalMatrix[2][1] = -1.0f;
+    normalMatrix[2][2] = 1.0f;
+}
+
+void App::updateVertexData() {
+    vertexData[0 * 5 + 0] = x;
+    vertexData[0 * 5 + 1] = y;
+
+    vertexData[1 * 5 + 0] = x + w;
+    vertexData[1 * 5 + 1] = y + h;
+
+    vertexData[2 * 5 + 0] = x;
+    vertexData[2 * 5 + 1] = y + h;
+
+    vertexData[3 * 5 + 0] = x;
+    vertexData[3 * 5 + 1] = y;
+
+    vertexData[4 * 5 + 0] = x + w;
+    vertexData[4 * 5 + 1] = y;
+
+    vertexData[5 * 5 + 0] = x + w;
+    vertexData[5 * 5 + 1] = y + h;
+}
+
+void App::createShader() {
+    std::string vtxSrc = std::string("#version 300 es\n"
+                                     "\n"
+                                     "layout(location = 0) in vec3 a_position;\n"
+                                     "layout(location = 1) in vec2 a_texture;\n"
+                                     "\n"
+                                     "uniform mat3 transMat;\n"
+                                     "\n"
+                                     "out vec2 vUv;\n"
+                                     "\n"
+                                     "void main(){\n"
+                                     "    gl_Position = vec4(transMat * a_position ,1.0f);\n"
+                                     "    vUv = vec2(a_texture.x  , a_texture.y);\n"
+                                     "}");
+
+    std::string frgSrc = std::string("#version 300 es\n"
+                                     "\n"
+                                     "precision mediump float;\n"
+                                     "\n"
+                                     "uniform sampler2D mainTexture;\n"
+                                     "\n"
+                                     "in vec2 vUv;\n"
+                                     "out vec4 outColor;\n"
+                                     "\n"
+                                     "void main(){\n"
+                                     "    vec4 originColor = texture(mainTexture , vUv);\n"
+                                     "    outColor = originColor.rgba;\n"
+                                     "}");
+    shader = ShaderManager::getInstance().fetchShader("view_shader" , vtxSrc , frgSrc);
+}
+
+void App::initVertex() {
+    GLuint bufferIds[1];
+    glGenBuffers(1 , bufferIds);
+    vbo = bufferIds[0];
+
+    glBindBuffer(GL_ARRAY_BUFFER , vbo);
+    glBufferData(GL_ARRAY_BUFFER ,  6 *5 * sizeof(float) , vertexData , GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER , 0);
+}
+
+void App::renderMainView() {
+//    Logi("render main view shader name : %d" , shader.programId);
+    shader.useShader();
+//    glm::mat3 matrix = (normalMatrix);
+    shader.setIUniformMat3("transMat" , normalMatrix);
+
+    glBindBuffer(GL_ARRAY_BUFFER ,vbo);
+
+    glVertexAttribPointer(0 , 3 , GL_FLOAT , false , 5 * sizeof(float) , 0);
+    glVertexAttribPointer(1 , 2 , GL_FLOAT , false , 5 * sizeof(float) , (void*)(3 * sizeof(float)));
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, originImage->contentTextureId);
+//    glBindTexture(GL_TEXTURE_2D, baseImage->textureId);
+    shader.setUniformInt("mainTexture" , 1);
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+    glDrawArrays(GL_TRIANGLES , 0 , 6);
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindBuffer(GL_ARRAY_BUFFER ,0);
 }
 
 

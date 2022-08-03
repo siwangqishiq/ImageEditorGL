@@ -7,13 +7,13 @@
 #include <iostream>
 #include <string>
 
-#include <GLES3/gl3.h>
-#include <GLES2/gl2ext.h>
+#include "gl.h"
 #include <jni.h>
 #include "shader.h"
 #include "paint.h"
 #include "image.h"
 #include "common.h"
+#include "origin_image.h"
 #include <memory>
 
 enum Mode{
@@ -23,6 +23,7 @@ enum Mode{
 
 class Paint;
 class Image;
+class OriginImage;
 
 class App{
 public:
@@ -34,7 +35,12 @@ public:
     Mode mode = IDLE;
 
     glm::mat3 normalMatrix = glm::mat3(1.0f);
+
+    std::shared_ptr<OriginImage> originImage;
     std::shared_ptr<Image> baseImage;
+
+    //绘制组件集合
+    std::vector<std::shared_ptr<Paint>> paintList = std::vector<std::shared_ptr<Paint>>();
 
     void onResize(int width , int height);
 
@@ -55,12 +61,28 @@ public:
 
     //导出bitmap
     int exportBitmap(jobject outputBitmap);
+
+    float x = 0.0f;
+    float y = 0.0f;
+    float w = 1.0f;
+    float h = 1.0f;
+
+    float vertexData[6 * 5] = {
+            x       ,  y         , 1.0f , 0.0f , 1.0f,
+            x + w , y + h   , 1.0f , 1.0f , 0.0f,
+            x        , y + h   , 1.0f , 0.0f , 0.0f,
+            x       ,  y         , 1.0f , 0.0f , 1.0f,
+            x+ w  , y          ,1.0f , 1.0f , 1.0f,
+            x + w , y + h   , 1.0f , 1.0f , 0.0f,
+    };
 private:
+    Shader shader;
+
+    unsigned int vbo;
+
     //事件消息队列
     std::vector<EventMessage> messageQueue = std::vector<EventMessage>();
 
-    //绘制组件集合
-    std::vector<std::shared_ptr<Paint>> paintList = std::vector<std::shared_ptr<Paint>>();
 
     //处理按下事件
     void handleDownAction(float x , float y);
@@ -75,4 +97,14 @@ private:
 
     //处理事件消息队列
     bool pumpMessageQueue();
+
+    void updateVertexData();
+
+    void createShader();
+
+    void initVertex();
+
+    void renderMainView();
+
+    void resetNormalMatrix(float width, float height);
 };

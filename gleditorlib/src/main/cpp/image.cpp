@@ -19,24 +19,40 @@ void Image::onInit() {
     vbo = bufferIds[0];
 
     glBindBuffer(GL_ARRAY_BUFFER , vbo);
-    glBufferData(GL_ARRAY_BUFFER ,  4 *5 * sizeof(float) , vertexData , GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER ,  6 *5 * sizeof(float) , vertexData , GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER , 0);
 }
 
-void Image::render() {
+void Image::render(glm::mat3 &normalMatrix) {
+//    Logi("Image normal : %f , %f , %f" ,normalMatrix[0][0],normalMatrix[0][1],normalMatrix[0][2]);
+//    Logi("Image normal : %f , %f , %f" ,normalMatrix[1][0],normalMatrix[1][1],normalMatrix[1][2]);
+//    Logi("Image normal : %f , %f , %f" ,normalMatrix[2][0],normalMatrix[2][1],normalMatrix[2][2]);
+
+//    glm::vec3 v1(vertexData[5 * 0 + 0] , vertexData[5 * 0 + 1] , vertexData[5 * 0 + 2]);
+//    glm::vec3 v2(vertexData[5 * 1 + 0] , vertexData[5 * 1 + 1] , vertexData[5 * 1 + 2]);
+//    glm::vec3 v3(vertexData[5 * 2 + 0] , vertexData[5 * 2 + 1] , vertexData[5 * 2 + 2]);
+//    glm::vec3 v4(vertexData[5 * 3 + 0] , vertexData[5 * 3 + 1] , vertexData[5 * 3 + 2]);
+//    glm::vec3 v5(vertexData[5 * 4 + 0] , vertexData[5 * 4 + 1] , vertexData[5 * 4 + 2]);
+//    glm::vec3 v6(vertexData[5 * 5 + 0] , vertexData[5 * 5 + 1] , vertexData[5 * 5 + 2]);
+//
+//    auto newV1 = normalMatrix * v1;
+//    Logi("transform v1 %f %f %f" , newV1.x , newV1.y , newV1.z);
+//    auto newV2 = normalMatrix * v2;
+//    Logi("transform v2 %f %f %f" , newV2.x , newV2.y , newV2.z);
+//    auto newV3 = normalMatrix * v3;
+//    Logi("transform v3 %f %f %f" , newV3.x , newV3.y , newV3.z);
+//    auto newV4 = normalMatrix * v4;
+//    Logi("transform v4 %f %f %f" , newV4.x , newV4.y , newV4.z);
+//    auto newV5 = normalMatrix * v5;
+//    Logi("transform v5 %f %f %f" , newV5.x , newV5.y , newV5.z);
+//    auto newV6 = normalMatrix * v6;
+//    Logi("transform v6 %f %f %f" , newV6.x , newV6.y , newV6.z);
+
     shader.useShader();
 
 //    transMatrix = math_scale_mat3(scaleVal , scaleVal);
-    auto matrix = transMatrix * (appContext->normalMatrix);
+    glm::mat3 matrix =  (normalMatrix);
 //
-//    Logi("transMatrix : %f\t %f\t %f\t" ,transMatrix[0][0],transMatrix[0][1],transMatrix[0][2]);
-//    Logi("transMatrix : %f\t %f\t %f\t" ,transMatrix[1][0],transMatrix[1][1],transMatrix[1][2]);
-//    Logi("transMatrix : %f\t %f\t %f\t" ,transMatrix[2][0],transMatrix[2][1],transMatrix[2][2]);
-//
-//    Logi("matrix : %f\t %f\t %f\t" ,matrix[0][0],matrix[0][1],matrix[0][2]);
-//    Logi("matrix : %f\t %f\t %f\t" ,matrix[1][0],matrix[1][1],matrix[1][2]);
-//    Logi("matrix : %f\t %f\t %f\t" ,matrix[2][0],matrix[2][1],matrix[2][2]);
-
     shader.setIUniformMat3("transMat" , matrix);
 
     glBindBuffer(GL_ARRAY_BUFFER ,vbo);
@@ -47,8 +63,9 @@ void Image::render() {
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureId);
+    shader.setUniformInt("sTexture" , 0);
 
-    glDrawArrays(GL_TRIANGLE_FAN , 0 , 4);
+    glDrawArrays(GL_TRIANGLE_FAN , 0 , 6);
 
     glBindBuffer(GL_ARRAY_BUFFER ,0);
 
@@ -73,16 +90,16 @@ void Image::createShader(){
 
     std::string frgSrc = std::string("#version 300 es\n"
                                      "\n"
-                                     "precision mediump float;\n"
+                                     "precision highp float;\n"
                                      "\n"
                                      "uniform sampler2D sTexture;\n"
                                      "\n"
                                      "in vec2 vUv;\n"
-                                     "out vec4 outColor;\n"
+                                     "layout(location = 0) out vec4 outColor;\n"
                                      "\n"
                                      "void main(){\n"
                                      "    vec4 originColor = texture(sTexture , vUv);\n"
-                                     "    outColor = originColor.rgba;\n"
+                                     "    outColor = originColor;\n"
                                      "}");
 
     shader = ShaderManager::getInstance().fetchShader("image_shader" , vtxSrc , frgSrc);
@@ -92,32 +109,47 @@ void Image::updateVertexData() {
     vertexData[0 * 5 + 0] = x;
     vertexData[0 * 5 + 1] = y;
 
-    vertexData[1 * 5 + 0] = x;
+    vertexData[1 * 5 + 0] = x + w;
     vertexData[1 * 5 + 1] = y + h;
 
-    vertexData[2 * 5 + 0] = x + w;
+    vertexData[2 * 5 + 0] = x;
     vertexData[2 * 5 + 1] = y + h;
 
-    vertexData[3 * 5 + 0] = x + w;
+    vertexData[3 * 5 + 0] = x;
     vertexData[3 * 5 + 1] = y;
+
+    vertexData[4 * 5 + 0] = x + w;
+    vertexData[4 * 5 + 1] = y;
+
+    vertexData[5 * 5 + 0] = x + w;
+    vertexData[5 * 5 + 1] = y + h;
+
+    for(int i = 0 ; i < 6 ; i++){
+        Logi("vertexData : %f,%f,%f,%f,%f" , vertexData[5 * i + 0] , vertexData[5 * i + 1] , vertexData[5 * i + 2],
+             vertexData[5 * i + 3],vertexData[5 * i + 4]);
+    }
 }
 
 void Image::resetPositionData() {
-    const float ratio = (float)imgWidth / imgHeight;
-    if(imgWidth >= imgHeight){
-        w = appContext->viewWidth;
-        x = 0.0f;
+//    const float ratio = (float)imgWidth / imgHeight;
+//    if(imgWidth >= imgHeight){
+//        w = appContext->viewWidth;
+//        x = 0.0f;
+//
+//        h = w / ratio;
+//        y = appContext->viewHeight / 2.0f - h / 2.0f;
+//    }else{
+//        h = appContext->viewHeight;
+//        y = 0.0f;
+//        w = ratio * h;
+//        x = appContext->viewWidth / 2.0f - w / 2.0f;
+//    }
 
-        h = w / ratio;
-        y = appContext->viewHeight / 2.0f - h / 2.0f;
-    }else{
-        h = appContext->viewHeight;
-        y = 0.0f;
-        w = ratio * h;
-        x = appContext->viewWidth / 2.0f - w / 2.0f;
-    }
-
-    Logi("x = %f , y = %f , w = %f , h = %f" , x, y, w ,h);
+    x = 0.0f;
+    y = 0.0f;
+    w = static_cast<float>(imgWidth);
+    h = static_cast<float>(imgHeight);
+    Logi("image vertex x = %f , y = %f , w = %f , h = %f" , x, y, w ,h);
     updateVertexData();
 }
 

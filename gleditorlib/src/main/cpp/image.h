@@ -17,7 +17,7 @@ public:
 
     void onInit();
 
-    void render();
+    void render(glm::mat3 &normalMatrix);
 
     void onDestroy();
 
@@ -27,7 +27,7 @@ public:
     float y = 0;
     float w = 1.0f;
     float h = 1.0f;
-
+    unsigned int textureId;
 private:
     App *appContext;
     Shader shader;
@@ -35,13 +35,14 @@ private:
     jobject imageBitmap;
 
     unsigned int vbo;
-    unsigned int textureId;
 
-    float vertexData[4 * 5] = {
+    float vertexData[ 6 * 5] = {
             x       ,  y         , 1.0f , 0.0f , 1.0f,
-            x        , y + h   , 1.0f , 0.0f , 0.0f,
             x + w , y + h   , 1.0f , 1.0f , 0.0f,
-            x+ w  , y          ,1.0f , 1.0f , 1.0f
+            x        , y + h   , 1.0f , 0.0f , 0.0f,
+            x       ,  y         , 1.0f , 0.0f , 1.0f,
+            x+  w , y          ,1.0f , 1.0f , 1.0f,
+            x + w , y + h   , 1.0f , 1.0f , 0.0f,
     };
 
     glm::mat3 transMatrix = glm::mat3 (1.0f);
