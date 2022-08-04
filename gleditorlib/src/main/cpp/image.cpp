@@ -131,20 +131,6 @@ void Image::updateVertexData() {
 }
 
 void Image::resetPositionData() {
-//    const float ratio = (float)imgWidth / imgHeight;
-//    if(imgWidth >= imgHeight){
-//        w = appContext->viewWidth;
-//        x = 0.0f;
-//
-//        h = w / ratio;
-//        y = appContext->viewHeight / 2.0f - h / 2.0f;
-//    }else{
-//        h = appContext->viewHeight;
-//        y = 0.0f;
-//        w = ratio * h;
-//        x = appContext->viewWidth / 2.0f - w / 2.0f;
-//    }
-
     x = 0.0f;
     y = 0.0f;
     w = static_cast<float>(imgWidth);

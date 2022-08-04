@@ -32,9 +32,10 @@ public:
     int viewWidth;
     int viewHeight;
 
-    Mode mode = IDLE;
+    float imageOriginWidth;
+    float imageOriginHeight;
 
-    glm::mat3 normalMatrix = glm::mat3(1.0f);
+    Mode mode = IDLE;
 
     std::shared_ptr<OriginImage> originImage;
     std::shared_ptr<Image> baseImage;
@@ -75,6 +76,12 @@ public:
             x+ w  , y          ,1.0f , 1.0f , 1.0f,
             x + w , y + h   , 1.0f , 1.0f , 0.0f,
     };
+    glm::mat3 normalMatrix = glm::mat3(1.0f);
+
+    //调整原始图片 在View上的显示
+    //先缩放 再平移
+    glm::mat3 scaleMatrix = glm::mat3(1.0f);
+    glm::mat3 moveMatrix = glm::mat3(1.0f);
 private:
     Shader shader;
 
@@ -98,7 +105,7 @@ private:
     //处理事件消息队列
     bool pumpMessageQueue();
 
-    void updateVertexData();
+    void updateVertexData(float _x , float _y , float _w , float _h);
 
     void createShader();
 
@@ -107,4 +114,7 @@ private:
     void renderMainView();
 
     void resetNormalMatrix(float width, float height);
+
+    //计算出合适View的变换矩阵
+    void calculateFitViewTransMatrix();
 };
