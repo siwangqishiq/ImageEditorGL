@@ -26,7 +26,7 @@ public:
 
     void onInit();
 
-    void render();
+    void render(glm::mat3 &normalMatrix);
 
     void onDestory();
 
@@ -41,8 +41,8 @@ private:
     std::vector<glm::vec3> vertexList = std::vector<glm::vec3>();
 
     float lineWidth = 16.0f;
-    glm::vec4 pointColor =  glm::vec4(0.0f , 0.0f ,1.0f ,1.0f);
-    glm::mat3 transMatrix = glm::mat3 (1.0f);
+    glm::vec4 pointColor =  glm::vec4(1.0f , 0.0f ,0.0f ,1.0f);
+//    glm::mat3 transMatrix = glm::mat3 (1.0f);
 
     Shader shader;
     void createShader();

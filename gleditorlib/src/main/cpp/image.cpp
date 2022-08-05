@@ -90,7 +90,7 @@ void Image::createShader(){
 
     std::string frgSrc = std::string("#version 300 es\n"
                                      "\n"
-                                     "precision highp float;\n"
+                                     "precision mediump float;\n"
                                      "\n"
                                      "uniform sampler2D sTexture;\n"
                                      "\n"

@@ -95,7 +95,7 @@ void App::onDestroy() {
 
 bool App::onTouch(int action, float x, float y) {
      // Logi("touch %d , (%f , %f)" , action , x , y);
-     y = viewHeight - y;
+//     y = viewHeight - y;
     bool ret = false;
     EventMessage msg(EVENT_ACTION_DOWN , x , y);
     switch (action) {
@@ -396,6 +396,7 @@ void App::calculateFitViewTransMatrix() {
     moveMatrix[2][0] = dx;
     moveMatrix[2][1] = dy;
 
+    //变换矩阵重置
     worldToScreenMatrix = moveMatrix * scaleMatrix;
     screenToWorldMatrix = glm::inverse(worldToScreenMatrix);
 }

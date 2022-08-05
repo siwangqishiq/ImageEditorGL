@@ -22,13 +22,23 @@ void Paint::onInit() {
     glBindBuffer(GL_ARRAY_BUFFER , 0);
 }
 
-void Paint::render() {
+void Paint::render(glm::mat3 &normalMatrix) {
     shader.useShader();
 
-    auto matrix = transMatrix * (appContext->normalMatrix);
-    shader.setIUniformMat3("transMat" , matrix);
+    glm::mat3 transMatrix = normalMatrix;
+    shader.setIUniformMat3("transMat" , transMatrix);
     shader.setUniformFloat("pointSize" , lineWidth);
     shader.setUniformVec4("pointColor" , pointColor);
+
+//    if(pointList.size() > 0){
+//        glm::vec3 v = pointList[pointList.size() - 1];
+//        auto p = normalMatrix * v;
+//        Logi("last paint point : %f , %f , %f" ,p.x , p.y , p.z);
+//
+////        Logi("Paint normal : %f , %f , %f" ,normalMatrix[0][0],normalMatrix[0][1],normalMatrix[0][2]);
+////        Logi("Paint normal : %f , %f , %f" ,normalMatrix[1][0],normalMatrix[1][1],normalMatrix[1][2]);
+////        Logi("Paint normal : %f , %f , %f" ,normalMatrix[2][0],normalMatrix[2][1],normalMatrix[2][2]);
+//    }
 
     if(paintMode == Line){
         glBindBuffer(GL_ARRAY_BUFFER , vbo);
@@ -38,7 +48,6 @@ void Paint::render() {
         glEnableVertexAttribArray(0);
         glDrawArrays(GL_TRIANGLE_STRIP ,  0 , vertexList.size());
         glDisableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER ,0);
     }else if(paintMode == Point){
         glBindBuffer(GL_ARRAY_BUFFER , vbo);
         glBufferSubData(GL_ARRAY_BUFFER , 0 , sizeof(glm::vec3) * pointList.size() , pointList.data());
@@ -47,9 +56,8 @@ void Paint::render() {
         glEnableVertexAttribArray(0);
         glDrawArrays(GL_POINTS , 0 , pointList.size());
         glDisableVertexAttribArray(0);
-
-        glBindBuffer(GL_ARRAY_BUFFER ,0);
     }
+    glBindBuffer(GL_ARRAY_BUFFER ,0);
 }
 
 void Paint::onDestory() {
@@ -77,7 +85,7 @@ void Paint::createShader(){
                                      "\n"
                                      "uniform vec4 pointColor;\n"
                                      "\n"
-                                     "out vec4 outColor;\n"
+                                     "layout(location = 0) out vec4 outColor;\n"
                                      "\n"
                                      "void main(){\n"
                                      "    outColor = pointColor;\n"
@@ -87,6 +95,15 @@ void Paint::createShader(){
 }
 
 void Paint::addPaintPoint(float x, float y) {
+    Logi("add screen point %f , %f" , x , y);
+    glm::vec3 origin(x , y , 1.0f);
+
+    glm::vec3 worldPos = appContext->screenToWorldMatrix * origin;
+    Logi("add world point %f , %f" , worldPos.x , worldPos.y);
+
+    x = worldPos.x;
+    y = worldPos.y;
+
     glm::vec3 endPoint = glm::vec3(x , y ,1.0f);
     if(pointList.empty()){
         pointList.push_back(endPoint);

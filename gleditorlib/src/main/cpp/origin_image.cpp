@@ -28,13 +28,13 @@ void OriginImage::renderToFrameBuffer() {
 
     glViewport(0 , 0, imgWidth , imgHeight);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);//关闭深度测试  按绘制顺序显示图像
 
     appContext->baseImage->render(normalMatrix);
 
     auto paintList = appContext->paintList;
     for(auto &pPaint : paintList){
-        pPaint->render();
+        pPaint->render(normalMatrix);
     }//end for each
 
     glBindFramebuffer(GL_FRAMEBUFFER , 0);
