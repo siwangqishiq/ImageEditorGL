@@ -77,6 +77,7 @@ Java_panyi_xyz_gleditorlib_NativeBridge_exportBitmap(JNIEnv *env, jobject thiz, 
    }
    return -1;
 }
+
 extern "C"
 JNIEXPORT jint JNICALL
 Java_panyi_xyz_gleditorlib_NativeBridge_originImageWidth(JNIEnv *env, jobject thiz) {

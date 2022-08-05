@@ -20,6 +20,7 @@
         android:padding="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <ImageView
             android:id="@+id/paint_action"
             android:src="@drawable/ic_paint"

@@ -96,7 +96,6 @@ void App::onDestroy() {
 }
 
 bool App::onTouch(int action, float x, float y) {
-     // Logi("touch %d , (%f , %f)" , action , x , y);
 //     y = viewHeight - y;
     bool ret = false;
     EventMessage msg(EVENT_ACTION_DOWN , x , y);
@@ -106,12 +105,13 @@ bool App::onTouch(int action, float x, float y) {
             ret = true;
             break;
         case 1:
-            msg.action = EVENT_ACTION_MOVE;
+            msg.action = EVENT_ACTION_UP;
+            Logi("touch %d , (%f , %f) msg.action %d" , action , x , y , msg.action);
             ret = true;
             break;
         case 2:
-        case 3:
-            msg.action = EVENT_ACTION_UP;
+            msg.action = EVENT_ACTION_MOVE;
+            ret = true;
             break;
         default:
             break;
@@ -126,26 +126,50 @@ void App::setImageBitmap(JNIEnv *env ,jobject image_bitmap) {
 
 
 void App::handleDownAction(float x, float y) {
-    std::shared_ptr<Paint> newPaint = std::make_shared<Paint>(this);
-    paintList.push_back(newPaint);
+    if(mode  == Mode::PAINT){//绘制模式
+        std::shared_ptr<Paint> newPaint = std::make_shared<Paint>(this);
+        paintList.push_back(newPaint);
 
-    auto curPaint = fetchCurrentPaint();
-    if(curPaint != nullptr){
-        curPaint->addPaintPoint(x , y);
+        auto curPaint = fetchCurrentPaint();
+        if(curPaint != nullptr){
+            curPaint->addPaintPoint(x , y);
+        }
+    }else if(mode == Mode::IDLE){
+        changeMode(Mode::IDLE_MOVE);
+
+        lastPoint.x = x;
+        lastPoint.y = y;
     }
 }
 
 void App::handleMoveAction(float x, float y) {
-    auto curPaint = fetchCurrentPaint();
-    if(curPaint != nullptr){
-        curPaint->addPaintPoint(x , y);
+    if(mode  == Mode::PAINT){
+        auto curPaint = fetchCurrentPaint();
+        if(curPaint != nullptr){
+            curPaint->addPaintPoint(x , y);
+        }
+    }else if(mode == Mode::IDLE_MOVE){//移动
+        float dx = x - lastPoint.x;
+        float dy = lastPoint.y - y;
+        lastPoint.x = x;
+        lastPoint.y = y;
+
+        moveMatrix[2][0] += dx;
+        moveMatrix[2][1] += dy;
+
+        //Logi("dx = %f ,  dy = %f" , moveMatrix[2][0] , moveMatrix[2][1]) ;
+        resetTransMatrix();
     }
 }
 
 void App::handleUpCancelAction(float x, float y) {
-    auto curPaint = fetchCurrentPaint();
-    if(curPaint != nullptr){
-        curPaint->addPaintPoint(x , y);
+    if(mode == Mode::PAINT){
+        auto curPaint = fetchCurrentPaint();
+        if(curPaint != nullptr){
+            curPaint->addPaintPoint(x , y);
+        }
+    }else if(mode == Mode::IDLE_MOVE){
+        changeMode(Mode::IDLE);
     }
 }
 
@@ -162,12 +186,12 @@ bool App::pumpMessageQueue() {
 //    Logi("action queue size : %d" , messageQueue.size());
     while(!messageQueue.empty()){
         bool continueRunning = handleActionEvent(messageQueue.front());
-        Logi("continueRunning : %d" , continueRunning);
+//        Logi("continueRunning : %d" , continueRunning);
         if(!continueRunning){
             messageQueue.clear();
             return false;
         }
-        messageQueue.pop_back();
+        messageQueue.pop_front();
     }//end while
 
     return true;
@@ -179,8 +203,8 @@ bool App::pumpMessageQueue() {
  * @param msg
  * @return
  */
-bool App::handleActionEvent(EventMessage &msg) {
-    Logi("action : %d" , msg.action);
+bool App::handleActionEvent(EventMessage msg) {
+    // Logi("action : %d" , msg.action);
     if(msg.action == EVENT_EXIT){//退出事件
         Logi("action exit!!!!");
         onDestroy();
@@ -191,12 +215,11 @@ bool App::handleActionEvent(EventMessage &msg) {
         case EVENT_ACTION_DOWN:
             handleDownAction(msg.x , msg.y);
             break;
+        case EVENT_ACTION_UP:
+            handleUpCancelAction(msg.x , msg.y);
+            break;
         case EVENT_ACTION_MOVE:
             handleMoveAction(msg.x , msg.y);
-            break;
-        case EVENT_ACTION_UP:
-        case EVENT_ACTION_CANCEL:
-            handleUpCancelAction(msg.x , msg.y);
             break;
         default:
             break;
@@ -403,6 +426,14 @@ void App::calculateFitViewTransMatrix() {
     moveMatrix[2][0] = dx;
     moveMatrix[2][1] = dy;
 
+    resetTransMatrix();
+}
+
+void App::changeMode(Mode newMode) {
+    mode = newMode;
+}
+
+void App::resetTransMatrix() {
     //变换矩阵重置
     worldToScreenMatrix = moveMatrix * scaleMatrix;
     screenToWorldMatrix = glm::inverse(worldToScreenMatrix);

@@ -15,9 +15,12 @@
 #include "common.h"
 #include "origin_image.h"
 #include <memory>
+#include <deque>
 
 enum Mode{
     IDLE,//空闲态
+    IDLE_MOVE,//移动
+    IDLE_SCALE,//缩放
     PAINT,//绘制
 };
 
@@ -53,7 +56,7 @@ public:
 
     bool onTouch(int action ,float x , float y);
 
-    bool handleActionEvent(EventMessage &msg);
+    bool handleActionEvent(EventMessage msg);
 
     void setImageBitmap(JNIEnv *env , jobject image_bitmap);
 
@@ -62,6 +65,9 @@ public:
 
     //导出bitmap
     int exportBitmap(jobject outputBitmap);
+
+    //改变模式
+    void changeMode(Mode newMode);
 
     float x = 0.0f;
     float y = 0.0f;
@@ -88,13 +94,15 @@ public:
 
     //屏幕坐标->世界坐标
     glm::mat3 screenToWorldMatrix = glm::mat3(1.0f);
+
+    glm::vec2 lastPoint;
 private:
     Shader shader;
 
     unsigned int vbo;
 
-    //事件消息队列
-    std::vector<EventMessage> messageQueue = std::vector<EventMessage>();
+    //事件消息队列 双端队列
+    std::deque<EventMessage> messageQueue = std::deque<EventMessage>();
 
 
     //处理按下事件
@@ -123,4 +131,7 @@ private:
 
     //计算出合适View的变换矩阵
     void calculateFitViewTransMatrix();
+
+    //重置变换矩阵
+    void resetTransMatrix();
 };
