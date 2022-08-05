@@ -2,6 +2,10 @@ package panyi.xyz.gleditorlib
 
 import android.graphics.Bitmap
 
+/**
+ *  java -> c++
+ *
+ */
 object NativeBridge {
     init {
         System.loadLibrary("imageeditorgl")
@@ -28,4 +32,6 @@ object NativeBridge {
     external fun originImageWidth() : Int
 
     external fun originImageHeight() : Int
+
+    external fun setPaintMode();
 }

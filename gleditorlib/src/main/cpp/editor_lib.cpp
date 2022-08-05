@@ -96,3 +96,11 @@ Java_panyi_xyz_gleditorlib_NativeBridge_originImageHeight(JNIEnv *env, jobject t
     }
     return 0;
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_panyi_xyz_gleditorlib_NativeBridge_setPaintMode(JNIEnv *env, jobject thiz) {
+    if(app != nullptr){
+        app->changeMode(Mode::PAINT);
+    }
+}

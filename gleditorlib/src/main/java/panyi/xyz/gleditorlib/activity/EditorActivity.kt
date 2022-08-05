@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 
 import androidx.appcompat.app.AppCompatActivity
@@ -54,6 +55,10 @@ class EditorActivity : AppCompatActivity() {
         fileData = intent.getStringExtra(INTENT_DATA)?:""
         val path = fileData
         mainView.setContent(path , -1 , -1 , null)
+
+        findViewById<View>(R.id.paint_action).setOnClickListener {
+            mainView.setPaintMode()
+        }
     }
 
     fun exportProcessedBitmap(){

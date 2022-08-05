@@ -69,18 +69,21 @@ public:
     //改变模式
     void changeMode(Mode newMode);
 
+    //屏幕坐标点 转为世界坐标点
+    glm::vec2 convertScreenToWorld(float _x , float _y);
+
     float x = 0.0f;
     float y = 0.0f;
     float w = 1.0f;
     float h = 1.0f;
 
     float vertexData[6 * 5] = {
-            x       ,  y         , 1.0f , 0.0f , 1.0f,
-            x + w , y + h   , 1.0f , 1.0f , 0.0f,
-            x        , y + h   , 1.0f , 0.0f , 0.0f,
-            x       ,  y         , 1.0f , 0.0f , 1.0f,
-            x+ w  , y          ,1.0f , 1.0f , 1.0f,
-            x + w , y + h   , 1.0f , 1.0f , 0.0f,
+            x       ,  y         , 1.0f , 0.0f , 0.0f,
+            x + w , y + h   , 1.0f , 1.0f , 1.0f,
+            x        , y + h   , 1.0f , 0.0f , 1.0f,
+            x       ,  y         , 1.0f , 0.0f , 0.0f,
+            x+ w  , y          ,1.0f , 1.0f , 0.0f,
+            x + w , y + h   , 1.0f , 1.0f , 1.0f,
     };
     glm::mat3 normalMatrix = glm::mat3(1.0f);
 

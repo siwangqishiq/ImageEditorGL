@@ -30,15 +30,16 @@ void Paint::render(glm::mat3 &normalMatrix) {
     shader.setUniformFloat("pointSize" , lineWidth);
     shader.setUniformVec4("pointColor" , pointColor);
 
-//    if(pointList.size() > 0){
-//        glm::vec3 v = pointList[pointList.size() - 1];
-//        auto p = normalMatrix * v;
-//        Logi("last paint point : %f , %f , %f" ,p.x , p.y , p.z);
-//
-////        Logi("Paint normal : %f , %f , %f" ,normalMatrix[0][0],normalMatrix[0][1],normalMatrix[0][2]);
-////        Logi("Paint normal : %f , %f , %f" ,normalMatrix[1][0],normalMatrix[1][1],normalMatrix[1][2]);
-////        Logi("Paint normal : %f , %f , %f" ,normalMatrix[2][0],normalMatrix[2][1],normalMatrix[2][2]);
-//    }
+    if(pointList.size() > 0){
+        glm::vec3 v = pointList[pointList.size() - 1];
+        auto p = normalMatrix * v;
+        Logi("last paint point origin : %f , %f , %f" ,v.x , v.y , v.z);
+        Logi("last paint point : %f , %f , %f" ,p.x , p.y , p.z);
+
+//        Logi("Paint normal : %f , %f , %f" ,normalMatrix[0][0],normalMatrix[0][1],normalMatrix[0][2]);
+//        Logi("Paint normal : %f , %f , %f" ,normalMatrix[1][0],normalMatrix[1][1],normalMatrix[1][2]);
+//        Logi("Paint normal : %f , %f , %f" ,normalMatrix[2][0],normalMatrix[2][1],normalMatrix[2][2]);
+    }
 
     if(paintMode == Line){
         glBindBuffer(GL_ARRAY_BUFFER , vbo);
@@ -95,14 +96,12 @@ void Paint::createShader(){
 }
 
 void Paint::addPaintPoint(float x, float y) {
-    Logi("add screen point %f , %f" , x , y);
-    glm::vec3 origin(x , y , 1.0f);
-
-    glm::vec3 worldPos = appContext->screenToWorldMatrix * origin;
-    Logi("add world point %f , %f" , worldPos.x , worldPos.y);
+    glm::vec2 worldPos = appContext->convertScreenToWorld(x , y);
 
     x = worldPos.x;
     y = worldPos.y;
+
+    Logi("add point %f , %f" , x , y);
 
     glm::vec3 endPoint = glm::vec3(x , y ,1.0f);
     if(pointList.empty()){

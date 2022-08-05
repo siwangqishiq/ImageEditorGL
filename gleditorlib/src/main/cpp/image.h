@@ -37,12 +37,12 @@ private:
     unsigned int vbo;
 
     float vertexData[ 6 * 5] = {
-            x       ,  y         , 1.0f , 0.0f , 1.0f,
-            x + w , y + h   , 1.0f , 1.0f , 0.0f,
-            x        , y + h   , 1.0f , 0.0f , 0.0f,
-            x       ,  y         , 1.0f , 0.0f , 1.0f,
-            x+  w , y          ,1.0f , 1.0f , 1.0f,
-            x + w , y + h   , 1.0f , 1.0f , 0.0f,
+            x       ,  y         , 1.0f , 0.0f , 0.0f,
+            x + w , y + h   , 1.0f , 1.0f , 1.0f,
+            x        , y + h   , 1.0f , 0.0f , 1.0f,
+            x       ,  y         , 1.0f , 0.0f , 0.0f,
+            x+ w  , y          ,1.0f , 1.0f , 0.0f,
+            x + w , y + h   , 1.0f , 1.0f , 1.0f,
     };
 
     glm::mat3 transMatrix = glm::mat3 (1.0f);

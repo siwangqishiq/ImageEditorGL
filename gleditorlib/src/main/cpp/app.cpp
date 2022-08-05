@@ -124,7 +124,6 @@ void App::setImageBitmap(JNIEnv *env ,jobject image_bitmap) {
     baseImage->setImageBitmap(env , image_bitmap);
 }
 
-
 void App::handleDownAction(float x, float y) {
     if(mode  == Mode::PAINT){//绘制模式
         std::shared_ptr<Paint> newPaint = std::make_shared<Paint>(this);
@@ -136,7 +135,7 @@ void App::handleDownAction(float x, float y) {
         }
     }else if(mode == Mode::IDLE){
         changeMode(Mode::IDLE_MOVE);
-
+//        auto worldPos = convertScreenToWorld(x , y);
         lastPoint.x = x;
         lastPoint.y = y;
     }
@@ -149,8 +148,13 @@ void App::handleMoveAction(float x, float y) {
             curPaint->addPaintPoint(x , y);
         }
     }else if(mode == Mode::IDLE_MOVE){//移动
+//        auto worldPos = convertScreenToWorld(x , y);
+//        x = worldPos.x;
+//        y = worldPos.y;
+
         float dx = x - lastPoint.x;
-        float dy = lastPoint.y - y;
+        float dy = y - lastPoint.y;
+
         lastPoint.x = x;
         lastPoint.y = y;
 
@@ -437,6 +441,12 @@ void App::resetTransMatrix() {
     //变换矩阵重置
     worldToScreenMatrix = moveMatrix * scaleMatrix;
     screenToWorldMatrix = glm::inverse(worldToScreenMatrix);
+}
+
+glm::vec2 App::convertScreenToWorld(float _x, float _y) {
+    glm::vec3 origin(_x , _y , 1.0f);
+    glm::vec3 worldPos = screenToWorldMatrix * origin;
+    return glm::vec2(worldPos.x , worldPos.y);
 }
 
 

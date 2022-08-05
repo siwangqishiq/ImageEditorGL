@@ -39,7 +39,7 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
         val ret = NativeBridge.onTouch(
             event?.actionMasked ?: MotionEvent.ACTION_CANCEL,
             event?.x ?: 0.0f,
-            event?.y ?: 0.0f
+            measuredHeight - (event?.y ?: 0.0f)
         )
 //        requestRender()
         return ret
@@ -80,5 +80,7 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
         return BitmapFactory.decodeFile(path , options)
     }
 
-
+    fun setPaintMode(){
+        NativeBridge.setPaintMode();
+    }
 }
