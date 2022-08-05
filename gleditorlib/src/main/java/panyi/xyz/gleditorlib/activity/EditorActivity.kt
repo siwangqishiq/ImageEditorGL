@@ -47,7 +47,7 @@ class EditorActivity : AppCompatActivity() {
 
         val exportBtn = findViewById<Button>(R.id.export_btn)
         exportBtn.setOnClickListener{
-            exportMainViewBitmap()
+            exportProcessedBitmap()
         }
 
         mainView = findViewById(R.id.editor_view)
@@ -56,11 +56,11 @@ class EditorActivity : AppCompatActivity() {
         mainView.setContent(path , -1 , -1 , null)
     }
 
-    fun exportMainViewBitmap(){
-        val bitWidth = mainView.width
-        val bitHeight = mainView.height
-        LogUtil.d(TAG , "mainView $bitWidth , $bitHeight ")
+    fun exportProcessedBitmap(){
+        val bitWidth = NativeBridge.originImageWidth()
+        val bitHeight = NativeBridge.originImageHeight()
 
+        LogUtil.d(TAG , "export image size: $bitWidth , $bitHeight ")
         mainView.queueEvent{
             val outputBitmap = Bitmap.createBitmap(bitWidth , bitHeight , Bitmap.Config.ARGB_8888)
             val result = NativeBridge.exportBitmap(outputBitmap)

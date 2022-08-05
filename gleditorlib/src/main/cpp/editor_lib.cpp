@@ -77,3 +77,21 @@ Java_panyi_xyz_gleditorlib_NativeBridge_exportBitmap(JNIEnv *env, jobject thiz, 
    }
    return -1;
 }
+extern "C"
+JNIEXPORT jint JNICALL
+Java_panyi_xyz_gleditorlib_NativeBridge_originImageWidth(JNIEnv *env, jobject thiz) {
+    if(app != nullptr){
+        return app->w;
+    }
+    return 0;
+}
+
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_panyi_xyz_gleditorlib_NativeBridge_originImageHeight(JNIEnv *env, jobject thiz) {
+    if(app != nullptr){
+        return app->h;
+    }
+    return 0;
+}

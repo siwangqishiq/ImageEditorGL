@@ -18,8 +18,6 @@ void OriginImage::init(int w, int h) {
 //绘制内容 到 framebuffer
 void OriginImage::renderToFrameBuffer() {
     //render objects to texture
-    glBindFramebuffer(GL_FRAMEBUFFER , frameBufferId);
-
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
         glBindFramebuffer(GL_FRAMEBUFFER , 0);
         Loge("frame buffer status error !");
@@ -36,8 +34,6 @@ void OriginImage::renderToFrameBuffer() {
     for(auto &pPaint : paintList){
         pPaint->render(normalMatrix);
     }//end for each
-
-    glBindFramebuffer(GL_FRAMEBUFFER , 0);
 }
 
 void OriginImage::createFrameBufferObject() {

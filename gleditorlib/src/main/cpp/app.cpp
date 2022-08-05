@@ -68,8 +68,10 @@ void App::onRender() {
 //    glEnable(GL_SCISSOR_TEST);
 //    glDisable(GL_SCISSOR_TEST);
 
-    //do render
+    //do render 先将画面渲染至离屏缓存
+    glBindFramebuffer(GL_FRAMEBUFFER , originImage->frameBufferId);
     originImage->renderToFrameBuffer();
+    glBindFramebuffer(GL_FRAMEBUFFER , 0);
 
     //将离屏缓冲区内容作为纹理 渲染到屏幕
     glViewport(0 , 0, viewWidth , viewHeight);
@@ -221,6 +223,9 @@ int App::exportBitmap(jobject outputBitmap) {
     int outWidth = info.width;
     int outHeight = info.height;
 
+    glBindFramebuffer(GL_FRAMEBUFFER , originImage->frameBufferId);
+    originImage->renderToFrameBuffer();
+
     const int len = 4 * outWidth * outHeight;
     unsigned char *buf = new unsigned char[len];
     glReadPixels(0 , 0 , outWidth , outHeight,
@@ -238,6 +243,8 @@ int App::exportBitmap(jobject outputBitmap) {
     }//end for i
 
     AndroidBitmap_unlockPixels(env , outputBitmap);
+    glBindFramebuffer(GL_FRAMEBUFFER , 0);
+
     Logi("export bitmap end");
     return 0;
 }
