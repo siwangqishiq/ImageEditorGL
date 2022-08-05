@@ -45,9 +45,15 @@ void App::onInit(JNIEnv *env) {
     imageOriginWidth = static_cast<float>(baseImage->imgWidth);
     imageOriginHeight = static_cast<float>(baseImage->imgHeight);
     originImage->init(imageOriginWidth , imageOriginHeight);
+
     //重置归一化矩阵
     resetNormalMatrix(viewWidth , viewHeight);
     calculateFitViewTransMatrix();
+
+    x = 0.0f;
+    y = 0.0f;
+    w = imageOriginWidth;
+    h = imageOriginHeight;
     updateVertexData(x , y , w , h);
     initVertex();
 }
@@ -320,7 +326,8 @@ void App::renderMainView() {
 //    Logi("render main view shader name : %d" , shader.programId);
     shader.useShader();
 
-    glm::mat3 matrix =normalMatrix * scaleMatrix * moveMatrix;
+//    glm::mat3 matrix =normalMatrix * moveMatrix * scaleMatrix;
+    glm::mat3 matrix =normalMatrix * worldToScreenMatrix;
     shader.setIUniformMat3("transMat" , matrix);
 
     glBindBuffer(GL_ARRAY_BUFFER ,vbo);
@@ -346,60 +353,51 @@ void App::renderMainView() {
 
 //计算缩放矩阵  以保持图片显示宽高比
 void App::calculateFitViewTransMatrix() {
-    float left = 0.0f;
-    float bottom = 0.0f;
     float width = 0.0f;
     float height = 0.0f;
 
-    int maxViewSize = viewWidth >= viewHeight?viewWidth : viewHeight;
-    int maxImageSize = imageOriginWidth >= imageOriginHeight?imageOriginWidth : imageOriginHeight;
-
-    if(maxViewSize >= maxImageSize){
-        width = imageOriginWidth;
-        height = imageOriginHeight;
-        left = viewWidth / 2.0f - width / 2.0f;
-        bottom = viewHeight / 2.0f - height / 2.0f;
-    }else{
-        const float ratio = imageOriginWidth / imageOriginHeight;
-        if(imageOriginWidth >= imageOriginHeight){
-            width = viewWidth;
-            height = viewWidth / ratio;
-
-            left = 0.0f;
-            bottom = viewHeight / 2.0f - height / 2.0f;
-        }else{
+    const float ratio = imageOriginWidth / imageOriginHeight;
+    if(imageOriginWidth >= imageOriginHeight){
+        width = viewWidth;
+        height = viewWidth / ratio;
+        if(height >= viewHeight){
             height = viewHeight;
             width = ratio * viewHeight;
-
-            left = viewWidth / 2.0f - width / 2.0f;
-            bottom = 0.0f;
+        }
+    }else{
+        height = viewHeight;
+        width = ratio * viewHeight;
+        if(width >= viewWidth){
+            width = viewWidth;
+            height = viewWidth / ratio;
         }
     }
 
-    float sx = width / viewWidth;
-    float sy = height / viewHeight;
+    float sx = width / imageOriginWidth;
+    float sy = height / imageOriginHeight;
     Logi("scale view width height: %d - %d" , viewWidth , viewHeight);
     Logi("scale real width height: %f - %f" , width , height);
     Logi("scale x - y : %f - %f" , sx , sy);
 
-    moveMatrix[0][0] = sx;
-    moveMatrix[1][1] = sy;
-//    moveMatrix[2][0] = left;
-//    moveMatrix[2][1] = bottom;
+    scaleMatrix[0][0] = sx;
+    scaleMatrix[1][1] = sy;
 
-//    float scale = 2.0f;
-//    scaleMatrix[0][0] = scale;
-//    scaleMatrix[1][1] = scale;
-////    scaleMatrix[2][2] = 1.0f;
-////    scaleMatrix[2][0] = -(left) * scale;
-////    scaleMatrix[2][1] = -(bottom) * scale;
+    float dx = 0.0f;
+    float dy = 0.0f;
 
-//    scaleMatrix = glm::inverse(moveMatrix);
+    if(!equalFloat(width , static_cast<float>(viewWidth))){
+        dx = (viewWidth - width) / 2.0f;
+    }
 
-    x = 0.0f;
-    y = 0.0f;
-    w = imageOriginWidth;
-    h = imageOriginHeight;
+    if(!equalFloat(height , static_cast<float>(viewHeight))){
+        dy = (viewHeight - height) / 2.0f;
+    }
+
+    moveMatrix[2][0] = dx;
+    moveMatrix[2][1] = dy;
+
+    worldToScreenMatrix = moveMatrix * scaleMatrix;
+    screenToWorldMatrix = glm::inverse(worldToScreenMatrix);
 }
 
 

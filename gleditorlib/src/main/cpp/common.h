@@ -4,6 +4,9 @@
 
 #pragma once
 
+#include <math.h>
+#include <limits>
+
 const int EVENT_EXIT = 100;//退出
 const int EVENT_EXPORT_BITMAP = 102;//
 
@@ -21,3 +24,9 @@ struct EventMessage{
 
     EventMessage(int a , int _x , int _y):action(a) , x(_x),y(_y){}
 };
+
+//比较浮点型数据是否相等
+template <class T>
+bool equalFloat(T a , T b){
+    return abs(a - b) <= std::numeric_limits<T>::epsilon();
+}

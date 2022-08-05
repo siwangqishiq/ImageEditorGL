@@ -82,6 +82,12 @@ public:
     //先缩放 再平移
     glm::mat3 scaleMatrix = glm::mat3(1.0f);
     glm::mat3 moveMatrix = glm::mat3(1.0f);
+
+    //世界坐标 -> 屏幕坐标转化矩阵
+    glm::mat3 worldToScreenMatrix = glm::mat3(1.0f);
+
+    //屏幕坐标->世界坐标
+    glm::mat3 screenToWorldMatrix = glm::mat3(1.0f);
 private:
     Shader shader;
 
