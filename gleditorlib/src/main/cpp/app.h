@@ -54,7 +54,7 @@ public:
 
     void onDestroy();
 
-    bool onTouch(int action ,float x , float y);
+    bool onTouch(int action ,float x , float y , float x2 , float y2);
 
     bool handleActionEvent(EventMessage msg);
 
@@ -112,10 +112,16 @@ private:
     void handleDownAction(float x , float y);
 
     //处理移动事件
-    void handleMoveAction(float x , float y);
+    void handleMoveAction(float _x , float _y);
 
     //处理取消事件
     void handleUpCancelAction(float x , float y);
+
+    //第二根手指按下
+    void handlePointDownAction(float _x , float _y);
+
+    //第二根手指抬起
+    void handlePointUpAction(float _x , float _y);
 
     std::shared_ptr<Paint> fetchCurrentPaint();
 

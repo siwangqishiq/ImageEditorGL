@@ -25,7 +25,7 @@ object NativeBridge {
 
     external fun scale(scale:Float)
 
-    external fun onTouch(action:Int , x :Float , y : Float) : Boolean
+    external fun onTouch(action:Int , x :Float , y : Float , x2 : Float , y2 : Float) : Boolean
 
     external fun exportBitmap(output : Bitmap) : Int
 
@@ -33,5 +33,7 @@ object NativeBridge {
 
     external fun originImageHeight() : Int
 
-    external fun setPaintMode();
+    external fun setPaintMode()
+
+    external fun setIdleMode()
 }

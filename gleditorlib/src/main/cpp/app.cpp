@@ -95,10 +95,11 @@ void App::onDestroy() {
     Logi("destroy");
 }
 
-bool App::onTouch(int action, float x, float y) {
-//     y = viewHeight - y;
+bool App::onTouch(int action, float x, float y , float x2 , float y2) {
     bool ret = false;
     EventMessage msg(EVENT_ACTION_DOWN , x , y);
+    Logi("touch %d , (%f , %f)  secondPoint (%f , %f)" , action , x , y , x2 , y2);
+
     switch (action) {
         case 0:
             msg.action = EVENT_ACTION_DOWN;
@@ -106,12 +107,17 @@ bool App::onTouch(int action, float x, float y) {
             break;
         case 1:
             msg.action = EVENT_ACTION_UP;
-            Logi("touch %d , (%f , %f) msg.action %d" , action , x , y , msg.action);
             ret = true;
             break;
         case 2:
             msg.action = EVENT_ACTION_MOVE;
             ret = true;
+            break;
+        case 5://ACTION_POINT_DOWN
+            msg.action = EVENT_ACTION_POINT_DOWN;
+            break;
+        case 6://ACTION_POINT_UP
+            msg.action = EVENT_ACTION_POINT_UP;
             break;
         default:
             break;
@@ -141,22 +147,22 @@ void App::handleDownAction(float x, float y) {
     }
 }
 
-void App::handleMoveAction(float x, float y) {
+void App::handleMoveAction(float _x, float _y) {
     if(mode  == Mode::PAINT){
         auto curPaint = fetchCurrentPaint();
         if(curPaint != nullptr){
-            curPaint->addPaintPoint(x , y);
+            curPaint->addPaintPoint(_x , _y);
         }
-    }else if(mode == Mode::IDLE_MOVE){//移动
-//        auto worldPos = convertScreenToWorld(x , y);
-//        x = worldPos.x;
-//        y = worldPos.y;
+    }else if(mode == Mode::IDLE_MOVE){//移动状态
+//        auto worldPos = convertScreenToWorld(_x , _y);
+//        _x = worldPos._x;
+//        _y = worldPos._y;
 
-        float dx = x - lastPoint.x;
-        float dy = y - lastPoint.y;
+        float dx = _x - lastPoint.x;
+        float dy = _y - lastPoint.y;
 
-        lastPoint.x = x;
-        lastPoint.y = y;
+        lastPoint.x = _x;
+        lastPoint.y = _y;
 
         moveMatrix[2][0] += dx;
         moveMatrix[2][1] += dy;
@@ -164,6 +170,14 @@ void App::handleMoveAction(float x, float y) {
         //Logi("dx = %f ,  dy = %f" , moveMatrix[2][0] , moveMatrix[2][1]) ;
         resetTransMatrix();
     }
+}
+
+void App::handlePointDownAction(float _x, float _y) {
+
+}
+
+void App::handlePointUpAction(float _x, float _y) {
+
 }
 
 void App::handleUpCancelAction(float x, float y) {
@@ -448,6 +462,8 @@ glm::vec2 App::convertScreenToWorld(float _x, float _y) {
     glm::vec3 worldPos = screenToWorldMatrix * origin;
     return glm::vec2(worldPos.x , worldPos.y);
 }
+
+
 
 
 

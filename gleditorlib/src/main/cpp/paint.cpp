@@ -27,7 +27,8 @@ void Paint::render(glm::mat3 &normalMatrix) {
 
     glm::mat3 transMatrix = normalMatrix;
     shader.setIUniformMat3("transMat" , transMatrix);
-    shader.setUniformFloat("pointSize" , lineWidth);
+    float scaleVal = 1.0f / appContext->scaleMatrix[0][0];
+    shader.setUniformFloat("pointSize" , lineWidth * scaleVal);
     shader.setUniformVec4("pointColor" , pointColor);
 
     if(pointList.size() > 0){

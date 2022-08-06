@@ -35,14 +35,30 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
 
     var path : String?= null
 
-    override fun onTouchEvent(event: MotionEvent?) : Boolean{
-        val ret = NativeBridge.onTouch(
-            event?.actionMasked ?: MotionEvent.ACTION_CANCEL,
-            event?.x ?: 0.0f,
-            measuredHeight - (event?.y ?: 0.0f)
-        )
+    override fun onTouchEvent(event: MotionEvent) : Boolean{
+        // LogUtil.d(TAG , "point count ${event.pointerCount}")
+        var x = 0.0f
+        var y = 0.0f
+        var x2 = 0.0f
+        var y2 = 0.0f
+
+        if(event.pointerCount > 1){
+            val pFirstIndex = event.getPointerId(0)
+            val pSecondIndex = event.getPointerId(1)
+
+            x = event.getX(pFirstIndex)
+            y = measuredHeight - event.getY(pFirstIndex)
+
+            x2 = event.getX(pSecondIndex)
+            y2 = measuredHeight - event.getY(pSecondIndex)
+
+            // LogUtil.d(TAG , "p1->p2   ($x , $y) -> ($x2 , $y2)")
+        }else{//one finger
+            x = event.x
+            y = measuredHeight - event.y
+        }
 //        requestRender()
-        return ret
+        return NativeBridge.onTouch(event.actionMasked , x, y, x2 , y2)
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
@@ -80,7 +96,7 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
         return BitmapFactory.decodeFile(path , options)
     }
 
-    fun setPaintMode(){
-        NativeBridge.setPaintMode();
-    }
+    fun setPaintMode() = NativeBridge.setPaintMode()
+
+    fun setIdleMode() = NativeBridge.setIdleMode()
 }

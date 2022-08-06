@@ -14,11 +14,16 @@ const int EVENT_ACTION_DOWN = 1000;
 const int EVENT_ACTION_UP = 1001;
 const int EVENT_ACTION_MOVE = 1002;
 const int EVENT_ACTION_CANCEL = 1003;
+const int EVENT_ACTION_POINT_DOWN = 1004;
+const int EVENT_ACTION_POINT_UP = 1005;
 
 struct EventMessage{
     int action;
     float x;
     float y;
+    float x2 = 0.0f;
+    float y2 = 0.0f;
+    int actionIndex = 0;
 
     EventMessage(int _a): action(_a) ,x(0.0f),y(0.0f){}
 

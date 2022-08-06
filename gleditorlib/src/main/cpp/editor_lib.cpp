@@ -20,13 +20,17 @@ Java_panyi_xyz_gleditorlib_NativeBridge_onResize(JNIEnv *env, jobject thiz, jint
 extern "C"
 JNIEXPORT void JNICALL
 Java_panyi_xyz_gleditorlib_NativeBridge_onRender(JNIEnv *env, jobject thiz) {
-    app->onRender();
+    if(app != nullptr){
+        app->onRender();
+    }
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_panyi_xyz_gleditorlib_NativeBridge_onDestroy(JNIEnv *env, jobject thiz) {
-    app->exitApp();
+    if(app != nullptr){
+        app->exitApp();
+    }
 }
 
 extern "C"
@@ -38,20 +42,26 @@ Java_panyi_xyz_gleditorlib_NativeBridge_setImageContent(JNIEnv *env, jobject thi
 extern "C"
 JNIEXPORT void JNICALL
 Java_panyi_xyz_gleditorlib_NativeBridge_scale(JNIEnv *env, jobject thiz, jfloat scale) {
+    Logi("no implement method scale");
 }
 
 extern "C"
 JNIEXPORT jboolean JNICALL
 Java_panyi_xyz_gleditorlib_NativeBridge_onTouch(JNIEnv *env, jobject thiz, jint action, jfloat x,
-                                                  jfloat y) {
-    return app->onTouch(action , x , y);
+                                                  jfloat y , jfloat x2 , jfloat y2) {
+    if(app != nullptr){
+        return app->onTouch(action , x , y ,x2 , y2);
+    }
+    return false;
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_panyi_xyz_gleditorlib_NativeBridge_setImageBitmap(JNIEnv *env, jobject thiz,
                                                          jobject image_bitmap) {
-    app->setImageBitmap(env ,image_bitmap);
+    if(app != nullptr){
+        app->setImageBitmap(env ,image_bitmap);
+    }
 }
 
 extern "C"
@@ -102,5 +112,12 @@ JNIEXPORT void JNICALL
 Java_panyi_xyz_gleditorlib_NativeBridge_setPaintMode(JNIEnv *env, jobject thiz) {
     if(app != nullptr){
         app->changeMode(Mode::PAINT);
+    }
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_panyi_xyz_gleditorlib_NativeBridge_setIdleMode(JNIEnv *env, jobject thiz) {
+    if(app != nullptr){
+        app->changeMode(Mode::IDLE);
     }
 }

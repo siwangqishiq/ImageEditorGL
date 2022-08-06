@@ -36,6 +36,8 @@ class EditorActivity : AppCompatActivity() {
     private lateinit var fileData : String
     private lateinit var mainView : MainView
 
+    private var paintMode = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editor)
@@ -57,7 +59,14 @@ class EditorActivity : AppCompatActivity() {
         mainView.setContent(path , -1 , -1 , null)
 
         findViewById<View>(R.id.paint_action).setOnClickListener {
-            mainView.setPaintMode()
+            if(paintMode){
+                mainView.setIdleMode()
+                paintMode = false
+            }else{
+                mainView.setPaintMode()
+                paintMode = true
+            }
+
         }
     }
 
