@@ -36,4 +36,6 @@ object NativeBridge {
     external fun setPaintMode()
 
     external fun setIdleMode()
+
+    external fun resetImage()
 }

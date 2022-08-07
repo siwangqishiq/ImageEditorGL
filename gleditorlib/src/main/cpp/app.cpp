@@ -178,23 +178,29 @@ void App::handleMoveAction(EventMessage &msg) {
 
         //Logi("dx = %f ,  dy = %f" , moveMatrix[2][0] , moveMatrix[2][1]) ;
         resetTransMatrix();
-    }else if(mode == Mode::IDLE_SCALE){
+    }else if(mode == Mode::IDLE_SCALE){//缩放底图
         float currentDistance = calDistanceFromEventMsg(msg);
 //        Logi("scale distance : %f" , currentDistance);
         if(scaleOriginDistance < 0){
             return;
         }
 
-        scaleFactor = (currentDistance / scaleOriginDistance);
+        float scalDelta = (currentDistance / scaleOriginDistance);
+//        scaleFactor = log2(scalDelta * scaleFactor);
+        scaleFactor = scalDelta;
+        Logi("scaleFactory : scalDelta %f   scaleFactor %f"  ,scalDelta , scaleFactor);
+
         if(scaleFactor > 3.0f){
             scaleFactor = 3.0f;
         }else if(scaleFactor < 1.0f){
             scaleFactor = 1.0f;
         }
-        Logi("scaleFactory : cur %f / origin %f  scaleFactor : %f"  ,currentDistance , currentDistance, scaleFactor);
 
         customScaleMatrix[0][0] = scaleFactor;
         customScaleMatrix[1][1] = scaleFactor;
+
+        customScaleMatrix[2][0] = -(scaleFactor - 1) * (scaleCenter.x);
+        customScaleMatrix[2][1] = -(scaleFactor - 1) * (scaleCenter.y);
 
         resetTransMatrix();
     }
@@ -203,13 +209,14 @@ void App::handleMoveAction(EventMessage &msg) {
 void App::handlePointDownAction(EventMessage &msg) {
     if(mode == Mode::IDLE_MOVE){
         changeMode(Mode::IDLE_SCALE);
-        scaleOriginDistance = calDistanceFromEventMsg(msg);
+        onScaleGestureStart(msg);
     }
 }
 
 void App::handlePointUpAction(EventMessage &msg) {
     if(mode == Mode::IDLE_SCALE){
         changeMode(Mode::IDLE);
+        onScaleGestureEnd();
     }
 }
 
@@ -226,6 +233,7 @@ void App::handleUpCancelAction(EventMessage &msg) {
         changeMode(Mode::IDLE);
     }else if(mode == Mode::IDLE_SCALE){
         changeMode(Mode::IDLE);
+        onScaleGestureEnd();
     }
 }
 
@@ -465,6 +473,9 @@ void App::calculateFitViewTransMatrix() {
         }
     }
 
+    widthInView = width;
+    heightInView = height;
+
     float sx = width / imageOriginWidth;
     float sy = height / imageOriginHeight;
     Logi("scale view width height: %d - %d" , viewWidth , viewHeight);
@@ -496,7 +507,26 @@ void App::changeMode(Mode newMode) {
     mode = newMode;
 }
 
+void App::resetImage(){
+    customScaleMatrix = glm::mat3(1.0f);
+    calculateFitViewTransMatrix();
+}
+
 void App::resetTransMatrix() {
+
+    //scale 1.0
+//    if(moveMatrix[2][0] < 0){
+//        moveMatrix[2][0] = 0;
+//    }else if(moveMatrix[2][0] >= viewWidth - widthInView){
+//        moveMatrix[2][0] = viewWidth - widthInView;
+//    }
+//
+//    if(moveMatrix[2][1] < 0){
+//        moveMatrix[2][1] = 0;
+//    }else if(moveMatrix[2][1] >= viewHeight - heightInView){
+//        moveMatrix[2][1] = viewHeight - heightInView;
+//    }
+
     //变换矩阵重置
     worldToScreenMatrix = moveMatrix * customScaleMatrix * scaleMatrix;
     screenToWorldMatrix = glm::inverse(worldToScreenMatrix);
@@ -517,6 +547,27 @@ float App::calDistanceFromEventMsg(EventMessage &msg) {
     glm::vec2 p2{msg.x2 , msg.y2};
     return glm::distance(p1 , p2);
 }
+
+
+void App::onScaleGestureStart(EventMessage &msg) {
+    scaleOriginDistance = calDistanceFromEventMsg(msg);
+    scaleOriginDistance *= customScaleMatrix[0][0];
+
+    float cx = msg.x - moveMatrix[2][0];
+    float cy = msg.y - moveMatrix[2][1];
+
+//    auto c = convertScreenToWorld(cx , cy);
+
+    scaleCenter.x = cx;
+    scaleCenter.y = cy;
+}
+
+//缩放手势结束
+void App::onScaleGestureEnd() {
+//    scaleMatrix = customScaleMatrix * scaleMatrix;
+//    customScaleMatrix = glm::mat3(1.0f);
+}
+
 
 
 

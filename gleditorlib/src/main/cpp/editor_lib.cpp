@@ -121,3 +121,11 @@ Java_panyi_xyz_gleditorlib_NativeBridge_setIdleMode(JNIEnv *env, jobject thiz) {
         app->changeMode(Mode::IDLE);
     }
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_panyi_xyz_gleditorlib_NativeBridge_resetImage(JNIEnv *env, jobject thiz) {
+    if(app != nullptr){
+        app->resetImage();
+    }
+}

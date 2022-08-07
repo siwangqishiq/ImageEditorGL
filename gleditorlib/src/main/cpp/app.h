@@ -73,6 +73,8 @@ public:
     void changeMode(Mode newMode);
     //恢复前一个模式
     void restorePreMode();
+    //重置
+    void resetImage();
 
     //屏幕坐标点 转为世界坐标点
     glm::vec2 convertScreenToWorld(float _x , float _y);
@@ -81,6 +83,9 @@ public:
     float y = 0.0f;
     float w = 1.0f;
     float h = 1.0f;
+
+    float widthInView;
+    float heightInView;
 
     float vertexData[6 * 5] = {
             x       ,  y         , 1.0f , 0.0f , 0.0f,
@@ -96,6 +101,8 @@ public:
     //先缩放 再平移
     glm::mat3 scaleMatrix{1.0f};
     glm::mat3 moveMatrix{1.0f};
+
+    glm::vec2 scaleCenter;
 
     glm::mat3 customScaleMatrix{1.0f};
 
@@ -155,4 +162,10 @@ private:
 
     //从事件消息中计算出两点距离
     float calDistanceFromEventMsg(EventMessage &msg);
+
+    //缩放手势 开始
+    void onScaleGestureStart(EventMessage &msg);
+
+    //缩放手势结束
+    void onScaleGestureEnd();
 };

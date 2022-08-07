@@ -66,7 +66,10 @@ class EditorActivity : AppCompatActivity() {
                 mainView.setPaintMode()
                 paintMode = true
             }
+        }
 
+        findViewById<View>(R.id.reset_btn).setOnClickListener {
+            mainView.resetImage()
         }
     }
 
