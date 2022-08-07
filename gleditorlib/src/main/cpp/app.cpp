@@ -98,6 +98,9 @@ void App::onDestroy() {
 bool App::onTouch(int action, float x, float y , float x2 , float y2) {
     bool ret = false;
     EventMessage msg(EVENT_ACTION_DOWN , x , y);
+    msg.x2 = x2;
+    msg.y2 = y2;
+
     Logi("touch %d , (%f , %f)  secondPoint (%f , %f)" , action , x , y , x2 , y2);
 
     switch (action) {
@@ -130,24 +133,30 @@ void App::setImageBitmap(JNIEnv *env ,jobject image_bitmap) {
     baseImage->setImageBitmap(env , image_bitmap);
 }
 
-void App::handleDownAction(float x, float y) {
+void App::handleDownAction(EventMessage &msg) {
+    float _x = msg.x;
+    float _y = msg.y;
+
     if(mode  == Mode::PAINT){//绘制模式
         std::shared_ptr<Paint> newPaint = std::make_shared<Paint>(this);
         paintList.push_back(newPaint);
 
         auto curPaint = fetchCurrentPaint();
         if(curPaint != nullptr){
-            curPaint->addPaintPoint(x , y);
+            curPaint->addPaintPoint(_x , _y);
         }
     }else if(mode == Mode::IDLE){
         changeMode(Mode::IDLE_MOVE);
 //        auto worldPos = convertScreenToWorld(x , y);
-        lastPoint.x = x;
-        lastPoint.y = y;
+        lastPoint.x = _x;
+        lastPoint.y = _y;
     }
 }
 
-void App::handleMoveAction(float _x, float _y) {
+void App::handleMoveAction(EventMessage &msg) {
+    float _x = msg.x;
+    float _y = msg.y;
+
     if(mode  == Mode::PAINT){
         auto curPaint = fetchCurrentPaint();
         if(curPaint != nullptr){
@@ -169,24 +178,53 @@ void App::handleMoveAction(float _x, float _y) {
 
         //Logi("dx = %f ,  dy = %f" , moveMatrix[2][0] , moveMatrix[2][1]) ;
         resetTransMatrix();
+    }else if(mode == Mode::IDLE_SCALE){
+        float currentDistance = calDistanceFromEventMsg(msg);
+//        Logi("scale distance : %f" , currentDistance);
+        if(scaleOriginDistance < 0){
+            return;
+        }
+
+        scaleFactor = (currentDistance / scaleOriginDistance);
+        if(scaleFactor > 3.0f){
+            scaleFactor = 3.0f;
+        }else if(scaleFactor < 1.0f){
+            scaleFactor = 1.0f;
+        }
+        Logi("scaleFactory : cur %f / origin %f  scaleFactor : %f"  ,currentDistance , currentDistance, scaleFactor);
+
+        customScaleMatrix[0][0] = scaleFactor;
+        customScaleMatrix[1][1] = scaleFactor;
+
+        resetTransMatrix();
     }
 }
 
-void App::handlePointDownAction(float _x, float _y) {
-
+void App::handlePointDownAction(EventMessage &msg) {
+    if(mode == Mode::IDLE_MOVE){
+        changeMode(Mode::IDLE_SCALE);
+        scaleOriginDistance = calDistanceFromEventMsg(msg);
+    }
 }
 
-void App::handlePointUpAction(float _x, float _y) {
-
+void App::handlePointUpAction(EventMessage &msg) {
+    if(mode == Mode::IDLE_SCALE){
+        changeMode(Mode::IDLE);
+    }
 }
 
-void App::handleUpCancelAction(float x, float y) {
+void App::handleUpCancelAction(EventMessage &msg) {
+    float _x = msg.x;
+    float _y = msg.y;
+
     if(mode == Mode::PAINT){
         auto curPaint = fetchCurrentPaint();
         if(curPaint != nullptr){
-            curPaint->addPaintPoint(x , y);
+            curPaint->addPaintPoint(_x , _y);
         }
     }else if(mode == Mode::IDLE_MOVE){
+        changeMode(Mode::IDLE);
+    }else if(mode == Mode::IDLE_SCALE){
         changeMode(Mode::IDLE);
     }
 }
@@ -231,13 +269,19 @@ bool App::handleActionEvent(EventMessage msg) {
 
     switch (msg.action) {
         case EVENT_ACTION_DOWN:
-            handleDownAction(msg.x , msg.y);
+            handleDownAction(msg);
             break;
         case EVENT_ACTION_UP:
-            handleUpCancelAction(msg.x , msg.y);
+            handleUpCancelAction(msg);
             break;
         case EVENT_ACTION_MOVE:
-            handleMoveAction(msg.x , msg.y);
+            handleMoveAction(msg);
+            break;
+        case EVENT_ACTION_POINT_DOWN:
+            handlePointDownAction(msg);
+            break;
+        case EVENT_ACTION_POINT_UP:
+            handlePointUpAction(msg);
             break;
         default:
             break;
@@ -448,12 +492,13 @@ void App::calculateFitViewTransMatrix() {
 }
 
 void App::changeMode(Mode newMode) {
+    preMode = mode;
     mode = newMode;
 }
 
 void App::resetTransMatrix() {
     //变换矩阵重置
-    worldToScreenMatrix = moveMatrix * scaleMatrix;
+    worldToScreenMatrix = moveMatrix * customScaleMatrix * scaleMatrix;
     screenToWorldMatrix = glm::inverse(worldToScreenMatrix);
 }
 
@@ -461,6 +506,16 @@ glm::vec2 App::convertScreenToWorld(float _x, float _y) {
     glm::vec3 origin(_x , _y , 1.0f);
     glm::vec3 worldPos = screenToWorldMatrix * origin;
     return glm::vec2(worldPos.x , worldPos.y);
+}
+
+void App::restorePreMode() {
+    mode = preMode;
+}
+
+float App::calDistanceFromEventMsg(EventMessage &msg) {
+    glm::vec2 p1{msg.x , msg.y};
+    glm::vec2 p2{msg.x2 , msg.y2};
+    return glm::distance(p1 , p2);
 }
 
 

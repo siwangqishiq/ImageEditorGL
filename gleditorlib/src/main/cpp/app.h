@@ -40,6 +40,9 @@ public:
 
     Mode mode = IDLE;
 
+    //记录之前的状态
+    Mode preMode = IDLE;
+
     std::shared_ptr<OriginImage> originImage;
     std::shared_ptr<Image> baseImage;
 
@@ -68,6 +71,8 @@ public:
 
     //改变模式
     void changeMode(Mode newMode);
+    //恢复前一个模式
+    void restorePreMode();
 
     //屏幕坐标点 转为世界坐标点
     glm::vec2 convertScreenToWorld(float _x , float _y);
@@ -85,20 +90,25 @@ public:
             x+ w  , y          ,1.0f , 1.0f , 0.0f,
             x + w , y + h   , 1.0f , 1.0f , 1.0f,
     };
-    glm::mat3 normalMatrix = glm::mat3(1.0f);
+    glm::mat3 normalMatrix{1.0f};
 
     //调整原始图片 在View上的显示
     //先缩放 再平移
-    glm::mat3 scaleMatrix = glm::mat3(1.0f);
-    glm::mat3 moveMatrix = glm::mat3(1.0f);
+    glm::mat3 scaleMatrix{1.0f};
+    glm::mat3 moveMatrix{1.0f};
+
+    glm::mat3 customScaleMatrix{1.0f};
 
     //世界坐标 -> 屏幕坐标转化矩阵
-    glm::mat3 worldToScreenMatrix = glm::mat3(1.0f);
+    glm::mat3 worldToScreenMatrix{1.0f};
 
     //屏幕坐标->世界坐标
-    glm::mat3 screenToWorldMatrix = glm::mat3(1.0f);
+    glm::mat3 screenToWorldMatrix{1.0f};
 
     glm::vec2 lastPoint;
+
+    float scaleOriginDistance = -1.0;
+    float scaleFactor = 1.0f;//缩放因子
 private:
     Shader shader;
 
@@ -107,21 +117,20 @@ private:
     //事件消息队列 双端队列
     std::deque<EventMessage> messageQueue = std::deque<EventMessage>();
 
-
     //处理按下事件
-    void handleDownAction(float x , float y);
+    void handleDownAction(EventMessage &msg);
 
     //处理移动事件
-    void handleMoveAction(float _x , float _y);
+    void handleMoveAction(EventMessage &msg);
 
     //处理取消事件
-    void handleUpCancelAction(float x , float y);
+    void handleUpCancelAction(EventMessage &msg);
 
     //第二根手指按下
-    void handlePointDownAction(float _x , float _y);
+    void handlePointDownAction(EventMessage &msg);
 
     //第二根手指抬起
-    void handlePointUpAction(float _x , float _y);
+    void handlePointUpAction(EventMessage &msg);
 
     std::shared_ptr<Paint> fetchCurrentPaint();
 
@@ -143,4 +152,7 @@ private:
 
     //重置变换矩阵
     void resetTransMatrix();
+
+    //从事件消息中计算出两点距离
+    float calDistanceFromEventMsg(EventMessage &msg);
 };
