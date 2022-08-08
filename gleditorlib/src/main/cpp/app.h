@@ -24,6 +24,9 @@ enum Mode{
     PAINT,//绘制
 };
 
+static const float MAX_SCALE = 5.0f;
+static const float MIN_SCALE = 1.0f;
+
 class Paint;
 class Image;
 class OriginImage;
@@ -117,6 +120,8 @@ public:
     float scaleOriginDistance = -1.0;
     float scaleFactor = 1.0f;//缩放因子
 private:
+    float lastLenRatio = 0.0f;
+
     Shader shader;
 
     unsigned int vbo;

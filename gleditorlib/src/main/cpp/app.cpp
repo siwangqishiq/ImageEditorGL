@@ -163,18 +163,18 @@ void App::handleMoveAction(EventMessage &msg) {
             curPaint->addPaintPoint(_x , _y);
         }
     }else if(mode == Mode::IDLE_MOVE){//移动状态
-//        auto worldPos = convertScreenToWorld(_x , _y);
-//        _x = worldPos._x;
-//        _y = worldPos._y;
-
         float dx = _x - lastPoint.x;
         float dy = _y - lastPoint.y;
 
         lastPoint.x = _x;
         lastPoint.y = _y;
 
-        moveMatrix[2][0] += dx;
-        moveMatrix[2][1] += dy;
+        glm::mat3 inverseMat = glm::inverse(customScaleMatrix);
+        glm::vec3 dP(dx , dy , 1.0f);
+        glm::vec3 transDxy = dP * inverseMat;
+
+        moveMatrix[2][0] += transDxy.x;
+        moveMatrix[2][1] += transDxy.y;
 
         //Logi("dx = %f ,  dy = %f" , moveMatrix[2][0] , moveMatrix[2][1]) ;
         resetTransMatrix();
@@ -185,15 +185,25 @@ void App::handleMoveAction(EventMessage &msg) {
             return;
         }
 
-        float scalDelta = (currentDistance / scaleOriginDistance);
-//        scaleFactor = log2(scalDelta * scaleFactor);
-        scaleFactor = scalDelta;
-        Logi("scaleFactory : scalDelta %f   scaleFactor %f"  ,scalDelta , scaleFactor);
+        float scaleDelta = 0.0f;
+        float lenRatio = (currentDistance / scaleOriginDistance);
+//        if(abs(lenRatio - lastLenRatio) <=0.1f){
+//            return;
+//        }
 
-        if(scaleFactor > 3.0f){
-            scaleFactor = 3.0f;
-        }else if(scaleFactor < 1.0f){
-            scaleFactor = 1.0f;
+        lastLenRatio = lenRatio;
+        if(lenRatio > 1.0){
+            scaleDelta += 0.05f;
+        }else{
+            scaleDelta -= 0.05f;
+        }
+        scaleFactor += scaleDelta;
+        Logi("scaleFactory : scalDelta %f   scaleFactor %f"  ,scaleDelta , scaleFactor);
+
+        if(scaleFactor > MAX_SCALE){
+            scaleFactor = MAX_SCALE;
+        }else if(scaleFactor < MIN_SCALE){
+            scaleFactor = MIN_SCALE;
         }
 
         customScaleMatrix[0][0] = scaleFactor;
@@ -508,27 +518,15 @@ void App::changeMode(Mode newMode) {
 }
 
 void App::resetImage(){
+    scaleFactor = 1.0f;
     customScaleMatrix = glm::mat3(1.0f);
     calculateFitViewTransMatrix();
 }
 
 void App::resetTransMatrix() {
 
-    //scale 1.0
-//    if(moveMatrix[2][0] < 0){
-//        moveMatrix[2][0] = 0;
-//    }else if(moveMatrix[2][0] >= viewWidth - widthInView){
-//        moveMatrix[2][0] = viewWidth - widthInView;
-//    }
-//
-//    if(moveMatrix[2][1] < 0){
-//        moveMatrix[2][1] = 0;
-//    }else if(moveMatrix[2][1] >= viewHeight - heightInView){
-//        moveMatrix[2][1] = viewHeight - heightInView;
-//    }
-
     //变换矩阵重置
-    worldToScreenMatrix = moveMatrix * customScaleMatrix * scaleMatrix;
+    worldToScreenMatrix = customScaleMatrix * moveMatrix * scaleMatrix;
     screenToWorldMatrix = glm::inverse(worldToScreenMatrix);
 }
 
@@ -551,15 +549,10 @@ float App::calDistanceFromEventMsg(EventMessage &msg) {
 
 void App::onScaleGestureStart(EventMessage &msg) {
     scaleOriginDistance = calDistanceFromEventMsg(msg);
-    scaleOriginDistance *= customScaleMatrix[0][0];
+//    scaleOriginDistance *= customScaleMatrix[0][0];
 
-    float cx = msg.x - moveMatrix[2][0];
-    float cy = msg.y - moveMatrix[2][1];
-
-//    auto c = convertScreenToWorld(cx , cy);
-
-    scaleCenter.x = cx;
-    scaleCenter.y = cy;
+    scaleCenter.x = msg.x;
+    scaleCenter.y = msg.y;
 }
 
 //缩放手势结束
