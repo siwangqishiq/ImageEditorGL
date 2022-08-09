@@ -169,13 +169,7 @@ void App::handleMoveAction(EventMessage &msg) {
         lastPoint.x = _x;
         lastPoint.y = _y;
 
-        glm::mat3 inverseMat = glm::inverse(customScaleMatrix);
-        glm::vec3 dP(dx , dy , 1.0f);
-        glm::vec3 transDxy = dP * inverseMat;
-
-        moveMatrix[2][0] += transDxy.x;
-        moveMatrix[2][1] += transDxy.y;
-
+        moveImageInView(dx , dy);
         //Logi("dx = %f ,  dy = %f" , moveMatrix[2][0] , moveMatrix[2][1]) ;
         resetTransMatrix();
     }else if(mode == Mode::IDLE_SCALE){//缩放底图
@@ -191,7 +185,6 @@ void App::handleMoveAction(EventMessage &msg) {
 //            return;
 //        }
 
-        lastLenRatio = lenRatio;
         if(lenRatio > 1.0){
             scaleDelta += 0.05f;
         }else{
@@ -206,11 +199,11 @@ void App::handleMoveAction(EventMessage &msg) {
             scaleFactor = MIN_SCALE;
         }
 
-        customScaleMatrix[0][0] = scaleFactor;
-        customScaleMatrix[1][1] = scaleFactor;
+        customTransMatrix[0][0] = scaleFactor;
+        customTransMatrix[1][1] = scaleFactor;
 
-        customScaleMatrix[2][0] = -(scaleFactor - 1) * (scaleCenter.x);
-        customScaleMatrix[2][1] = -(scaleFactor - 1) * (scaleCenter.y);
+        customTransMatrix[2][0] = (1 - scaleFactor) * (scaleCenter.x);
+        customTransMatrix[2][1] = (1 - scaleFactor) * (scaleCenter.y);
 
         resetTransMatrix();
     }
@@ -519,14 +512,14 @@ void App::changeMode(Mode newMode) {
 
 void App::resetImage(){
     scaleFactor = 1.0f;
-    customScaleMatrix = glm::mat3(1.0f);
+    customTransMatrix = glm::mat3(1.0f);
     calculateFitViewTransMatrix();
 }
 
 void App::resetTransMatrix() {
 
     //变换矩阵重置
-    worldToScreenMatrix = customScaleMatrix * moveMatrix * scaleMatrix;
+    worldToScreenMatrix = customTransMatrix * moveMatrix * scaleMatrix;
     screenToWorldMatrix = glm::inverse(worldToScreenMatrix);
 }
 
@@ -549,16 +542,26 @@ float App::calDistanceFromEventMsg(EventMessage &msg) {
 
 void App::onScaleGestureStart(EventMessage &msg) {
     scaleOriginDistance = calDistanceFromEventMsg(msg);
-//    scaleOriginDistance *= customScaleMatrix[0][0];
-
-    scaleCenter.x = msg.x;
-    scaleCenter.y = msg.y;
+//    scaleOriginDistance *= customTransMatrix[0][0];
+    glm::vec3 pOrigin(msg.x , msg.y , 1.0f);
+    auto c = glm::inverse(customTransMatrix * moveMatrix) * pOrigin;
+    // auto inverseMat = glm::inverse(customTransMatrix * moveMatrix);
+    // auto c = inverseMat * pOrigin;
+    scaleCenter.x = c.x;
+    scaleCenter.y = c.y;
 }
 
 //缩放手势结束
 void App::onScaleGestureEnd() {
-//    scaleMatrix = customScaleMatrix * scaleMatrix;
-//    customScaleMatrix = glm::mat3(1.0f);
+//    scaleMatrix = customTransMatrix * scaleMatrix;
+//    customTransMatrix = glm::mat3(1.0f);
+}
+
+void App::moveImageInView(float dx, float dy) {
+    glm::mat3 mMat{1.0f};
+    mMat[2][0] = dx;
+    mMat[2][1] = dy;
+    customTransMatrix = mMat * customTransMatrix;
 }
 
 

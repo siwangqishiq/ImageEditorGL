@@ -107,7 +107,7 @@ public:
 
     glm::vec2 scaleCenter;
 
-    glm::mat3 customScaleMatrix{1.0f};
+    glm::mat3 customTransMatrix{1.0f};
 
     //世界坐标 -> 屏幕坐标转化矩阵
     glm::mat3 worldToScreenMatrix{1.0f};
@@ -120,8 +120,6 @@ public:
     float scaleOriginDistance = -1.0;
     float scaleFactor = 1.0f;//缩放因子
 private:
-    float lastLenRatio = 0.0f;
-
     Shader shader;
 
     unsigned int vbo;
@@ -173,4 +171,7 @@ private:
 
     //缩放手势结束
     void onScaleGestureEnd();
+
+    //移动底图
+    void moveImageInView(float dx , float dy);
 };
