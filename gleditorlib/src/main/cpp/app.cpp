@@ -186,9 +186,9 @@ void App::handleMoveAction(EventMessage &msg) {
 //        }
 
         if(lenRatio > 1.0){
-            scaleDelta += 0.05f;
+            scaleDelta += (0.1f);
         }else{
-            scaleDelta -= 0.05f;
+            scaleDelta -= 0.1f;
         }
         scaleFactor += scaleDelta;
         Logi("scaleFactory : scalDelta %f   scaleFactor %f"  ,scaleDelta , scaleFactor);
@@ -210,7 +210,7 @@ void App::handleMoveAction(EventMessage &msg) {
 }
 
 void App::handlePointDownAction(EventMessage &msg) {
-    if(mode == Mode::IDLE_MOVE){
+    if(mode == Mode::IDLE_MOVE || mode == Mode::IDLE) {
         changeMode(Mode::IDLE_SCALE);
         onScaleGestureStart(msg);
     }
