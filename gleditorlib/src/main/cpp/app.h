@@ -27,6 +27,8 @@ enum Mode{
 static const float MAX_SCALE = 5.0f;
 static const float MIN_SCALE = 1.0f;
 
+static const float SCALE_VELOCITY = 0.07f; //缩放速率
+
 class Paint;
 class Image;
 class OriginImage;
@@ -103,11 +105,12 @@ public:
     //调整原始图片 在View上的显示
     //先缩放 再平移
     glm::mat3 scaleMatrix{1.0f};
-    glm::mat3 moveMatrix{1.0f};
+    glm::mat3 moveAdjustMatrix{1.0f};
 
     glm::vec2 scaleCenter;
 
-    glm::mat3 customTransMatrix{1.0f};
+    glm::mat3 viewportScaleMatrix{1.0f};
+    glm::mat3 viewportMoveMatrix{1.0f};
 
     //世界坐标 -> 屏幕坐标转化矩阵
     glm::mat3 worldToScreenMatrix{1.0f};
@@ -121,10 +124,8 @@ public:
     float scaleFactor = 1.0f;//缩放因子
 
     //限制底图移动边界
-    float limitLeft;
-    float limitTop;
-    float limitRight;
-    float limitBottom;
+    glm::vec3 limitLeftBottomPoint{0.0f , 0.0f , 1.0f};
+    glm::vec3 limitRightTopPoint{1.0f , 1.0f ,1.0f};
 private:
     Shader shader;
 
@@ -180,4 +181,7 @@ private:
 
     //移动底图
     void moveImageInView(float dx , float dy);
+
+    //缩放底图
+    void scaleImageInView(float scaleValue);
 };

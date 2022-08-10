@@ -101,7 +101,7 @@ bool App::onTouch(int action, float x, float y , float x2 , float y2) {
     msg.x2 = x2;
     msg.y2 = y2;
 
-    Logi("touch %d , (%f , %f)  secondPoint (%f , %f)" , action , x , y , x2 , y2);
+    // Logi("touch %d , (%f , %f)  secondPoint (%f , %f)" , action , x , y , x2 , y2);
 
     switch (action) {
         case 0:
@@ -169,8 +169,9 @@ void App::handleMoveAction(EventMessage &msg) {
         lastPoint.x = _x;
         lastPoint.y = _y;
 
-        moveImageInView(dx , dy);
-        //Logi("dx = %f ,  dy = %f" , moveMatrix[2][0] , moveMatrix[2][1]) ;
+         moveImageInView(dx , dy);
+
+        //Logi("dx = %f ,  dy = %f" , moveAdjustMatrix[2][0] , moveAdjustMatrix[2][1]) ;
         resetTransMatrix();
     }else if(mode == Mode::IDLE_SCALE){//缩放底图
         float currentDistance = calDistanceFromEventMsg(msg);
@@ -182,31 +183,27 @@ void App::handleMoveAction(EventMessage &msg) {
         float scaleDelta = 0.0f;
         float lenRatio = (currentDistance / scaleOriginDistance);
         if(lenRatio > 1.0){
-            scaleDelta += (0.1f);
+            scaleDelta += SCALE_VELOCITY;
         }else{
-            scaleDelta -= 0.1f;
+            scaleDelta -= SCALE_VELOCITY;
         }
+
+        scaleOriginDistance = currentDistance;
         scaleFactor += scaleDelta;
 //        Logi("scaleFactory : scalDelta %f   scaleFactor %f"  ,scaleDelta , scaleFactor);
+        glm::vec2 adjustPosition(scaleCenter.x  , scaleCenter.y);
+        scaleImageInView(scaleFactor);
 
-        if(scaleFactor > MAX_SCALE){
-            scaleFactor = MAX_SCALE;
-        }else if(scaleFactor < MIN_SCALE){
-            scaleFactor = MIN_SCALE;
-        }
+        float cx = scaleCenter.x;
+        float cy = scaleCenter.y;
 
-        customTransMatrix[0][0] = scaleFactor;
-        customTransMatrix[1][1] = scaleFactor;
+        //由缩放操作 产生的位移修正
+        float moveXbyScale =  (1 - scaleFactor) * (cx);
+        float moveYByScale = (1 - scaleFactor) * (cy);
 
-        Logi("scale center %f - %f" , scaleCenter.x , scaleCenter.y);
-
-//        moveMatrix[2][0] = 0.0f;
-//        moveMatrix[2][1] = 0.0f;
-
-//        moveMatrix = moveMatrix;
-
-        customTransMatrix[2][0] = (1 - scaleFactor) * (scaleCenter.x);
-        customTransMatrix[2][1] = (1 - scaleFactor) * (scaleCenter.y);
+        float originPosX = viewportMoveMatrix[2][0];
+        float originPosY = viewportMoveMatrix[2][1];
+        moveImageInView(moveXbyScale - originPosX, moveYByScale - originPosY);
 
         resetTransMatrix();
     }
@@ -432,7 +429,7 @@ void App::renderMainView() {
 //    Logi("render main view shader name : %d" , shader.programId);
     shader.useShader();
 
-//    glm::mat3 matrix =normalMatrix * moveMatrix * scaleMatrix;
+//    glm::mat3 matrix =normalMatrix * moveAdjustMatrix * scaleMatrix;
     glm::mat3 matrix =normalMatrix * worldToScreenMatrix;
     shader.setIUniformMat3("transMat" , matrix);
 
@@ -502,8 +499,12 @@ void App::calculateFitViewTransMatrix() {
         dy = (viewHeight - height) / 2.0f;
     }
 
-    moveMatrix[2][0] = dx;
-    moveMatrix[2][1] = dy;
+    moveAdjustMatrix[2][0] = dx;
+    moveAdjustMatrix[2][1] = dy;
+
+    limitLeftBottomPoint = glm::vec3(dx , dy , 1.0f);
+    limitRightTopPoint = glm::vec3(dx + widthInView , dy + heightInView , 1.0f);
+    Logi("limit %f , %f    -    %f , %f" , limitLeftBottomPoint.x , limitLeftBottomPoint.y , limitRightTopPoint.x , limitRightTopPoint.y);
 
     resetTransMatrix();
 }
@@ -515,14 +516,16 @@ void App::changeMode(Mode newMode) {
 
 void App::resetImage(){
     scaleFactor = 1.0f;
-    customTransMatrix = glm::mat3(1.0f);
+    viewportScaleMatrix = glm::mat3(1.0f);
+    viewportMoveMatrix = glm::mat3(1.0f);
+
     calculateFitViewTransMatrix();
 }
 
 void App::resetTransMatrix() {
 
     //变换矩阵重置
-    worldToScreenMatrix = customTransMatrix * moveMatrix * scaleMatrix;
+    worldToScreenMatrix = viewportMoveMatrix * viewportScaleMatrix * moveAdjustMatrix * scaleMatrix;
     screenToWorldMatrix = glm::inverse(worldToScreenMatrix);
 }
 
@@ -545,32 +548,72 @@ float App::calDistanceFromEventMsg(EventMessage &msg) {
 
 void App::onScaleGestureStart(EventMessage &msg) {
     scaleOriginDistance = calDistanceFromEventMsg(msg);
-//    scaleOriginDistance *= customTransMatrix[0][0];
+//    scaleOriginDistance *= viewportScaleMatrix[0][0];
 //    glm::vec3 pOrigin(msg.x , msg.y , 1.0f);
-//    auto c = glm::inverse(customTransMatrix * moveMatrix * scaleMatrix) * pOrigin;
-    // auto inverseMat = glm::inverse(customTransMatrix * moveMatrix);
+//    auto c = glm::inverse(viewportScaleMatrix * moveAdjustMatrix * scaleMatrix) * pOrigin;
+    // auto inverseMat = glm::inverse(viewportScaleMatrix * moveAdjustMatrix);
     // auto c = inverseMat * pOrigin;
 
 //    glm::vec2 c = convertScreenToWorld(msg.x , msg.y);
 //    scaleCenter.x = c.x;
 //    scaleCenter.y = c.y;
 
-    scaleCenter.x = msg.x;
-    scaleCenter.y = msg.y;
+    scaleCenter.x = (msg.x + msg.x2)/ 2.0f;
+    scaleCenter.y = (msg.y + msg.y2) / 2.0f;
 }
 
 //缩放手势结束
 void App::onScaleGestureEnd() {
-//    scaleMatrix = customTransMatrix * scaleMatrix;
-//    customTransMatrix = glm::mat3(1.0f);
+//    scaleMatrix = viewportScaleMatrix * scaleMatrix;
+//    viewportScaleMatrix = glm::mat3(1.0f);
 }
 
 void App::moveImageInView(float dx, float dy) {
     glm::mat3 mMat{1.0f};
     mMat[2][0] = dx;
     mMat[2][1] = dy;
-    customTransMatrix = mMat * customTransMatrix;
+
+    viewportMoveMatrix = mMat * viewportMoveMatrix;
+
+    float viewportX = viewportMoveMatrix[2][0];
+    float viewportY = viewportMoveMatrix[2][1];
+
+    glm::vec2 realLimitLeftBottom = viewportScaleMatrix * limitLeftBottomPoint;
+    glm::vec2 realLimitRightTop = viewportScaleMatrix * limitRightTopPoint;
+
+
+//    if(viewportMoveMatrix[2][0] < realLimitLeftBottom.x){
+//        viewportMoveMatrix[2][0] = realLimitLeftBottom.x;
+//    }else if(viewportMoveMatrix[2][0] >=  realLimitRightTop.x - widthInView){
+//        viewportMoveMatrix[2][0] = realLimitRightTop.x - widthInView;
+//    }
+//
+//    if(viewportMoveMatrix[2][1] < realLimitLeftBottom.y){
+//        viewportMoveMatrix[2][1] = realLimitLeftBottom.y;
+//    }else if(viewportMoveMatrix[2][1] >=  realLimitRightTop.y){
+//        viewportMoveMatrix[2][1] = realLimitRightTop.y;
+//    }
 }
+
+void App::scaleImageInView(float scaleValue) {
+    float originScaleValue = scaleFactor;//
+
+    scaleFactor = scaleValue;
+    if(scaleFactor > MAX_SCALE){
+        scaleFactor = MAX_SCALE;
+    }else if(scaleFactor < MIN_SCALE){
+        scaleFactor = MIN_SCALE;
+    }
+
+    viewportScaleMatrix[0][0] = scaleFactor;
+    viewportScaleMatrix[1][1] = scaleFactor;
+
+//    auto realLimitLeftBottom = viewportScaleMatrix * limitLeftBottomPoint;
+//    auto realLimitRightTop = viewportScaleMatrix * limitRightTopPoint;
+//    Logi("limit %f , %f    -    %f , %f" , realLimitLeftBottom.x , realLimitLeftBottom.y , realLimitRightTop.x , realLimitRightTop.y);
+}
+
+
 
 
 
