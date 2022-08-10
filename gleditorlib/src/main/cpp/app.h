@@ -119,6 +119,12 @@ public:
 
     float scaleOriginDistance = -1.0;
     float scaleFactor = 1.0f;//缩放因子
+
+    //限制底图移动边界
+    float limitLeft;
+    float limitTop;
+    float limitRight;
+    float limitBottom;
 private:
     Shader shader;
 

@@ -181,17 +181,13 @@ void App::handleMoveAction(EventMessage &msg) {
 
         float scaleDelta = 0.0f;
         float lenRatio = (currentDistance / scaleOriginDistance);
-//        if(abs(lenRatio - lastLenRatio) <=0.1f){
-//            return;
-//        }
-
         if(lenRatio > 1.0){
             scaleDelta += (0.1f);
         }else{
             scaleDelta -= 0.1f;
         }
         scaleFactor += scaleDelta;
-        Logi("scaleFactory : scalDelta %f   scaleFactor %f"  ,scaleDelta , scaleFactor);
+//        Logi("scaleFactory : scalDelta %f   scaleFactor %f"  ,scaleDelta , scaleFactor);
 
         if(scaleFactor > MAX_SCALE){
             scaleFactor = MAX_SCALE;
@@ -201,6 +197,13 @@ void App::handleMoveAction(EventMessage &msg) {
 
         customTransMatrix[0][0] = scaleFactor;
         customTransMatrix[1][1] = scaleFactor;
+
+        Logi("scale center %f - %f" , scaleCenter.x , scaleCenter.y);
+
+//        moveMatrix[2][0] = 0.0f;
+//        moveMatrix[2][1] = 0.0f;
+
+//        moveMatrix = moveMatrix;
 
         customTransMatrix[2][0] = (1 - scaleFactor) * (scaleCenter.x);
         customTransMatrix[2][1] = (1 - scaleFactor) * (scaleCenter.y);
@@ -543,12 +546,17 @@ float App::calDistanceFromEventMsg(EventMessage &msg) {
 void App::onScaleGestureStart(EventMessage &msg) {
     scaleOriginDistance = calDistanceFromEventMsg(msg);
 //    scaleOriginDistance *= customTransMatrix[0][0];
-    glm::vec3 pOrigin(msg.x , msg.y , 1.0f);
-    auto c = glm::inverse(customTransMatrix * moveMatrix) * pOrigin;
+//    glm::vec3 pOrigin(msg.x , msg.y , 1.0f);
+//    auto c = glm::inverse(customTransMatrix * moveMatrix * scaleMatrix) * pOrigin;
     // auto inverseMat = glm::inverse(customTransMatrix * moveMatrix);
     // auto c = inverseMat * pOrigin;
-    scaleCenter.x = c.x;
-    scaleCenter.y = c.y;
+
+//    glm::vec2 c = convertScreenToWorld(msg.x , msg.y);
+//    scaleCenter.x = c.x;
+//    scaleCenter.y = c.y;
+
+    scaleCenter.x = msg.x;
+    scaleCenter.y = msg.y;
 }
 
 //缩放手势结束
@@ -563,6 +571,8 @@ void App::moveImageInView(float dx, float dy) {
     mMat[2][1] = dy;
     customTransMatrix = mMat * customTransMatrix;
 }
+
+
 
 
 
