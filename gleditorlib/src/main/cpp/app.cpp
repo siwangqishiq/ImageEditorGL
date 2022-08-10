@@ -499,8 +499,8 @@ void App::calculateFitViewTransMatrix() {
         dy = (viewHeight - height) / 2.0f;
     }
 
-    moveAdjustMatrix[2][0] = dx;
-    moveAdjustMatrix[2][1] = dy;
+//    moveAdjustMatrix[2][0] = dx;
+//    moveAdjustMatrix[2][1] = dy;
 
     limitLeftBottomPoint = glm::vec3(dx , dy , 1.0f);
     limitRightTopPoint = glm::vec3(dx + widthInView , dy + heightInView , 1.0f);
@@ -581,18 +581,24 @@ void App::moveImageInView(float dx, float dy) {
     glm::vec2 realLimitLeftBottom = viewportScaleMatrix * limitLeftBottomPoint;
     glm::vec2 realLimitRightTop = viewportScaleMatrix * limitRightTopPoint;
 
+    float realWidth = realLimitRightTop.x - realLimitLeftBottom.x;
+    float realHeight = realLimitRightTop.y - realLimitLeftBottom.y;
+    Logi("limit real size %f  %f" ,realWidth ,realHeight );
 
-//    if(viewportMoveMatrix[2][0] < realLimitLeftBottom.x){
-//        viewportMoveMatrix[2][0] = realLimitLeftBottom.x;
-//    }else if(viewportMoveMatrix[2][0] >=  realLimitRightTop.x - widthInView){
-//        viewportMoveMatrix[2][0] = realLimitRightTop.x - widthInView;
-//    }
-//
-//    if(viewportMoveMatrix[2][1] < realLimitLeftBottom.y){
-//        viewportMoveMatrix[2][1] = realLimitLeftBottom.y;
-//    }else if(viewportMoveMatrix[2][1] >=  realLimitRightTop.y){
-//        viewportMoveMatrix[2][1] = realLimitRightTop.y;
-//    }
+    float x = viewportMoveMatrix[2][0];
+    float y = viewportMoveMatrix[2][1];
+    Logi("scale %f limit wall offset %f  %f" ,scaleFactor, x ,y );
+    if(viewportMoveMatrix[2][0] > 0){
+        viewportMoveMatrix[2][0] = 0.0f;
+    }else if(viewportMoveMatrix[2][0]  < -realWidth + widthInView){
+        viewportMoveMatrix[2][0] = -realWidth + widthInView;
+    }
+
+    if(viewportMoveMatrix[2][1] > 0){
+        viewportMoveMatrix[2][1] = 0.0f;
+    }else if(viewportMoveMatrix[2][1]  < -realHeight + heightInView){
+        viewportMoveMatrix[2][1] = -realHeight + heightInView;
+    }
 }
 
 void App::scaleImageInView(float scaleValue) {
