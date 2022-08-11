@@ -97,9 +97,11 @@ void App::onDestroy() {
 
 bool App::onTouch(int action, float x, float y , float x2 , float y2) {
     bool ret = false;
+
     EventMessage msg(EVENT_ACTION_DOWN , x , y);
     msg.x2 = x2;
     msg.y2 = y2;
+    glm::vec2 curPoint2(msg.x2 , msg.y2);
 
     // Logi("touch %d , (%f , %f)  secondPoint (%f , %f)" , action , x , y , x2 , y2);
 
@@ -125,6 +127,7 @@ bool App::onTouch(int action, float x, float y , float x2 , float y2) {
         default:
             break;
     }
+
     messageQueue.push_back(msg);
     return ret;
 }
@@ -174,6 +177,13 @@ void App::handleMoveAction(EventMessage &msg) {
         //Logi("dx = %f ,  dy = %f" , moveAdjustMatrix[2][0] , moveAdjustMatrix[2][1]) ;
         resetTransMatrix();
     }else if(mode == Mode::IDLE_SCALE){//缩放底图
+        glm::vec2 curPoint2(msg.x2 , msg.y2);
+        if(glm::distance(lastPoint2 , curPoint2) <= 0.8f){//防抖
+            Logi("skip this action! %f" , glm::distance(lastPoint2 , curPoint2));
+            return;
+        }
+        lastPoint2 = curPoint2;
+
         float currentDistance = calDistanceFromEventMsg(msg);
 //        Logi("scale distance : %f" , currentDistance);
         if(scaleOriginDistance < 0){
@@ -203,6 +213,7 @@ void App::handleMoveAction(EventMessage &msg) {
 
         float originPosX = viewportMoveMatrix[2][0];
         float originPosY = viewportMoveMatrix[2][1];
+
         moveImageInView(moveXbyScale - originPosX, moveYByScale - originPosY);
 
         resetTransMatrix();
@@ -502,8 +513,8 @@ void App::calculateFitViewTransMatrix() {
 //    moveAdjustMatrix[2][0] = dx;
 //    moveAdjustMatrix[2][1] = dy;
 
-    limitLeftBottomPoint = glm::vec3(dx , dy , 1.0f);
-    limitRightTopPoint = glm::vec3(dx + widthInView , dy + heightInView , 1.0f);
+    limitLeftBottomPoint = glm::vec3(0 , 0 , 1.0f);
+    limitRightTopPoint = glm::vec3(widthInView ,  heightInView , 1.0f);
     Logi("limit %f , %f    -    %f , %f" , limitLeftBottomPoint.x , limitLeftBottomPoint.y , limitRightTopPoint.x , limitRightTopPoint.y);
 
     resetTransMatrix();
@@ -575,19 +586,26 @@ void App::moveImageInView(float dx, float dy) {
 
     viewportMoveMatrix = mMat * viewportMoveMatrix;
 
-    float viewportX = viewportMoveMatrix[2][0];
-    float viewportY = viewportMoveMatrix[2][1];
-
     glm::vec2 realLimitLeftBottom = viewportScaleMatrix * limitLeftBottomPoint;
     glm::vec2 realLimitRightTop = viewportScaleMatrix * limitRightTopPoint;
 
+    Logi("limit rect after scale : (%f , %f)   (%f , %f)" , realLimitLeftBottom.x , realLimitLeftBottom.y ,
+            realLimitRightTop.x , realLimitRightTop.y);
+
     float realWidth = realLimitRightTop.x - realLimitLeftBottom.x;
     float realHeight = realLimitRightTop.y - realLimitLeftBottom.y;
-    Logi("limit real size %f  %f" ,realWidth ,realHeight );
+    //Logi("limit real size %f  %f" ,realWidth ,realHeight );
 
     float x = viewportMoveMatrix[2][0];
     float y = viewportMoveMatrix[2][1];
-    Logi("scale %f limit wall offset %f  %f" ,scaleFactor, x ,y );
+
+    float adjustDx = moveAdjustMatrix[2][0];
+    float adjustDy = moveAdjustMatrix[2][1];
+
+    float scaleAdjustDy = adjustDy * viewportScaleMatrix[1][1];
+    //Logi("scale %f limit wall offset %f  %f , scaleAdjustDy %f" ,scaleFactor, x ,y , scaleAdjustDy);
+    Logi("limit %f , %f" ,viewportMoveMatrix[2][0] , viewportMoveMatrix[2][1] );
+
     if(viewportMoveMatrix[2][0] > 0){
         viewportMoveMatrix[2][0] = 0.0f;
     }else if(viewportMoveMatrix[2][0]  < -realWidth + widthInView){
@@ -599,11 +617,14 @@ void App::moveImageInView(float dx, float dy) {
     }else if(viewportMoveMatrix[2][1]  < -realHeight + heightInView){
         viewportMoveMatrix[2][1] = -realHeight + heightInView;
     }
+
+//    if(viewportMoveMatrix[2][1] > realLimitLeftBottom.y - adjustDy){
+//        viewportMoveMatrix[2][1] = realLimitLeftBottom.y - adjustDy;
+//    }
+
 }
 
 void App::scaleImageInView(float scaleValue) {
-    float originScaleValue = scaleFactor;//
-
     scaleFactor = scaleValue;
     if(scaleFactor > MAX_SCALE){
         scaleFactor = MAX_SCALE;

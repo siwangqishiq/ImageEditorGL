@@ -120,6 +120,8 @@ public:
 
     glm::vec2 lastPoint;
 
+    glm::vec2 lastPoint2;
+
     float scaleOriginDistance = -1.0;
     float scaleFactor = 1.0f;//缩放因子
 

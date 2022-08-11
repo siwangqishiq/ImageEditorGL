@@ -87,9 +87,13 @@ void Paint::createShader(){
                                      "\n"
                                      "uniform vec4 pointColor;\n"
                                      "\n"
-                                     "layout(location = 0) out vec4 outColor;\n"
+                                     "out vec4 outColor;\n"
                                      "\n"
                                      "void main(){\n"
+                                     "    vec2 coord = gl_PointCoord - vec2(0.5);\n"
+                                     "    if(length(coord) > 0.5){\n"
+                                     "        discard;\n"
+                                     "    }\n"
                                      "    outColor = pointColor;\n"
                                      "}");
 

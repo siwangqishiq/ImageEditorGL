@@ -18,7 +18,7 @@ class Paint {
 public:
     const int BUFFER_SIZE = 16 * 1024; //16K
 
-    PaintMode paintMode = Line;
+    PaintMode paintMode = Point;
 
     Paint(App *app) : appContext(app){
         onInit();
