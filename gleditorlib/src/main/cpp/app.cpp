@@ -510,8 +510,8 @@ void App::calculateFitViewTransMatrix() {
         dy = (viewHeight - height) / 2.0f;
     }
 
-//    moveAdjustMatrix[2][0] = dx;
-//    moveAdjustMatrix[2][1] = dy;
+    moveAdjustMatrix[2][0] = dx;
+    moveAdjustMatrix[2][1] = dy;
 
     limitLeftBottomPoint = glm::vec3(0 , 0 , 1.0f);
     limitRightTopPoint = glm::vec3(widthInView ,  heightInView , 1.0f);
@@ -602,9 +602,10 @@ void App::moveImageInView(float dx, float dy) {
     float adjustDx = moveAdjustMatrix[2][0];
     float adjustDy = moveAdjustMatrix[2][1];
 
+    float scaleAdjustDx = adjustDx * viewportScaleMatrix[0][0];
     float scaleAdjustDy = adjustDy * viewportScaleMatrix[1][1];
     //Logi("scale %f limit wall offset %f  %f , scaleAdjustDy %f" ,scaleFactor, x ,y , scaleAdjustDy);
-    Logi("limit %f , %f" ,viewportMoveMatrix[2][0] , viewportMoveMatrix[2][1] );
+    Logi("limit %f , %f  scale= %f" ,viewportMoveMatrix[2][0] , viewportMoveMatrix[2][1] , viewportScaleMatrix[0][0]);
 
     if(viewportMoveMatrix[2][0] > 0){
         viewportMoveMatrix[2][0] = 0.0f;
@@ -613,15 +614,12 @@ void App::moveImageInView(float dx, float dy) {
     }
 
     if(viewportMoveMatrix[2][1] > 0){
-        viewportMoveMatrix[2][1] = 0.0f;
+        Logi("limit occur for 0");
+        viewportMoveMatrix[2][1] = 0;
     }else if(viewportMoveMatrix[2][1]  < -realHeight + heightInView){
+        Logi("limit occur for height");
         viewportMoveMatrix[2][1] = -realHeight + heightInView;
     }
-
-//    if(viewportMoveMatrix[2][1] > realLimitLeftBottom.y - adjustDy){
-//        viewportMoveMatrix[2][1] = realLimitLeftBottom.y - adjustDy;
-//    }
-
 }
 
 void App::scaleImageInView(float scaleValue) {

@@ -49,9 +49,14 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
             x = event.getX(pFirstIndex)
             y = measuredHeight - event.getY(pFirstIndex)
 
-            x2 = event.getX(pSecondIndex)
-            y2 = measuredHeight - event.getY(pSecondIndex)
+            val index = event.findPointerIndex(event.getPointerId(1))
 
+            try{
+                x2 = event.getX(pSecondIndex)
+                y2 = measuredHeight - event.getY(pSecondIndex)
+            }catch (e:Exception){
+                return false
+            }
             // LogUtil.d(TAG , "p1->p2   ($x , $y) -> ($x2 , $y2)")
         }else{//one finger
             x = event.x
