@@ -89,6 +89,8 @@ public:
     float w = 1.0f;
     float h = 1.0f;
 
+    float offsetX;
+    float offsetY;
     float widthInView;
     float heightInView;
 
@@ -128,6 +130,9 @@ public:
     //限制底图移动边界
     glm::vec3 limitLeftBottomPoint{0.0f , 0.0f , 1.0f};
     glm::vec3 limitRightTopPoint{1.0f , 1.0f ,1.0f};
+
+    float lastMoveXbyScale = 0.0f;
+    float lastMoveYByScale = 0.0f;
 private:
     Shader shader;
 

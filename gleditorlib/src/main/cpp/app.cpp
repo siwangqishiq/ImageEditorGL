@@ -173,7 +173,6 @@ void App::handleMoveAction(EventMessage &msg) {
         lastPoint.y = _y;
 
          moveImageInView(dx , dy);
-
         //Logi("dx = %f ,  dy = %f" , moveAdjustMatrix[2][0] , moveAdjustMatrix[2][1]) ;
         resetTransMatrix();
     }else if(mode == Mode::IDLE_SCALE){//缩放底图
@@ -183,6 +182,10 @@ void App::handleMoveAction(EventMessage &msg) {
             return;
         }
         lastPoint2 = curPoint2;
+
+        float cx = scaleCenter.x;
+        float cy = scaleCenter.y;
+
 
         float currentDistance = calDistanceFromEventMsg(msg);
 //        Logi("scale distance : %f" , currentDistance);
@@ -198,24 +201,27 @@ void App::handleMoveAction(EventMessage &msg) {
             scaleDelta -= SCALE_VELOCITY;
         }
 
+        float lastScaleFactor = scaleFactor;
         scaleOriginDistance = currentDistance;
         scaleFactor += scaleDelta;
 //        Logi("scaleFactory : scalDelta %f   scaleFactor %f"  ,scaleDelta , scaleFactor);
-        glm::vec2 adjustPosition(scaleCenter.x  , scaleCenter.y);
+//        glm::vec2 adjustPosition(scaleCenter.x  , scaleCenter.y);
         scaleImageInView(scaleFactor);
 
-        float cx = scaleCenter.x;
-        float cy = scaleCenter.y;
+        float deltaScaleFactor = scaleFactor - lastScaleFactor;
+
+        //需要将原始采集来的屏幕坐标 转化为viewport坐标
+        auto p = glm::inverse(viewportMoveMatrix * viewportScaleMatrix) * glm::vec3(cx , cy , 1.0f);
 
         //由缩放操作 产生的位移修正
-        float moveXbyScale =  (1 - scaleFactor) * (cx);
-        float moveYByScale = (1 - scaleFactor) * (cy);
+        float moveXbyScale =   (deltaScaleFactor) * (p.x);
+        float moveYByScale =  (deltaScaleFactor) * (p.y);
+        Logi("scale fixed deltaScale : %f  move %f , %f" ,deltaScaleFactor , moveXbyScale , moveYByScale);
 
-        float originPosX = viewportMoveMatrix[2][0];
-        float originPosY = viewportMoveMatrix[2][1];
+//        float originPosX = viewportMoveMatrix[2][0];
+//        float originPosY = viewportMoveMatrix[2][1];
 
-        moveImageInView(moveXbyScale - originPosX, moveYByScale - originPosY);
-
+        moveImageInView(-moveXbyScale , -moveYByScale);
         resetTransMatrix();
     }
 }
@@ -510,8 +516,14 @@ void App::calculateFitViewTransMatrix() {
         dy = (viewHeight - height) / 2.0f;
     }
 
-    moveAdjustMatrix[2][0] = dx;
-    moveAdjustMatrix[2][1] = dy;
+//    moveAdjustMatrix[2][0] = dx;
+//    moveAdjustMatrix[2][1] = dy;
+
+    offsetX = dx;
+    offsetY = dy;
+
+    viewportMoveMatrix[2][0] = offsetX;
+    viewportMoveMatrix[2][1] = offsetY;
 
     limitLeftBottomPoint = glm::vec3(0 , 0 , 1.0f);
     limitRightTopPoint = glm::vec3(widthInView ,  heightInView , 1.0f);
@@ -536,7 +548,7 @@ void App::resetImage(){
 void App::resetTransMatrix() {
 
     //变换矩阵重置
-    worldToScreenMatrix = viewportMoveMatrix * viewportScaleMatrix * moveAdjustMatrix * scaleMatrix;
+    worldToScreenMatrix = viewportMoveMatrix * viewportScaleMatrix  * scaleMatrix;
     screenToWorldMatrix = glm::inverse(worldToScreenMatrix);
 }
 
@@ -571,6 +583,13 @@ void App::onScaleGestureStart(EventMessage &msg) {
 
     scaleCenter.x = (msg.x + msg.x2)/ 2.0f;
     scaleCenter.y = (msg.y + msg.y2) / 2.0f;
+
+//    scaleCenter.x -= viewportMoveMatrix[2][0];
+//    scaleCenter.y -= viewportMoveMatrix[2][1];
+
+
+//    lastMoveXbyScale =  (1 - scaleFactor) * (scaleCenter.x);
+//    lastMoveYByScale = (1 - scaleFactor) * (scaleCenter.y);
 }
 
 //缩放手势结束
@@ -586,40 +605,47 @@ void App::moveImageInView(float dx, float dy) {
 
     viewportMoveMatrix = mMat * viewportMoveMatrix;
 
-    glm::vec2 realLimitLeftBottom = viewportScaleMatrix * limitLeftBottomPoint;
-    glm::vec2 realLimitRightTop = viewportScaleMatrix * limitRightTopPoint;
+    // adjust limit rectangle
+//    glm::vec2 realLimitLeftBottom = viewportScaleMatrix * limitLeftBottomPoint;
+//    glm::vec2 realLimitRightTop = viewportScaleMatrix * limitRightTopPoint;
+//
+//    Logi("limit rect after scale : (%f , %f)   (%f , %f)" , realLimitLeftBottom.x , realLimitLeftBottom.y ,
+//            realLimitRightTop.x , realLimitRightTop.y);
+//
+//    float realWidth = realLimitRightTop.x - realLimitLeftBottom.x;
+//    float realHeight = realLimitRightTop.y - realLimitLeftBottom.y;
+//    //Logi("limit real size %f  %f" ,realWidth ,realHeight );
+//
+//    float x = viewportMoveMatrix[2][0];
+//    float y = viewportMoveMatrix[2][1];
+//
+//    float adjustDx = moveAdjustMatrix[2][0];
+//    float adjustDy = moveAdjustMatrix[2][1];
+//
+//    float scaleAdjustDx = adjustDx * viewportScaleMatrix[0][0];
+//    float scaleAdjustDy = adjustDy * viewportScaleMatrix[1][1];
+//    //Logi("scale %f limit wall offset %f  %f , scaleAdjustDy %f" ,scaleFactor, x ,y , scaleAdjustDy);
+//    Logi("limit %f , %f  scale= %f" ,viewportMoveMatrix[2][0] , viewportMoveMatrix[2][1] , viewportScaleMatrix[0][0]);
+//
+//    if(viewportMoveMatrix[2][0] > 0){
+//        viewportMoveMatrix[2][0] = 0.0f;
+//    }else if(viewportMoveMatrix[2][0]  < -realWidth + widthInView){
+//        viewportMoveMatrix[2][0] = -realWidth + widthInView;
+//    }
 
-    Logi("limit rect after scale : (%f , %f)   (%f , %f)" , realLimitLeftBottom.x , realLimitLeftBottom.y ,
-            realLimitRightTop.x , realLimitRightTop.y);
+//    if(viewportMoveMatrix[2][1] > 0){
+//        viewportMoveMatrix[2][1] = 0.0f;
+//    }else if(viewportMoveMatrix[2][1]  < -realHeight + heightInView){
+//        viewportMoveMatrix[2][0] = -realHeight + heightInView;
+//    }
 
-    float realWidth = realLimitRightTop.x - realLimitLeftBottom.x;
-    float realHeight = realLimitRightTop.y - realLimitLeftBottom.y;
-    //Logi("limit real size %f  %f" ,realWidth ,realHeight );
-
-    float x = viewportMoveMatrix[2][0];
-    float y = viewportMoveMatrix[2][1];
-
-    float adjustDx = moveAdjustMatrix[2][0];
-    float adjustDy = moveAdjustMatrix[2][1];
-
-    float scaleAdjustDx = adjustDx * viewportScaleMatrix[0][0];
-    float scaleAdjustDy = adjustDy * viewportScaleMatrix[1][1];
-    //Logi("scale %f limit wall offset %f  %f , scaleAdjustDy %f" ,scaleFactor, x ,y , scaleAdjustDy);
-    Logi("limit %f , %f  scale= %f" ,viewportMoveMatrix[2][0] , viewportMoveMatrix[2][1] , viewportScaleMatrix[0][0]);
-
-    if(viewportMoveMatrix[2][0] > 0){
-        viewportMoveMatrix[2][0] = 0.0f;
-    }else if(viewportMoveMatrix[2][0]  < -realWidth + widthInView){
-        viewportMoveMatrix[2][0] = -realWidth + widthInView;
-    }
-
-    if(viewportMoveMatrix[2][1] > 0){
-        Logi("limit occur for 0");
-        viewportMoveMatrix[2][1] = 0;
-    }else if(viewportMoveMatrix[2][1]  < -realHeight + heightInView){
-        Logi("limit occur for height");
-        viewportMoveMatrix[2][1] = -realHeight + heightInView;
-    }
+//    if(viewportMoveMatrix[2][1] > 0){
+//        Logi("limit occur for 0");
+//        viewportMoveMatrix[2][1] = 0;
+//    }else if(viewportMoveMatrix[2][1]  < -realHeight + heightInView){
+//        Logi("limit occur for height");
+//        viewportMoveMatrix[2][1] = -realHeight + heightInView;
+//    }
 }
 
 void App::scaleImageInView(float scaleValue) {
