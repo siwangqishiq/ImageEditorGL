@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
 
 import androidx.appcompat.app.AppCompatActivity
 import panyi.xyz.gleditorlib.MainView
@@ -16,6 +18,7 @@ import panyi.xyz.gleditorlib.util.LogUtil
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+
 
 /**
  *  just for fun
@@ -31,12 +34,17 @@ class EditorActivity : AppCompatActivity() {
             }
             context.startActivity(it)
         }
+
+        const val COLOR_ITEM_UNSELECTED =Color.WHITE
+        const val COLOR_ITEM_SELECTED = Color.YELLOW
     }
 
     private lateinit var fileData : String
     private lateinit var mainView : MainView
 
     private var paintMode = false
+
+    private lateinit var paintBtn : TextView;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,13 +66,16 @@ class EditorActivity : AppCompatActivity() {
         val path = fileData
         mainView.setContent(path , -1 , -1 , null)
 
-        findViewById<View>(R.id.paint_action).setOnClickListener {
+        paintBtn = findViewById(R.id.paint_action)
+        paintBtn.setOnClickListener {
             if(paintMode){
                 mainView.setIdleMode()
                 paintMode = false
+                paintBtn.setTextColor(COLOR_ITEM_UNSELECTED)
             }else{
                 mainView.setPaintMode()
                 paintMode = true
+                paintBtn.setTextColor(COLOR_ITEM_SELECTED)
             }
         }
 

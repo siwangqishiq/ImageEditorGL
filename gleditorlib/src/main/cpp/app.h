@@ -25,9 +25,9 @@ enum Mode{
 };
 
 static const float MAX_SCALE = 5.0f;
-static const float MIN_SCALE = 1.0f;
+static const float MIN_SCALE = 0.7f;
 
-static const float SCALE_VELOCITY = 0.07f; //缩放速率
+static const float SCALE_VELOCITY = 0.05f; //缩放速率
 
 class Paint;
 class Image;
