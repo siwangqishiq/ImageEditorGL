@@ -35,3 +35,4 @@ template <class T>
 bool equalFloat(T a , T b){
     return abs(a - b) <= std::numeric_limits<T>::epsilon();
 }
+

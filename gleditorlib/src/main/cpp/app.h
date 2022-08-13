@@ -11,17 +11,21 @@
 #include <jni.h>
 #include "shader.h"
 #include "paint.h"
+#include "mosaic.h"
 #include "image.h"
 #include "common.h"
 #include "origin_image.h"
+#include "mosaic.h"
 #include <memory>
 #include <deque>
+
 
 enum Mode{
     IDLE,//空闲态
     IDLE_MOVE,//移动
     IDLE_SCALE,//缩放
     PAINT,//绘制
+    MOSAIC,//马赛克
 };
 
 static const float MAX_SCALE = 5.0f;
@@ -29,6 +33,7 @@ static const float MIN_SCALE = 0.7f;
 
 static const float SCALE_VELOCITY = 0.05f; //缩放速率
 
+class Mosaic;
 class Paint;
 class Image;
 class OriginImage;
@@ -53,6 +58,9 @@ public:
 
     //绘制组件集合
     std::vector<std::shared_ptr<Paint>> paintList = std::vector<std::shared_ptr<Paint>>();
+
+    //马赛克绘制组件
+    std::vector<std::shared_ptr<Mosaic>> mosaicList = std::vector<std::shared_ptr<Mosaic>>();
 
     void onResize(int width , int height);
 

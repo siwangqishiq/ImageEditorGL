@@ -85,7 +85,7 @@ void App::onDestroy() {
     baseImage->onDestroy();
 
     for(auto &pPaint : paintList){
-        pPaint->onDestory();
+        pPaint->onDestroy();
     }//end for each
 
     GLuint bufferIds[] = {vbo};
@@ -160,11 +160,13 @@ void App::handleMoveAction(EventMessage &msg) {
     float _x = msg.x;
     float _y = msg.y;
 
-    if(mode  == Mode::PAINT){
+    if(mode  == Mode::PAINT){//涂鸦模式
         auto curPaint = fetchCurrentPaint();
         if(curPaint != nullptr){
             curPaint->addPaintPoint(_x , _y);
         }
+    }else if(mode == Mode::MOSAIC){//马赛克模式
+
     }else if(mode == Mode::IDLE_MOVE){//移动状态
         float dx = _x - lastPoint.x;
         float dy = _y - lastPoint.y;

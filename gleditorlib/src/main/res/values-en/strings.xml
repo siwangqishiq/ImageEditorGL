@@ -6,4 +6,5 @@
     <string name="export">export</string>
     <string name="reset">reset</string>
     <string name="paint">paint</string>
+    <string name="mosaic">mosaic</string>
 </resources>

@@ -44,7 +44,10 @@ class EditorActivity : AppCompatActivity() {
 
     private var paintMode = false
 
-    private lateinit var paintBtn : TextView;
+    private lateinit var paintBtn : TextView
+
+    private var mosaicMode = false
+    private lateinit var mosaicBtn : TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,6 +79,16 @@ class EditorActivity : AppCompatActivity() {
                 mainView.setPaintMode()
                 paintMode = true
                 paintBtn.setTextColor(COLOR_ITEM_SELECTED)
+            }
+        }
+
+        mosaicBtn = findViewById(R.id.mosaic_action)
+        mosaicBtn.setOnClickListener {
+            mosaicMode = !mosaicMode
+            if(mosaicMode){
+                mosaicBtn.setTextColor(COLOR_ITEM_UNSELECTED)
+            }else{
+                mosaicBtn.setTextColor(COLOR_ITEM_SELECTED)
             }
         }
 

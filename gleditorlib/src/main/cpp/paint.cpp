@@ -7,6 +7,7 @@
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "app.h"
 
 void Paint::onInit() {
     Logi("paint init start");
@@ -62,7 +63,7 @@ void Paint::render(glm::mat3 &normalMatrix) {
     glBindBuffer(GL_ARRAY_BUFFER ,0);
 }
 
-void Paint::onDestory() {
+void Paint::onDestroy() {
     GLuint bufferIds[1];
     bufferIds[0] = vbo;
     glDeleteBuffers(1 , bufferIds);

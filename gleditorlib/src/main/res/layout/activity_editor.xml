@@ -33,8 +33,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <TextView
+            android:id="@+id/mosaic_action"
+            android:text="@string/mosaic"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:layout_marginLeft="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
         <Button
             android:id="@+id/export_btn"
+            android:visibility="gone"
             android:layout_marginLeft="20dp"
             android:text="@string/export"
             android:layout_width="wrap_content"

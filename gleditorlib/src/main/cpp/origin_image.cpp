@@ -34,6 +34,8 @@ void OriginImage::renderToFrameBuffer() {
     for(auto &pPaint : paintList){
         pPaint->render(normalMatrix);
     }//end for each
+
+
 }
 
 void OriginImage::createFrameBufferObject() {

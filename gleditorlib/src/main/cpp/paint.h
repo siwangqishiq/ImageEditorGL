@@ -4,19 +4,22 @@
 #pragma once
 
 #include <vector>
-#include "app.h"
 #include "common.h"
-
-class App;
+#include "glm/ext/matrix_float3x3.hpp"
+#include "shader.h"
 
 enum PaintMode{//绘制模式
     Point,
     Line
 };
 
+const int BUFFER_SIZE = 16 * 1024; //16K
+
+class App;
+
 class Paint {
 public:
-    const int BUFFER_SIZE = 16 * 1024; //16K
+    App *appContext;
 
     PaintMode paintMode = Point;
 
@@ -24,15 +27,17 @@ public:
         onInit();
     }
 
-    void onInit();
+    virtual void onInit();
 
-    void render(glm::mat3 &normalMatrix);
+    virtual void render(glm::mat3 &normalMatrix);
 
-    void onDestory();
+    virtual void onDestroy();
 
-    void addPaintPoint(float x , float y);
-private:
-    App *appContext;
+    virtual void addPaintPoint(float x , float y);
+
+    virtual void createShader();
+
+protected:
 
     //
     std::vector<glm::vec3> pointList = std::vector<glm::vec3>();
@@ -45,10 +50,8 @@ private:
 //    glm::mat3 transMatrix = glm::mat3 (1.0f);
 
     Shader shader;
-    void createShader();
 
     std::vector<glm::vec3> genVertexByPoint(glm::vec3 startPoint , glm::vec3 endPoint);
 
     unsigned int vbo;
 };
-
