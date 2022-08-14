@@ -86,9 +86,11 @@ class EditorActivity : AppCompatActivity() {
         mosaicBtn.setOnClickListener {
             mosaicMode = !mosaicMode
             if(mosaicMode){
-                mosaicBtn.setTextColor(COLOR_ITEM_UNSELECTED)
-            }else{
+                mainView.setMosaicMode()
                 mosaicBtn.setTextColor(COLOR_ITEM_SELECTED)
+            }else{
+                mainView.setIdleMode()
+                mosaicBtn.setTextColor(COLOR_ITEM_UNSELECTED)
             }
         }
 

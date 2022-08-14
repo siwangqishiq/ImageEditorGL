@@ -141,12 +141,20 @@ void App::handleDownAction(EventMessage &msg) {
     float _y = msg.y;
 
     if(mode  == Mode::PAINT){//绘制模式
-        std::shared_ptr<Paint> newPaint = std::make_shared<Paint>(this);
+        auto newPaint = std::make_shared<Paint>(this);
         paintList.push_back(newPaint);
 
         auto curPaint = fetchCurrentPaint();
         if(curPaint != nullptr){
             curPaint->addPaintPoint(_x , _y);
+        }
+    }else if(mode == Mode::MOSAIC){
+        auto newMosaic = std::make_shared<Mosaic>(this);
+        mosaicList.push_back(newMosaic);
+
+        auto curMosaic = fetchCurrentMosaic();
+        if(curMosaic != nullptr){
+            curMosaic->addPaintPoint(_x , _y);
         }
     }else if(mode == Mode::IDLE){
         changeMode(Mode::IDLE_MOVE);
@@ -166,7 +174,10 @@ void App::handleMoveAction(EventMessage &msg) {
             curPaint->addPaintPoint(_x , _y);
         }
     }else if(mode == Mode::MOSAIC){//马赛克模式
-
+        auto curMosaic = fetchCurrentMosaic();
+        if(curMosaic != nullptr){
+            curMosaic->addPaintPoint(_x , _y);
+        }
     }else if(mode == Mode::IDLE_MOVE){//移动状态
         float dx = _x - lastPoint.x;
         float dy = _y - lastPoint.y;
@@ -279,6 +290,14 @@ std::shared_ptr<Paint> App::fetchCurrentPaint() {
     }
 
     return paintList[paintList.size() - 1];
+}
+
+std::shared_ptr<Mosaic> App::fetchCurrentMosaic(){
+    if(mosaicList.empty()){
+        return nullptr;
+    }
+
+    return mosaicList.back();
 }
 
 //消费事件队列

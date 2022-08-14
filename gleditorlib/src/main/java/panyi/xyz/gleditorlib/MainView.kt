@@ -105,5 +105,7 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
 
     fun setIdleMode() = NativeBridge.setIdleMode()
 
+    fun setMosaicMode() = NativeBridge.setMosaicMode()
+
     fun resetImage() = NativeBridge.resetImage()
 }

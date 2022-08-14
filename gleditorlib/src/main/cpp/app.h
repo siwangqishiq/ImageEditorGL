@@ -166,6 +166,9 @@ private:
 
     std::shared_ptr<Paint> fetchCurrentPaint();
 
+    //
+    std::shared_ptr<Mosaic> fetchCurrentMosaic();
+
     //处理事件消息队列
     bool pumpMessageQueue();
 

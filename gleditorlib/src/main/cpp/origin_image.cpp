@@ -35,7 +35,10 @@ void OriginImage::renderToFrameBuffer() {
         pPaint->render(normalMatrix);
     }//end for each
 
-
+    auto mosaicList = appContext->mosaicList;
+    for(auto &m : mosaicList){
+        m->render(normalMatrix);
+    }//end for each
 }
 
 void OriginImage::createFrameBufferObject() {

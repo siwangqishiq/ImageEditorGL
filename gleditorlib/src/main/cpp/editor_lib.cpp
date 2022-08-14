@@ -124,6 +124,14 @@ Java_panyi_xyz_gleditorlib_NativeBridge_setIdleMode(JNIEnv *env, jobject thiz) {
 
 extern "C"
 JNIEXPORT void JNICALL
+Java_panyi_xyz_gleditorlib_NativeBridge_setMosaicMode(JNIEnv *env, jobject thiz) {
+    if(app != nullptr){
+        app->changeMode(Mode::MOSAIC);
+    }
+}
+
+extern "C"
+JNIEXPORT void JNICALL
 Java_panyi_xyz_gleditorlib_NativeBridge_resetImage(JNIEnv *env, jobject thiz) {
     if(app != nullptr){
         app->resetImage();
