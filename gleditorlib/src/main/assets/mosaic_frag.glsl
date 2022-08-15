@@ -2,10 +2,17 @@
 
 precision mediump float;
 
+uniform float mosaicSize;
+uniform float originImageWidth;
+uniform float originImageHeight;
 uniform sampler2D baseImageTexture;
+
+in vec3 originCoord;
 
 layout(location = 0) out vec4 outColor;
 
 void main(){
-    outColor = vec4(1.0f , 1.0f , 0.0f  ,1.0f);
+    vec2 uv = vec2(originCoord.x / originImageWidth ,1.0f - originCoord.y / originImageHeight);
+    vec4 originColor = texture(baseImageTexture , uv);
+    outColor = originColor;
 }

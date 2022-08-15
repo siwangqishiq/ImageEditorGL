@@ -23,14 +23,18 @@ void Paint::onInit() {
     glBindBuffer(GL_ARRAY_BUFFER , 0);
 }
 
-void Paint::render(glm::mat3 &normalMatrix) {
-    shader.useShader();
-
+void Paint::setShaderParams(glm::mat3 &normalMatrix){
     glm::mat3 transMatrix = normalMatrix;
     shader.setIUniformMat3("transMat" , transMatrix);
     float scaleVal = 1.0f / appContext->scaleMatrix[0][0];
     shader.setUniformFloat("pointSize" , lineWidth * scaleVal);
     shader.setUniformVec4("pointColor" , pointColor);
+}
+
+void Paint::render(glm::mat3 &normalMatrix) {
+    shader.useShader();
+
+    setShaderParams(normalMatrix);
 
     if(pointList.size() > 0){
         glm::vec3 v = pointList[pointList.size() - 1];

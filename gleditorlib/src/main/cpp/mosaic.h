@@ -13,7 +13,9 @@ public:
         Logi("Mosaic init construct");
     }
 
-    virtual void createShader();
+    virtual void createShader() override;
+
+    virtual void setShaderParams(glm::mat3 &normalMatrix) override;
 
     ~Mosaic(){
     }

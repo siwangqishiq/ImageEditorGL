@@ -28,7 +28,7 @@ void OriginImage::renderToFrameBuffer() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);//关闭深度测试  按绘制顺序显示图像
 
-    appContext->baseImage->render(normalMatrix);
+     appContext->baseImage->render(normalMatrix);
 
     auto paintList = appContext->paintList;
     for(auto &pPaint : paintList){

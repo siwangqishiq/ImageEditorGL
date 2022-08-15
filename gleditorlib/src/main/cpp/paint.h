@@ -35,6 +35,8 @@ public:
 
     virtual void createShader();
 
+    virtual void setShaderParams(glm::mat3 &normalMatrix);
+
     virtual ~Paint();
 protected:
 

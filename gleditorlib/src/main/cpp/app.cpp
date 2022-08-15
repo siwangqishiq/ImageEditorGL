@@ -149,7 +149,7 @@ void App::handleDownAction(EventMessage &msg) {
         if(curPaint != nullptr){
             curPaint->addPaintPoint(_x , _y);
         }
-    }else if(mode == Mode::MOSAIC){
+    }else if(mode == Mode::MOSAIC){//马赛克模式
         Logi("mode %d" , mode);
         auto newMosaic = std::make_shared<Mosaic>(this);
         newMosaic->onInit();
