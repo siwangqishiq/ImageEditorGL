@@ -142,6 +142,7 @@ void App::handleDownAction(EventMessage &msg) {
 
     if(mode  == Mode::PAINT){//绘制模式
         auto newPaint = std::make_shared<Paint>(this);
+        newPaint->onInit();
         paintList.push_back(newPaint);
 
         auto curPaint = fetchCurrentPaint();
@@ -149,7 +150,9 @@ void App::handleDownAction(EventMessage &msg) {
             curPaint->addPaintPoint(_x , _y);
         }
     }else if(mode == Mode::MOSAIC){
+        Logi("mode %d" , mode);
         auto newMosaic = std::make_shared<Mosaic>(this);
+        newMosaic->onInit();
         mosaicList.push_back(newMosaic);
 
         auto curMosaic = fetchCurrentMosaic();
@@ -576,6 +579,8 @@ void App::calculateFitViewTransMatrix() {
 void App::changeMode(Mode newMode) {
     preMode = mode;
     mode = newMode;
+
+    Logi("change mode from %d to %d" , preMode , mode);
 }
 
 void App::resetImage(){

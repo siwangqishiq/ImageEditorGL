@@ -34,9 +34,9 @@ void Paint::render(glm::mat3 &normalMatrix) {
 
     if(pointList.size() > 0){
         glm::vec3 v = pointList[pointList.size() - 1];
-        auto p = normalMatrix * v;
-        Logi("last paint point origin : %f , %f , %f" ,v.x , v.y , v.z);
-        Logi("last paint point : %f , %f , %f" ,p.x , p.y , p.z);
+//        auto p = normalMatrix * v;
+//        Logi("last paint point origin : %f , %f , %f" ,v.x , v.y , v.z);
+//        Logi("last paint point : %f , %f , %f" ,p.x , p.y , p.z);
 
 //        Logi("Paint normal : %f , %f , %f" ,normalMatrix[0][0],normalMatrix[0][1],normalMatrix[0][2]);
 //        Logi("Paint normal : %f , %f , %f" ,normalMatrix[1][0],normalMatrix[1][1],normalMatrix[1][2]);
@@ -70,6 +70,8 @@ void Paint::onDestroy() {
 }
 
 void Paint::createShader(){
+    Logi("paint create shader!");
+
     std::string vtxSrc = std::string("#version 300 es\n"
                                      "\n"
                                      "layout(location = 0) in vec3 aPosition;\n"
@@ -166,4 +168,7 @@ std::vector<glm::vec3> Paint::genVertexByPoint(glm::vec3 startPoint, glm::vec3 e
 
     vertList.insert(vertList.end() , {p1, p2 ,p3 , p4});
     return vertList;
+}
+
+Paint::~Paint(){
 }

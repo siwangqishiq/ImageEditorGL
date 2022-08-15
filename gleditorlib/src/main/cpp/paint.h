@@ -23,9 +23,7 @@ public:
 
     PaintMode paintMode = Point;
 
-    Paint(App *app) : appContext(app){
-        onInit();
-    }
+    Paint(App *app) : appContext(app){};
 
     virtual void onInit();
 
@@ -37,6 +35,7 @@ public:
 
     virtual void createShader();
 
+    virtual ~Paint();
 protected:
 
     //
