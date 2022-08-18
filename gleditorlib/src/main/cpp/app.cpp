@@ -18,7 +18,6 @@
 void App::onResize(int width,int height) {
     viewWidth = width;
     viewHeight = height;
-//    resetNormalMatrix();
 
     baseImage = std::make_shared<Image>(this);
     originImage = std::make_shared<OriginImage>(this);

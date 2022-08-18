@@ -53,8 +53,9 @@ public:
     //记录之前的状态
     Mode preMode = IDLE;
 
-    std::shared_ptr<OriginImage> originImage;
-    std::shared_ptr<Image> baseImage;
+    std::shared_ptr<OriginImage> originImage; //原始待编辑的图片
+
+    std::shared_ptr<Image> baseImage; //真正的绘制Image 操作均绘制到此Image上
 
     //绘制组件集合
     std::vector<std::shared_ptr<Paint>> paintList = std::vector<std::shared_ptr<Paint>>();
@@ -138,9 +139,6 @@ public:
     //限制底图移动边界
     glm::vec3 limitLeftBottomPoint{0.0f , 0.0f , 1.0f};
     glm::vec3 limitRightTopPoint{1.0f , 1.0f ,1.0f};
-
-    float lastMoveXbyScale = 0.0f;
-    float lastMoveYByScale = 0.0f;
 private:
     Shader shader;
 

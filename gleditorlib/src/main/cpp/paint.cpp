@@ -113,7 +113,7 @@ void Paint::addPaintPoint(float x, float y) {
     x = worldPos.x;
     y = worldPos.y;
 
-    Logi("add point %f , %f" , x , y);
+    // Logi("add point %f , %f" , x , y);
 
     glm::vec3 endPoint = glm::vec3(x , y ,1.0f);
     if(pointList.empty()){
@@ -131,7 +131,7 @@ void Paint::addPaintPoint(float x, float y) {
         vertexList.insert(vertexList.end(), verts.begin() , verts.end());
     }else if(paintMode == Point){
         const float distance = glm::distance(startPoint , endPoint);
-        Logi("distance : %f" , distance);
+        // Logi("distance : %f" , distance);
         if(distance >2.0f){
             glm::vec2 dir =glm::vec2(endPoint.x - startPoint.x , endPoint.y - startPoint.y);
             glm::vec2 dirNormal = glm::normalize(dir);
