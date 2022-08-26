@@ -75,36 +75,7 @@ void Paint::onDestroy() {
 
 void Paint::createShader(){
     Logi("paint create shader!");
-
-    std::string vtxSrc = std::string("#version 300 es\n"
-                                     "\n"
-                                     "layout(location = 0) in vec3 aPosition;\n"
-                                     "\n"
-                                     "uniform mat3 transMat;\n"
-                                     "uniform float pointSize;\n"
-                                     "\n"
-                                     "void main(){\n"
-                                     "    gl_Position = vec4(transMat * aPosition ,1.0f);\n"
-                                     "    gl_PointSize = pointSize;\n"
-                                     "}");
-
-    std::string frgSrc = std::string("#version 300 es\n"
-                                     "\n"
-                                     "precision mediump float;\n"
-                                     "\n"
-                                     "uniform vec4 pointColor;\n"
-                                     "\n"
-                                     "out vec4 outColor;\n"
-                                     "\n"
-                                     "void main(){\n"
-                                     "    vec2 coord = gl_PointCoord - vec2(0.5);\n"
-                                     "    if(length(coord) > 0.5){\n"
-                                     "        discard;\n"
-                                     "    }\n"
-                                     "    outColor = pointColor;\n"
-                                     "}");
-
-    shader = ShaderManager::getInstance().fetchShader("paint_shader" , vtxSrc , frgSrc);
+    shader = ShaderManager::getInstance().fetchShaderByPath("paint_shader" , "paint_vertex.glsl" , "paint_frag.glsl");
 }
 
 void Paint::addPaintPoint(float x, float y) {

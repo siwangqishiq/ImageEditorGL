@@ -52,7 +52,6 @@ class EditorActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editor)
-
         val btn = findViewById<Button>(R.id.complete_btn)
         btn.setOnClickListener{
             onBackPressed()

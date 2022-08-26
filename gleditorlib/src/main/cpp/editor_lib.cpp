@@ -1,10 +1,13 @@
 #include <jni.h>
 #include <string>
 #include <android/bitmap.h>
-#include "app.h"
 #include "log.h"
+#include "app.h"
+#include "common.h"
 
 static App *app = nullptr;
+
+AAssetManager *mAssetManager;
 
 extern "C"
 JNIEXPORT void JNICALL
@@ -136,4 +139,13 @@ Java_panyi_xyz_gleditorlib_NativeBridge_resetImage(JNIEnv *env, jobject thiz) {
     if(app != nullptr){
         app->resetImage();
     }
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_panyi_xyz_gleditorlib_NativeBridge_init(JNIEnv *env, jobject thiz, jobject asset_manager) {
+    mAssetManager = AAssetManager_fromJava(env , asset_manager);
+    Logi("init %ld " , mAssetManager);
+    std::string content = ReadAssetTextFile("paint_frag.glsl");
+    Logi("read asset file content : %s" , content.c_str());
 }

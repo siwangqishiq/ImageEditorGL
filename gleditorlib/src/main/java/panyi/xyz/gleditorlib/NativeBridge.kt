@@ -1,5 +1,7 @@
 package panyi.xyz.gleditorlib
 
+import android.content.Context
+import android.content.res.AssetManager
 import android.graphics.Bitmap
 
 /**
@@ -10,6 +12,8 @@ object NativeBridge {
     init {
         System.loadLibrary("imageeditorgl")
     }
+
+    external fun init(assetManager: AssetManager)
 
     external fun setImageContent(path : String , imgW:Int , imgH : Int)
 

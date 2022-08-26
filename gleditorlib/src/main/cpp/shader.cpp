@@ -6,8 +6,33 @@
 #include <fstream>
 #include "glm/gtc/type_ptr.hpp"
 #include "log.h"
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
 
-static std::string SHADER_FOLDER = "/assets";
+extern AAssetManager *mAssetManager;
+
+std::string ReadAssetTextFile(std::string filename) {
+    Logi("read asset filename  %s   %ld" , filename.c_str() , mAssetManager);
+    AAsset *file = AAssetManager_open(mAssetManager , filename.c_str() , AASSET_MODE_BUFFER);
+    if(file == nullptr){
+        Loge("open asset file : %s failed" , filename.c_str());
+    }
+
+    Logi("get asset file");
+    size_t fileSize = AAsset_getLength(file);
+
+    char *fileContentBuf = new char[fileSize + 1];
+
+    AAsset_read(file , fileContentBuf , fileSize);
+    fileContentBuf[fileSize] = '\0';
+    AAsset_close(file);
+
+    std::string contentStr = std::string(fileContentBuf);
+
+    delete[] fileContentBuf;
+    Logi("file content = %s" , contentStr.c_str());
+    return contentStr;
+}
 
 GLuint CreateGPUProgram(const char* vsShaderSource, const char* fsShaderSource) {
     GLuint vsShader = CompileShader(GL_VERTEX_SHADER, vsShaderSource);
@@ -83,6 +108,13 @@ GLuint CreateGPUProgramFromFile(std::string vertexShaderPath , std::string fragS
 Shader Shader::buildGPUProgram(std::string vtxSrc , std::string frgSrc){
     Shader shader;
     auto  pid = CreateGPUProgram(vtxSrc.c_str() , frgSrc.c_str());
+    shader.programId = pid;
+    return shader;
+}
+
+Shader Shader::buildGPUProgramAssetFile(std::string vtxPath , std::string frgPath){
+    Shader shader;
+    auto  pid = CreateGPUProgramByAsset(vtxPath , frgPath);
     shader.programId = pid;
     return shader;
 }
@@ -189,6 +221,17 @@ Shader ShaderManager::fetchShader(std::string shaderName , std::string vtxSrc , 
     return shaderMap[shaderName];
 }
 
+//获取 或 创建出一个shader
+Shader ShaderManager::fetchShaderByPath(std::string shaderName , std::string vertexPath , std::string fragPath) {
+    if(shaderMap.find(shaderName) == shaderMap.end()){//not found shader create a new shader
+        Logi("no found %s , create a new shader" , shaderName.c_str());
+        Shader shader = Shader::buildGPUProgramAssetFile(vertexPath , fragPath);
+        shaderMap[shaderName] = shader;
+    }
+
+    return shaderMap[shaderName];
+}
+
 void ShaderManager::clear() {
     for(auto pair : shaderMap){
         Shader shader = pair.second;
@@ -202,3 +245,12 @@ ShaderManager& ShaderManager::getInstance() {
     static ShaderManager instance;
     return instance;
 }
+
+//从Asset中读取shader
+GLuint CreateGPUProgramByAsset(std::string vsFilePath , std::string fsFilePath){
+    return CreateGPUProgram(ReadAssetTextFile(vsFilePath).c_str() ,
+                            ReadAssetTextFile(fsFilePath).c_str());
+}
+
+
+

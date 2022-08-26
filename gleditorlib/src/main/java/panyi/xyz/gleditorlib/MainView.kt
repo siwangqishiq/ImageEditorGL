@@ -68,6 +68,7 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         LogUtil.d(TAG,"MainView onSurfaceCreated")
+        NativeBridge.init(context.assets)
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {

@@ -1,11 +1,12 @@
 //
 // Created by panyi on 2022/7/27.
 //
-
 #pragma once
 
 #include <math.h>
 #include <limits>
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
 
 const int EVENT_EXIT = 100;//退出
 const int EVENT_EXPORT_BITMAP = 102;//

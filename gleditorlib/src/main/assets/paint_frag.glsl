@@ -11,5 +11,6 @@ void main(){
     if(length(coord) > 0.5){
         discard;
     }
-    outColor = pointColor;
+//    outColor = pointColor;
+    outColor = vec4(1.0f , 1.0f , 0.0f , 1.0f);
 }

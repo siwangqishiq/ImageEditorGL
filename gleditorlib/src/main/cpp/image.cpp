@@ -74,6 +74,7 @@ void Image::render(glm::mat3 &normalMatrix) {
 }
 
 void Image::createShader(){
+
     std::string vtxSrc = std::string("#version 300 es\n"
                                      "\n"
                                      "layout(location = 0) in vec3 a_position;\n"
@@ -103,6 +104,7 @@ void Image::createShader(){
                                      "}");
 
     shader = ShaderManager::getInstance().fetchShader("image_shader" , vtxSrc , frgSrc);
+//    shader = ShaderManager::getInstance().fetchShaderByPath("image_shader")
 }
 
 void Image::updateVertexData() {

@@ -8,7 +8,10 @@
 #include "glm/glm.hpp"
 #include <unordered_map>
 #include <map>
+#include "log.h"
 
+//读取asset 文本文件
+std::string ReadAssetTextFile(std::string filename);
 
 //编译shader源码
 GLuint CompileShader(GLenum shaderType, const char* shaderSource);
@@ -16,12 +19,16 @@ GLuint CompileShader(GLenum shaderType, const char* shaderSource);
 //创建完整Shader
 GLuint CreateGPUProgram(const char* vsShaderSource, const char* fsShaderSource);
 
+GLuint CreateGPUProgramByAsset(std::string vsFilePath , std::string fsFilePath);
+
 //读取文本文件
 std::string ReadFileAsText(std::string path);
 
 class Shader{
 public:
     static Shader buildGPUProgram(std::string vtxSrc , std::string frgSrc);
+
+    static Shader buildGPUProgramAssetFile(std::string vtxSrc , std::string frgSrc);
 
     //使用shader
     void useShader();
@@ -65,6 +72,8 @@ public:
     static ShaderManager& getInstance();
 
     Shader fetchShader(std::string shaderName , std::string vertexSrc , std::string frgSrc);
+
+    Shader fetchShaderByPath(std::string shaderName , std::string vertexPath , std::string fragPath);
 
     void clear();
 };

@@ -13,7 +13,6 @@
 #include "paint.h"
 #include "mosaic.h"
 #include "image.h"
-#include "common.h"
 #include "origin_image.h"
 #include "mosaic.h"
 #include <memory>
