@@ -16,6 +16,7 @@ add_library( # Sets the name of the library.
         paint.cpp
         origin_image.cpp
         mosaic.cpp
+        clip.cpp
         )
 
 find_library(opengl-lib GLESv3)

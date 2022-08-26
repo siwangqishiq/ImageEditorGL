@@ -15,8 +15,10 @@
 #include "image.h"
 #include "origin_image.h"
 #include "mosaic.h"
+#include "clip.h"
 #include <memory>
 #include <deque>
+
 
 
 enum Mode{
@@ -25,6 +27,7 @@ enum Mode{
     IDLE_SCALE,//缩放
     PAINT,//绘制
     MOSAIC,//马赛克
+    CLIP,// 裁剪
 };
 
 static const float MAX_SCALE = 5.0f;
@@ -61,6 +64,9 @@ public:
 
     //马赛克绘制组件
     std::vector<std::shared_ptr<Mosaic>> mosaicList = std::vector<std::shared_ptr<Mosaic>>();
+
+    //裁剪
+    std::shared_ptr<ClipWidget> clipWidget = nullptr;
 
     void onResize(int width , int height);
 

@@ -4,11 +4,6 @@
 
 #include "app.h"
 #include "log.h"
-
-//#include <android/imagedecoder.h>
-//#include <android/bitmap.h>
-
-#include "stb_image.h"
 #include "glm/matrix.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "math.hpp"
@@ -86,6 +81,14 @@ void App::onDestroy() {
     for(auto &pPaint : paintList){
         pPaint->onDestroy();
     }//end for each
+
+    for(auto &pMosaic : mosaicList){
+        pMosaic->onDestroy();
+    }
+
+    if(clipWidget != nullptr){
+        clipWidget->onDestroy();
+    }
 
     GLuint bufferIds[] = {vbo};
     glDeleteBuffers(1 , bufferIds);
@@ -554,6 +557,11 @@ void App::changeMode(Mode newMode) {
     mode = newMode;
 
     Logi("change mode from %d to %d" , preMode , mode);
+
+    if(mode == CLIP && clipWidget == nullptr){
+        clipWidget = std::make_shared<ClipWidget>(this);
+        clipWidget->onInit();
+    }
 }
 
 void App::resetImage(){

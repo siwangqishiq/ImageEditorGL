@@ -39,6 +39,10 @@ void OriginImage::renderToFrameBuffer() {
     for(auto &m : mosaicList){
         m->render(normalMatrix);
     }//end for each
+
+    if(appContext->mode ==Mode::CLIP && appContext->clipWidget != nullptr){
+        appContext->clipWidget->onRender();
+    }
 }
 
 void OriginImage::createFrameBufferObject() {
