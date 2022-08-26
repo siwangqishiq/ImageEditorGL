@@ -7,62 +7,9 @@
 
 void Mosaic::createShader() {
     Logi("mosaic create shader!");
-
-    std::string vtxSrc = std::string("#version 300 es\n"
-                                     "\n"
-                                     "precision mediump float;\n"
-                                     "\n"
-                                     "layout(location = 0) in vec3 aPosition;\n"
-                                     "\n"
-                                     "out vec3 originCoord;\n"
-                                     "\n"
-                                     "uniform mat3 transMat;\n"
-                                     "uniform float mosaicSize;\n"
-                                     "\n"
-                                     "void main(){\n"
-                                     "    gl_PointSize = mosaicSize;\n"
-                                     "    originCoord = aPosition;\n"
-                                     "    gl_Position = vec4(transMat * aPosition ,1.0f);\n"
-                                     "}");
-
-    std::string frgSrc = std::string("#version 300 es\n"
-                                     "\n"
-                                     "precision mediump float;\n"
-                                     "\n"
-                                     "uniform float mosaicSize;\n"
-                                     "uniform float originImageWidth;\n"
-                                     "uniform float originImageHeight;\n"
-                                     "uniform sampler2D baseImageTexture;\n"
-                                     "\n"
-                                     "in vec3 originCoord;\n"
-                                     "\n"
-                                     "layout(location = 0) out vec4 outColor;\n"
-                                     "\n"
-                                     "vec2 mosaicEffect(){\n"
-                                     "    int leftIndex = int(originCoord.x) / int(mosaicSize);\n"
-                                     "    int rightIndex = leftIndex + 1;\n"
-                                     "    int bottomIndex = int(originCoord.y) / int(mosaicSize);\n"
-                                     "    int topIndex = bottomIndex + 1;\n"
-                                     "\n"
-                                     "    vec2 leftBottomPoint;\n"
-                                     "    leftBottomPoint.x =  float(leftIndex) * mosaicSize;\n"
-                                     "    leftBottomPoint.y = float(bottomIndex) * mosaicSize;\n"
-                                     "\n"
-                                     "    vec2 rightTopPoint;\n"
-                                     "    rightTopPoint.x = float(rightIndex) * mosaicSize;\n"
-                                     "    rightTopPoint.y = float(topIndex) * mosaicSize;\n"
-                                     "\n"
-                                     "    return vec2((leftBottomPoint.x + rightTopPoint.x) / 2.0f , (leftBottomPoint.y + rightTopPoint.y) / 2.0f);\n"
-                                     "}\n"
-                                     "\n"
-                                     "void main(){\n"
-                                     "    vec2 mosaicPoint = mosaicEffect();\n"
-                                     "    vec2 uv = vec2(mosaicPoint.x / originImageWidth ,1.0f - mosaicPoint.y / originImageHeight);\n"
-                                     "    vec4 originColor = texture(baseImageTexture , uv);\n"
-                                     "    outColor = originColor;\n"
-                                     "}");
-
-    shader = ShaderManager::getInstance().fetchShader("mosaic_shader" , vtxSrc , frgSrc);
+    // shader = ShaderManager::getInstance().fetchShader("mosaic_shader" , vtxSrc , frgSrc);
+    shader = ShaderManager::getInstance().fetchShaderByPath("mosaic_shader",
+                                                            "mosaic_vertex.glsl","mosaic_frag.glsl");
 }
 
 void Mosaic::setShaderParams(glm::mat3 &normalMatrix) {
@@ -81,10 +28,42 @@ void Mosaic::setShaderParams(glm::mat3 &normalMatrix) {
 }
 
 void Mosaic::addPaintPoint(float _x, float _y){
+    glm::vec2 worldPos = appContext->convertScreenToWorld(_x , _y);
+    float x = worldPos.x;
+    float y = worldPos.y;
+
+    glm::vec3 endPoint = glm::vec3(x , y ,1.0f);
+    if(pointList.empty()){
+        pointList.push_back(endPoint);
+        return;
+    }
+
+    const glm::vec3 startPoint = pointList.back();
+    if(glm::distance(startPoint , endPoint) < 1.0f){
+        return ;
+    }
+
+    const float distance = glm::distance(startPoint , endPoint);
+    // Logi("distance : %f" , distance);
+    if(distance >mosaicSize / 2.0f){
+        glm::vec2 dir =glm::vec2(endPoint.x - startPoint.x , endPoint.y - startPoint.y);
+        glm::vec2 dirNormal = glm::normalize(dir);
+        float step = 1.0f;
+        while (step <= distance){
+            glm::vec2 insertPoint = glm::vec2(startPoint.x + step * dirNormal.x, startPoint.y + step * dirNormal.y);
+            step += 1.0f;
+
+            auto p = convertPointToMosaicCoord(insertPoint.x , insertPoint.y);
+            pointList.push_back(glm::vec3( p.x , p.y , 1.0f));
+        }//end while
+    }
+}
+
+glm::vec2 Mosaic::convertPointToMosaicCoord(float _x , float _y) {
+    glm::vec2 worldPos = glm::vec2(_x , _y);
+
     float imgWidth = appContext->originImage->imgWidth;
     float imgHeight = appContext->originImage->imgHeight;
-
-    glm::vec2 worldPos = appContext->convertScreenToWorld(_x , _y);
 
     int leftIndex = (int)(worldPos.x) / (int)mosaicSize;
     int rightIndex = leftIndex + 1;
@@ -98,5 +77,5 @@ void Mosaic::addPaintPoint(float _x, float _y){
 
     glm::vec2 p1(left , bottom);
     glm::vec2 p2(right , top);
-    pointList.push_back(glm::vec3( (p1.x + p2.x) / 2.0f, (p1.y + p2.y) / 2.0f , 1.0f));
+    return glm::vec2( (p1.x + p2.x) / 2.0f, (p1.y + p2.y) / 2.0f);
 }

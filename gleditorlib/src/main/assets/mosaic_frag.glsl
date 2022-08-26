@@ -33,4 +33,5 @@ void main(){
     vec2 uv = vec2(mosaicPoint.x / originImageWidth ,1.0f - mosaicPoint.y / originImageHeight);
     vec4 originColor = texture(baseImageTexture , uv);
     outColor = originColor;
+//    outColor = vec4(0.0f , 0.0f ,0.0f , 1.0f);
 }

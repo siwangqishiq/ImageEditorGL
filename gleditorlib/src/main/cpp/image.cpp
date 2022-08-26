@@ -74,37 +74,8 @@ void Image::render(glm::mat3 &normalMatrix) {
 }
 
 void Image::createShader(){
-
-    std::string vtxSrc = std::string("#version 300 es\n"
-                                     "\n"
-                                     "layout(location = 0) in vec3 a_position;\n"
-                                     "layout(location = 1) in vec2 a_texture;\n"
-                                     "\n"
-                                     "uniform mat3 transMat;\n"
-                                     "\n"
-                                     "out vec2 vUv;\n"
-                                     "\n"
-                                     "void main(){\n"
-                                     "    gl_Position = vec4(transMat * a_position ,1.0f);\n"
-                                     "    vUv = vec2(a_texture.x , 1.0 - a_texture.y);\n"
-                                     "}");
-
-    std::string frgSrc = std::string("#version 300 es\n"
-                                     "\n"
-                                     "precision mediump float;\n"
-                                     "\n"
-                                     "uniform sampler2D sTexture;\n"
-                                     "\n"
-                                     "in vec2 vUv;\n"
-                                     "layout(location = 0) out vec4 outColor;\n"
-                                     "\n"
-                                     "void main(){\n"
-                                     "    vec4 originColor = texture(sTexture , vUv);\n"
-                                     "    outColor = originColor;\n"
-                                     "}");
-
-    shader = ShaderManager::getInstance().fetchShader("image_shader" , vtxSrc , frgSrc);
-//    shader = ShaderManager::getInstance().fetchShaderByPath("image_shader")
+    shader = ShaderManager::getInstance().fetchShaderByPath("image_shader" ,
+                                                            "img_vertex.glsl","img_frag.glsl");
 }
 
 void Image::updateVertexData() {

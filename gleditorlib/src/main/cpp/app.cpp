@@ -439,34 +439,8 @@ void App::updateVertexData(float _x , float _y , float _w , float _h) {
 }
 
 void App::createShader() {
-    std::string vtxSrc = std::string("#version 300 es\n"
-                                     "\n"
-                                     "layout(location = 0) in vec3 a_position;\n"
-                                     "layout(location = 1) in vec2 a_texture;\n"
-                                     "\n"
-                                     "uniform mat3 transMat;\n"
-                                     "\n"
-                                     "out vec2 vUv;\n"
-                                     "\n"
-                                     "void main(){\n"
-                                     "    gl_Position = vec4(transMat * a_position ,1.0f);\n"
-                                     "    vUv = vec2(a_texture.x  , a_texture.y);\n"
-                                     "}");
-
-    std::string frgSrc = std::string("#version 300 es\n"
-                                     "\n"
-                                     "precision mediump float;\n"
-                                     "\n"
-                                     "uniform sampler2D mainTexture;\n"
-                                     "\n"
-                                     "in vec2 vUv;\n"
-                                     "out vec4 outColor;\n"
-                                     "\n"
-                                     "void main(){\n"
-                                     "    vec4 originColor = texture(mainTexture , vUv);\n"
-                                     "    outColor = originColor.rgba;\n"
-                                     "}");
-    shader = ShaderManager::getInstance().fetchShader("view_shader" , vtxSrc , frgSrc);
+    shader = ShaderManager::getInstance().fetchShaderByPath("view_shader" ,
+                                                            "main_view_vertex.glsl","main_view_frag.glsl");
 }
 
 void App::initVertex() {

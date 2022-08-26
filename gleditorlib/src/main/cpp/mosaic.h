@@ -15,6 +15,9 @@ public:
         Logi("Mosaic init construct");
     }
 
+    //将给定的原始点 转为马赛克固定点
+    glm::vec2 convertPointToMosaicCoord(float _x , float _y);
+
     virtual void createShader() override;
 
     virtual void setShaderParams(glm::mat3 &normalMatrix) override;

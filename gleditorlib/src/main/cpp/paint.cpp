@@ -75,7 +75,8 @@ void Paint::onDestroy() {
 
 void Paint::createShader(){
     Logi("paint create shader!");
-    shader = ShaderManager::getInstance().fetchShaderByPath("paint_shader" , "paint_vertex.glsl" , "paint_frag.glsl");
+    shader = ShaderManager::getInstance().fetchShaderByPath("paint_shader" ,
+                                                            "paint_vertex.glsl" , "paint_frag.glsl");
 }
 
 void Paint::addPaintPoint(float x, float y) {
