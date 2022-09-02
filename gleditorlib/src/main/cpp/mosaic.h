@@ -9,7 +9,7 @@
 
 class Mosaic : public Paint {
 public:
-    float mosaicSize = 16.0f;
+    float mosaicSize = 20.0f;
 
     Mosaic(App *_app) : Paint(_app) {
         Logi("Mosaic init construct");
@@ -23,6 +23,8 @@ public:
     virtual void setShaderParams(glm::mat3 &normalMatrix) override;
 
     virtual void addPaintPoint(float x, float y) override;
+
+    float getRealMosaicSize();
 
     ~Mosaic(){
     }

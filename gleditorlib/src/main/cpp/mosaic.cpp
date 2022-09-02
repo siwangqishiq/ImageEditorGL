@@ -15,8 +15,8 @@ void Mosaic::createShader() {
 void Mosaic::setShaderParams(glm::mat3 &normalMatrix) {
     glm::mat3 transMatrix = normalMatrix;
     shader.setIUniformMat3("transMat" , transMatrix);
-    float scaleVal = 1.0f / appContext->scaleMatrix[0][0];
-    shader.setUniformFloat("mosaicSize" , mosaicSize);
+
+    shader.setUniformFloat("mosaicSize" , getRealMosaicSize());
     shader.setUniformVec4("pointColor" , pointColor);
 
     shader.setUniformFloat("originImageWidth" , appContext->imageOriginWidth);
@@ -45,7 +45,10 @@ void Mosaic::addPaintPoint(float _x, float _y){
 
     const float distance = glm::distance(startPoint , endPoint);
     // Logi("distance : %f" , distance);
-    if(distance >mosaicSize / 2.0f){
+
+    float realMosaicSize = getRealMosaicSize();
+
+    if(distance >realMosaicSize / 2.0f){
         glm::vec2 dir =glm::vec2(endPoint.x - startPoint.x , endPoint.y - startPoint.y);
         glm::vec2 dirNormal = glm::normalize(dir);
         float step = 1.0f;
@@ -65,17 +68,23 @@ glm::vec2 Mosaic::convertPointToMosaicCoord(float _x , float _y) {
     float imgWidth = appContext->originImage->imgWidth;
     float imgHeight = appContext->originImage->imgHeight;
 
-    int leftIndex = (int)(worldPos.x) / (int)mosaicSize;
+    float realMosaicSize = getRealMosaicSize();
+
+    int leftIndex = (int)(worldPos.x) / (int)realMosaicSize;
     int rightIndex = leftIndex + 1;
-    int bottomIndex = (int)(worldPos.y) / (int)mosaicSize;
+    int bottomIndex = (int)(worldPos.y) / (int)realMosaicSize;
     int topIndex = bottomIndex + 1;
 
-    float left = leftIndex * mosaicSize;
-    float right = glm::min(imgWidth , rightIndex * mosaicSize);
-    float bottom = bottomIndex * mosaicSize;
-    float top = glm::min(imgHeight , topIndex * mosaicSize);
+    float left = leftIndex * realMosaicSize;
+    float right = glm::min(imgWidth , rightIndex * realMosaicSize);
+    float bottom = bottomIndex * realMosaicSize;
+    float top = glm::min(imgHeight , topIndex * realMosaicSize);
 
     glm::vec2 p1(left , bottom);
     glm::vec2 p2(right , top);
     return glm::vec2( (p1.x + p2.x) / 2.0f, (p1.y + p2.y) / 2.0f);
+}
+
+float Mosaic::getRealMosaicSize(){
+    return mosaicSize;
 }
