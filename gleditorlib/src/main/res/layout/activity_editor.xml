@@ -17,7 +17,7 @@
         android:background="#3fffffff"
         android:visibility="visible"
         android:layout_gravity="bottom"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -25,43 +25,60 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/paint_action"
-            android:text="@string/paint"
-            android:textSize="18sp"
-            android:textColor="@color/white"
+        <RadioGroup
+            android:id="@+id/operate_group"
+            android:orientation="horizontal"
+            android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:id="@+id/op_idle"
+                android:text="@string/explorer"
+                android:checked="true"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
 
-        <TextView
-            android:id="@+id/mosaic_action"
-            android:text="@string/mosaic"
-            android:textSize="18sp"
-            android:textColor="@color/white"
-            android:layout_marginLeft="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <RadioButton
+                android:id="@+id/op_paint"
+                android:text="@string/paint"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <RadioButton
+                android:id="@+id/op_mosaic"
+                android:text="@string/mosaic"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+        </RadioGroup>
 
-        <Button
-            android:id="@+id/export_btn"
-            android:layout_marginLeft="20dp"
-            android:text="@string/export"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/export_btn"
+                android:text="@string/export"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
 
-        <Button
-            android:id="@+id/complete_btn"
-            android:text="@string/complete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+            <Button
+                android:id="@+id/complete_btn"
+                android:text="@string/complete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
 
-        <Button
-            android:id="@+id/reset_btn"
-            android:text="@string/reset"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+            <Button
+                android:id="@+id/reset_btn"
+                android:text="@string/reset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+        </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

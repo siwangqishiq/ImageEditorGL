@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.RadioGroup
 import android.widget.TextView
 
 import androidx.appcompat.app.AppCompatActivity
@@ -42,21 +43,16 @@ class EditorActivity : AppCompatActivity() {
     private lateinit var fileData : String
     private lateinit var mainView : MainView
 
-    private var paintMode = false
-
-    private lateinit var paintBtn : TextView
-
-    private var mosaicMode = false
-    private lateinit var mosaicBtn : TextView
+    private lateinit var operatePanel : RadioGroup
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editor)
+
         val btn = findViewById<Button>(R.id.complete_btn)
         btn.setOnClickListener{
             onBackPressed()
         }
-
 
         val exportBtn = findViewById<Button>(R.id.export_btn)
         exportBtn.setOnClickListener{
@@ -68,30 +64,40 @@ class EditorActivity : AppCompatActivity() {
         val path = fileData
         mainView.setContent(path , -1 , -1 , null)
 
-        paintBtn = findViewById(R.id.paint_action)
-        paintBtn.setOnClickListener {
-            if(paintMode){
-                mainView.setIdleMode()
-                paintMode = false
-                paintBtn.setTextColor(COLOR_ITEM_UNSELECTED)
-            }else{
-                mainView.setPaintMode()
-                paintMode = true
-                paintBtn.setTextColor(COLOR_ITEM_SELECTED)
-            }
+        operatePanel = findViewById(R.id.operate_group)
+
+        operatePanel.setOnCheckedChangeListener { group, checkedId ->
+                when (checkedId) {
+                    R.id.op_idle -> mainView.setIdleMode()
+                    R.id.op_mosaic->mainView.setMosaicMode()
+                    R.id.op_paint->mainView.setPaintMode()
+                }//end when
         }
 
-        mosaicBtn = findViewById(R.id.mosaic_action)
-        mosaicBtn.setOnClickListener {
-            mosaicMode = !mosaicMode
-            if(mosaicMode){
-                mainView.setMosaicMode()
-                mosaicBtn.setTextColor(COLOR_ITEM_SELECTED)
-            }else{
-                mainView.setIdleMode()
-                mosaicBtn.setTextColor(COLOR_ITEM_UNSELECTED)
-            }
-        }
+//        paintBtn = findViewById(R.id.paint_action)
+//        paintBtn.setOnClickListener {
+//            if(paintMode){
+//                mainView.setIdleMode()
+//                paintMode = false
+//                paintBtn.setTextColor(COLOR_ITEM_UNSELECTED)
+//            }else{
+//                mainView.setPaintMode()
+//                paintMode = true
+//                paintBtn.setTextColor(COLOR_ITEM_SELECTED)
+//            }
+//        }
+//
+//        mosaicBtn = findViewById(R.id.mosaic_action)
+//        mosaicBtn.setOnClickListener {
+//            mosaicMode = !mosaicMode
+//            if(mosaicMode){
+//                mainView.setMosaicMode()
+//                mosaicBtn.setTextColor(COLOR_ITEM_SELECTED)
+//            }else{
+//                mainView.setIdleMode()
+//                mosaicBtn.setTextColor(COLOR_ITEM_UNSELECTED)
+//            }
+//        }
 
         findViewById<View>(R.id.reset_btn).setOnClickListener {
             mainView.resetImage()
