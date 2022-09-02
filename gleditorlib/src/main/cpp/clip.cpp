@@ -16,4 +16,8 @@ void ClipWidget::onDestroy() {
 
 }
 
+void ClipWidget::resize() {
+
+}
+
 

@@ -562,6 +562,7 @@ void App::changeMode(Mode newMode) {
         clipWidget = std::make_shared<ClipWidget>(this);
         clipWidget->onInit();
     }
+    clipWidget->resize();
 }
 
 void App::resetImage(){
