@@ -71,6 +71,7 @@ class EditorActivity : AppCompatActivity() {
                     R.id.op_idle -> mainView.setIdleMode()
                     R.id.op_mosaic->mainView.setMosaicMode()
                     R.id.op_paint->mainView.setPaintMode()
+                    R.id.op_clip->mainView.setClipMode()
                 }//end when
         }
 

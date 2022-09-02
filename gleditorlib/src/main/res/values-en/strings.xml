@@ -8,4 +8,5 @@
     <string name="paint">paint</string>
     <string name="mosaic">mosaic</string>
     <string name="explorer">explorer</string>
+    <string name="clip">clip</string>
 </resources>

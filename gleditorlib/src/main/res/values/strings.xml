@@ -7,4 +7,5 @@
     <string name="paint">涂鸦</string>
     <string name="mosaic">马赛克</string>
     <string name="explorer">游览</string>
+    <string name="clip"> 裁剪</string>
 </resources>

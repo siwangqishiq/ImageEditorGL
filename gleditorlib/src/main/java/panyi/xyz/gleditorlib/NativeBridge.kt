@@ -41,6 +41,8 @@ object NativeBridge {
 
     external fun setMosaicMode()
 
+    external fun setClipMode()
+
     external fun setIdleMode()
 
     external fun resetImage()

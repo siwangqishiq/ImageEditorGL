@@ -149,3 +149,11 @@ Java_panyi_xyz_gleditorlib_NativeBridge_init(JNIEnv *env, jobject thiz, jobject 
     std::string content = ReadAssetTextFile("paint_frag.glsl");
     Logi("read asset file content : %s" , content.c_str());
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_panyi_xyz_gleditorlib_NativeBridge_setClipMode(JNIEnv *env, jobject thiz) {
+    if(app != nullptr){
+        app->changeMode(Mode::CLIP);
+    }
+}

@@ -86,10 +86,6 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
         NativeBridge.onRender()
     }
 
-//    override fun onDetachedFromWindow() {
-//        super.onDetachedFromWindow()
-//    }
-
     fun setContent(path : String , imgWidth : Int  , imgHeight : Int , bitmap : Bitmap?){
         this.path = path
 
@@ -102,11 +98,21 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
         return BitmapFactory.decodeFile(path , options)
     }
 
-    fun setPaintMode() = NativeBridge.setPaintMode()
+    fun setPaintMode(){
+        queueEvent { NativeBridge.setPaintMode() }
+    }
 
-    fun setIdleMode() = NativeBridge.setIdleMode()
+    fun setIdleMode(){
+        queueEvent{NativeBridge.setIdleMode()}
+    }
 
-    fun setMosaicMode() = NativeBridge.setMosaicMode()
+    fun setMosaicMode(){
+        queueEvent { NativeBridge.setMosaicMode() }
+    }
+
+    fun setClipMode() {
+      queueEvent{ NativeBridge.setClipMode() }
+    }
 
     fun resetImage() = NativeBridge.resetImage()
 }

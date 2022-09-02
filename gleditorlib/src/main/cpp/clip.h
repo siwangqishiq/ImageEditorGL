@@ -5,14 +5,15 @@
 #pragma once
 
 #include "glm/vec3.hpp"
+#include <vector>
+#include "shader.h"
 
 class App;
 
 //裁剪控制点 4个
-class ClipControllPoint{
+class ClipControlPoint{
 public:
     glm::vec3 pos;//中心点位置
-    float size = 32;//图标尺寸
 };
 
 //裁剪控件
@@ -26,15 +27,27 @@ public:
 
     void onDestroy();
 
+    void createShader();
+
     void resize();
 private:
     App *appContext;
 
     //四个控制点
-    ClipControllPoint leftTopPoint;
-    ClipControllPoint rightTopPoint;
-    ClipControllPoint leftBottomPoint;
-    ClipControllPoint rightBottomPoint;
+    ClipControlPoint leftTopPoint;
+    ClipControlPoint rightTopPoint;
+    ClipControlPoint leftBottomPoint;
+    ClipControlPoint rightBottomPoint;
+
+    float controlPointSize = 32;//图标尺寸
+
+    //控制点 顶点坐标
+    float controlPointVertex[4 * 3];
+    unsigned int controlPointBufId;
+
+    Shader clipControlShader;
+
+    void updateControlPointToBuf();
 };
 
 
