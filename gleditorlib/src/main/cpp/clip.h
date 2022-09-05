@@ -23,7 +23,7 @@ public:
 
     void onInit();
 
-    void onRender();
+    void onRender(glm::mat3 &normalMatrix);
 
     void onDestroy();
 
@@ -39,15 +39,16 @@ private:
     ClipControlPoint leftBottomPoint;
     ClipControlPoint rightBottomPoint;
 
-    float controlPointSize = 32;//图标尺寸
+    float controlPointSize = 64;//图标尺寸
 
+    static const int vertexBufSize = 4 * 3 * sizeof(float);
     //控制点 顶点坐标
-    float controlPointVertex[4 * 3];
+    float controlPointVertex[vertexBufSize];
     unsigned int controlPointBufId;
 
     Shader clipControlShader;
 
-    void updateControlPointToBuf();
+    void updateControlPointToBuf(bool update);
 };
 
 

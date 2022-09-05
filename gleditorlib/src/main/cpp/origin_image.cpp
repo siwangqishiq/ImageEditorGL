@@ -28,6 +28,10 @@ void OriginImage::renderToFrameBuffer() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);//关闭深度测试  按绘制顺序显示图像
 
+    //打开混合模式
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA , GL_ONE_MINUS_SRC_ALPHA);
+
     appContext->baseImage->render(normalMatrix);
 
     auto paintList = appContext->paintList;
@@ -39,10 +43,6 @@ void OriginImage::renderToFrameBuffer() {
     for(auto &m : mosaicList){
         m->render(normalMatrix);
     }//end for each
-
-    if(appContext->mode ==Mode::CLIP && appContext->clipWidget != nullptr){
-        appContext->clipWidget->onRender();
-    }
 }
 
 void OriginImage::createFrameBufferObject() {

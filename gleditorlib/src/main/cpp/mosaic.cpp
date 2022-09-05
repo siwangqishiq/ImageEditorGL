@@ -86,5 +86,6 @@ glm::vec2 Mosaic::convertPointToMosaicCoord(float _x , float _y) {
 }
 
 float Mosaic::getRealMosaicSize(){
-    return mosaicSize;
+    float scaleVal = 1.0f / appContext->scaleMatrix[0][0];
+    return mosaicSize * scaleVal;
 }

@@ -121,7 +121,7 @@ public:
     //调整原始图片 在View上的显示
     //先缩放 再平移
     glm::mat3 scaleMatrix{1.0f};
-    glm::mat3 moveAdjustMatrix{1.0f};
+//    glm::mat3 moveAdjustMatrix{1.0f};
 
     glm::vec2 scaleCenter;
 

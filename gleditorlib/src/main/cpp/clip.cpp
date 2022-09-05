@@ -6,24 +6,37 @@
 #include "app.h"
 
 void ClipWidget::onInit() {
-    leftTopPoint.pos = glm::vec3(0.0f , appContext->originImage->imgHeight , 1.0f);
-    rightTopPoint.pos = glm::vec3(appContext->originImage->imgWidth , appContext->originImage->imgHeight , 1.0f);
-    leftBottomPoint.pos = glm::vec3(0.0f , 0.0f , 1.0f);
-    rightBottomPoint.pos = glm::vec3(appContext->originImage->imgWidth , 0.0f , 1.0f);
+    leftTopPoint.pos = glm::vec3(appContext->offsetX , appContext->offsetY + appContext->heightInView, 1.0f);
+    rightTopPoint.pos = glm::vec3(appContext->offsetX + appContext->widthInView ,
+                                  appContext->offsetY + appContext->heightInView , 1.0f);
+    leftBottomPoint.pos = glm::vec3(appContext->offsetX , appContext->offsetY, 1.0f);
+    rightBottomPoint.pos = glm::vec3(appContext->offsetX + appContext->widthInView ,
+                                     appContext->offsetY , 1.0f);
 
     unsigned int buf[1];
     glGenBuffers(1 , buf);
     controlPointBufId = buf[0];
-    updateControlPointToBuf();
+    updateControlPointToBuf(false);
 
     createShader();
 }
 
-void ClipWidget::onRender() {
-    updateControlPointToBuf();
+void ClipWidget::onRender(glm::mat3 &normalMatrix) {
+    updateControlPointToBuf(true);
 
     clipControlShader.useShader();
-    
+
+    clipControlShader.setUniformFloat("size",controlPointSize);
+    auto matrix = normalMatrix;
+     clipControlShader.setIUniformMat3("transMat" , matrix);
+
+    glBindBuffer(GL_ARRAY_BUFFER , controlPointBufId);
+    glVertexAttribPointer(0 , 3 , GL_FLOAT , false , sizeof(glm::vec3) , 0);
+    glEnableVertexAttribArray(0);
+    glDrawArrays(GL_POINTS , 0 , 4);
+    glDisableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER , 0);
 }
 
 void ClipWidget::onDestroy() {
@@ -44,7 +57,7 @@ void ClipWidget::createShader(){
                                                             "clip_control_vertex.glsl","clip_control_frag.glsl");
 }
 
-void ClipWidget::updateControlPointToBuf() {
+void ClipWidget::updateControlPointToBuf(bool update) {
     controlPointVertex[0] = leftTopPoint.pos.x;
     controlPointVertex[1] = leftTopPoint.pos.y;
     controlPointVertex[2] = leftTopPoint.pos.z;
@@ -62,7 +75,13 @@ void ClipWidget::updateControlPointToBuf() {
     controlPointVertex[11] = leftBottomPoint.pos.z;
 
     glBindBuffer(GL_ARRAY_BUFFER , controlPointBufId);
-    glBufferSubData(GL_ARRAY_BUFFER , 0 , 4 * 3 , controlPointVertex);
+
+    if(update){
+        glBufferSubData(GL_ARRAY_BUFFER , 0 , vertexBufSize , controlPointVertex);
+    }else{
+        glBufferData(GL_ARRAY_BUFFER , vertexBufSize , controlPointVertex , GL_DYNAMIC_DRAW);
+    }
+
     glBindBuffer(GL_ARRAY_BUFFER , 0);
 }
 

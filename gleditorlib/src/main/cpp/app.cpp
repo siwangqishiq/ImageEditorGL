@@ -70,8 +70,12 @@ void App::onRender() {
     //将离屏缓冲区内容作为纹理 渲染到屏幕
     glViewport(0 , 0, viewWidth , viewHeight);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
+    // glEnable(GL_DEPTH_TEST);
     renderMainView();
+
+    if(mode ==Mode::CLIP && clipWidget != nullptr){
+        clipWidget->onRender(normalMatrix);
+    }
 }
 
 void App::onDestroy() {
