@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Matrix
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -29,15 +30,12 @@ class EditorActivity : AppCompatActivity() {
     companion object{
         const val INTENT_DATA = "_data"
         const val TAG = "MainGLView"
-        fun start(context : Activity , data : String){
+        fun start(context : Activity , data : String , requestCode : Int){
             val it = Intent(context , EditorActivity::class.java).apply {
                 putExtra(INTENT_DATA , data)
             }
-            context.startActivity(it)
+            context.startActivityForResult(it , requestCode)
         }
-
-        const val COLOR_ITEM_UNSELECTED =Color.WHITE
-        const val COLOR_ITEM_SELECTED = Color.YELLOW
     }
 
     private lateinit var fileData : String
@@ -75,31 +73,6 @@ class EditorActivity : AppCompatActivity() {
                 }//end when
         }
 
-//        paintBtn = findViewById(R.id.paint_action)
-//        paintBtn.setOnClickListener {
-//            if(paintMode){
-//                mainView.setIdleMode()
-//                paintMode = false
-//                paintBtn.setTextColor(COLOR_ITEM_UNSELECTED)
-//            }else{
-//                mainView.setPaintMode()
-//                paintMode = true
-//                paintBtn.setTextColor(COLOR_ITEM_SELECTED)
-//            }
-//        }
-//
-//        mosaicBtn = findViewById(R.id.mosaic_action)
-//        mosaicBtn.setOnClickListener {
-//            mosaicMode = !mosaicMode
-//            if(mosaicMode){
-//                mainView.setMosaicMode()
-//                mosaicBtn.setTextColor(COLOR_ITEM_SELECTED)
-//            }else{
-//                mainView.setIdleMode()
-//                mosaicBtn.setTextColor(COLOR_ITEM_UNSELECTED)
-//            }
-//        }
-
         findViewById<View>(R.id.reset_btn).setOnClickListener {
             mainView.resetImage()
         }
@@ -117,7 +90,13 @@ class EditorActivity : AppCompatActivity() {
                 LogUtil.d(TAG , "bitmap copy error")
                 return@queueEvent
             }
-            saveBitmap(outputBitmap , this@EditorActivity)
+            val path = saveBitmap(outputBitmap , this@EditorActivity)
+            runOnUiThread{
+                val it = Intent()
+                it.putExtra("path" , path)
+                setResult(Activity.RESULT_OK , it)
+                finish()
+            }
         }
     }
 
@@ -126,23 +105,31 @@ class EditorActivity : AppCompatActivity() {
         super.onBackPressed()
     }
 
-    private fun saveBitmap(bitmap:Bitmap, ctx:Context) {
+    private fun saveBitmap(bitmap:Bitmap, ctx:Context) : String? {
         val savePath:String = "${ctx.cacheDir.absolutePath}/${System.currentTimeMillis()}_img.jpg"
         LogUtil.d(TAG , "savePath : $savePath")
         try {
+            val matrix = Matrix()
+            matrix.postRotate(-180.0f)
+            matrix.postScale(-1.0f , 1.0f , bitmap.width / 2.0f , bitmap.height/2.0f )
+            val scaleBitmap = Bitmap.createScaledBitmap(bitmap , bitmap.width , bitmap.height , true)
+            val rotatedBitmap = Bitmap.createBitmap(scaleBitmap , 0 , 0, scaleBitmap.width , scaleBitmap.height ,
+                matrix , true)
             val filePic = File(savePath)
             if (!filePic.exists()) {
                 filePic.getParentFile().mkdirs()
                 filePic.createNewFile()
             }
             val fos = FileOutputStream(filePic);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.flush();
             fos.close();
             LogUtil.d(TAG , "save file success! ${filePic.absolutePath}")
+
+            return savePath
         } catch (e: IOException) {
             LogUtil.d(TAG , e.message)
-            return;
+            return null
         }
     }
 }
