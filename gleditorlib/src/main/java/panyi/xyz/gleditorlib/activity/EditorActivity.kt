@@ -111,7 +111,7 @@ class EditorActivity : AppCompatActivity() {
         try {
             val matrix = Matrix()
             matrix.postRotate(-180.0f)
-            matrix.postScale(-1.0f , 1.0f , bitmap.width / 2.0f , bitmap.height/2.0f )
+            matrix.postScale(-1.0f , 1.0f , bitmap.width / 2.0f , bitmap.height/2.0f ) //flip
             val scaleBitmap = Bitmap.createScaledBitmap(bitmap , bitmap.width , bitmap.height , true)
             val rotatedBitmap = Bitmap.createBitmap(scaleBitmap , 0 , 0, scaleBitmap.width , scaleBitmap.height ,
                 matrix , true)

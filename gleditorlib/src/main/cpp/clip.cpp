@@ -85,4 +85,79 @@ void ClipWidget::updateControlPointToBuf(bool update) {
     glBindBuffer(GL_ARRAY_BUFFER , 0);
 }
 
+void ClipWidget::onActionMove(float _x, float _y) {
+    // Logi("clipWidget %f ,  %f" , _x , _y);
+    if(currentSelectedPoint == nullptr){
+        return;
+    }
+
+    limitMovePointAndSet(_x , _y);
+    updateControlPointToBuf(true);
+}
+
+void ClipWidget::limitMovePointAndSet(float _x ,float _y){
+    if(_x <= appContext->offsetX){
+        _x = appContext->offsetX;
+    }else if(_x >= appContext->offsetX + appContext->widthInView){
+        _x = appContext->offsetX + appContext->widthInView;
+    }
+
+    if(_y <= appContext->offsetY){
+        _y = appContext->offsetY;
+    }else if(_y >= appContext->offsetY + appContext->heightInView){
+        _y = appContext->offsetY + appContext->heightInView;
+    }
+
+    if(currentSelectedPoint == &leftTopPoint){//左上方
+        _x = glm::min(rightTopPoint.pos.x - controlPointSize , _x);
+        _y = glm::max(leftBottomPoint.pos.y + controlPointSize , _y);
+    }else if(currentSelectedPoint == &rightTopPoint){//右上方
+        _x = glm::max(leftTopPoint.pos.x + controlPointSize , _x);
+        _y = glm::max(rightBottomPoint.pos.y + controlPointSize , _y);
+    }else if(currentSelectedPoint == &leftBottomPoint){//左下方
+        _x = glm::min(rightBottomPoint.pos.x - controlPointSize , _x);
+        _y = glm::min(leftTopPoint.pos.y - controlPointSize , _y);
+    }else if(currentSelectedPoint == &rightBottomPoint){//右下方
+        _x = glm::max(leftBottomPoint.pos.x + controlPointSize , _x);
+        _y = glm::min(rightTopPoint.pos.y - controlPointSize , _y);
+    }
+
+    currentSelectedPoint->pos.x = _x;
+    currentSelectedPoint->pos.y = _y;
+
+    if(currentSelectedPoint == &leftTopPoint){//左上方
+        rightTopPoint.pos.y = _y;
+        leftBottomPoint.pos.x = _x;
+    }else if(currentSelectedPoint == &rightTopPoint){//右上方
+        leftTopPoint.pos.y = _y;
+        rightBottomPoint.pos.x = _x;
+    }else if(currentSelectedPoint == &leftBottomPoint){//左下方
+        rightBottomPoint.pos.y = _y;
+        leftTopPoint.pos.x = _x;
+    }else if(currentSelectedPoint == &rightBottomPoint){//右下方
+        leftBottomPoint.pos.y = _y;
+        rightTopPoint.pos.x = _x;
+    }
+
+}
+
+void ClipWidget::onActionDown(float _x,float _y) {
+    // Logi("clipWidget %f ,  %f" , _x , _y);
+
+    const float radius = controlPointSize / 2.0f;
+    if(leftTopPoint.isPointIn(_x , _y, radius)){
+        currentSelectedPoint = &leftTopPoint;
+    }else if(rightTopPoint.isPointIn(_x , _y, radius)){
+        currentSelectedPoint = &rightTopPoint;
+    }else if(leftBottomPoint.isPointIn(_x , _y, radius)){
+        currentSelectedPoint = &leftBottomPoint;
+    }else if(rightBottomPoint.isPointIn(_x , _y, radius)){
+        currentSelectedPoint = &rightBottomPoint;
+    }
+}
+
+void ClipWidget::onActionUp(float _x, float _y) {
+    currentSelectedPoint = nullptr;
+}
+
 

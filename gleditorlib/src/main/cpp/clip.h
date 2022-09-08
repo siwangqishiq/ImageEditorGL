@@ -14,6 +14,12 @@ class App;
 class ClipControlPoint{
 public:
     glm::vec3 pos;//中心点位置
+
+    bool isPointIn(float _x , float _y , float radius){
+        float x = pos.x;
+        float y = pos.y;
+        return (x - _x) * (x - _x) + (y - _y)*(y - _y) <= radius * radius;
+    }
 };
 
 //裁剪控件
@@ -30,6 +36,16 @@ public:
     void createShader();
 
     void resize();
+
+    void onActionDown(float _x,float _y);
+
+    //move
+    void onActionMove(float _x , float _y);
+
+    void onActionUp(float _x , float _y);
+
+    //当前选中的控制点
+    ClipControlPoint *currentSelectedPoint = nullptr;
 private:
     App *appContext;
 
@@ -49,6 +65,8 @@ private:
     Shader clipControlShader;
 
     void updateControlPointToBuf(bool update);
+
+    void limitMovePointAndSet(float _x ,float _y);
 };
 
 

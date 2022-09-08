@@ -165,6 +165,10 @@ void App::handleDownAction(EventMessage &msg) {
         if(curMosaic != nullptr){
             curMosaic->addPaintPoint(_x , _y);
         }
+    }else if(mode == Mode::CLIP){
+        if(clipWidget != nullptr){
+            clipWidget->onActionDown(_x, _y);
+        }
     }else if(mode == Mode::IDLE){
         changeMode(Mode::IDLE_MOVE);
 //        auto worldPos = convertScreenToWorld(x , y);
@@ -186,6 +190,10 @@ void App::handleMoveAction(EventMessage &msg) {
         auto curMosaic = fetchCurrentMosaic();
         if(curMosaic != nullptr){
             curMosaic->addPaintPoint(_x , _y);
+        }
+    }else if(mode == Mode::CLIP){// 裁剪
+        if(clipWidget != nullptr){
+            clipWidget->onActionMove(_x,  _y);
         }
     }else if(mode == Mode::IDLE_MOVE){//移动状态
         float dx = _x - lastPoint.x;
@@ -290,6 +298,10 @@ void App::handleUpCancelAction(EventMessage &msg) {
     }else if(mode == Mode::IDLE_SCALE){
         changeMode(Mode::IDLE);
         onScaleGestureEnd();
+    }else if(mode == Mode::CLIP){// 裁剪
+        if(clipWidget != nullptr){
+            clipWidget->onActionUp(_x,  _y);
+        }
     }
 }
 
@@ -562,11 +574,16 @@ void App::changeMode(Mode newMode) {
 
     Logi("change mode from %d to %d" , preMode , mode);
 
-    if(mode == CLIP && clipWidget == nullptr){
+    if(mode == CLIP  && clipWidget == nullptr){
         clipWidget = std::make_shared<ClipWidget>(this);
         clipWidget->onInit();
     }
+
     clipWidget->resize();
+
+    if(mode == CLIP){
+        resetImage();
+    }
 }
 
 void App::resetImage(){

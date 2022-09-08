@@ -19,7 +19,7 @@ vec4 blurCircle(vec2 pos){
     vec2 offset = vec2(0.02f , 0.02f);
     vec2 center = vec2(0.5f , 0.5f) + offset;
     vec4 color =vec4(0.0f , 0.0f , 0.0f ,1.0f);
-    return color * (1.0f - smoothstep(0.2f , 0.43f , length(pos - center)));
+    return color * (1.0f - smoothstep(0.2f , 0.48f , length(pos - center)));
 }
 
 void main(){
