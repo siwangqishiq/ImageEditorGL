@@ -6,15 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <panyi.xyz.gleditorlib.MainView
-        android:id="@+id/editor_view"
-        android:layout_gravity="top"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
     <LinearLayout
         android:id="@+id/action_panel"
-        android:background="#3fffffff"
+        android:background="@color/cardview_dark_background"
         android:visibility="visible"
         android:layout_gravity="bottom"
         android:orientation="vertical"
@@ -89,4 +83,13 @@
                 />
         </LinearLayout>
     </LinearLayout>
+
+    <panyi.xyz.gleditorlib.MainView
+        android:id="@+id/editor_view"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/action_panel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
