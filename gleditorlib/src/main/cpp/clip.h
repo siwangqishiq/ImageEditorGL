@@ -9,6 +9,7 @@
 #include "shader.h"
 
 class App;
+class RectMaskWidget;
 
 //裁剪控制点 4个
 class ClipControlPoint{
@@ -18,12 +19,13 @@ public:
     bool isPointIn(float _x , float _y , float radius){
         float x = pos.x;
         float y = pos.y;
-        return (x - _x) * (x - _x) + (y - _y)*(y - _y) <= radius * radius;
+        return (x - _x) * (x - _x) + (y - _y) * (y - _y) <= radius * radius;
     }
 };
 
 //裁剪控件
 class ClipWidget {
+    friend class RectMaskWidget;
 public:
     ClipWidget(App *app) : appContext(app){}
 
@@ -46,6 +48,9 @@ public:
 
     //当前选中的控制点
     ClipControlPoint *currentSelectedPoint = nullptr;
+
+    //背景
+    std::shared_ptr<RectMaskWidget> rectMaskWidget;
 private:
     App *appContext;
 
@@ -59,7 +64,7 @@ private:
 
     static const int vertexBufSize = 4 * 3 * sizeof(float);
     //控制点 顶点坐标
-    float controlPointVertex[vertexBufSize];
+    float controlPointVertex[4 * 3];
     unsigned int controlPointBufId;
 
     Shader clipControlShader;
@@ -67,6 +72,29 @@ private:
     void updateControlPointToBuf(bool update);
 
     void limitMovePointAndSet(float _x ,float _y);
+};
+
+class RectMaskWidget{
+public:
+    RectMaskWidget(ClipWidget *clipWidget){
+        clipWidget_ = clipWidget;
+    }
+
+    void onInit();
+
+    void onRender(glm::mat3 &normalMatrix);
+
+    void onDestroy();
+private:
+    ClipWidget *clipWidget_;
+
+    //gl render
+    static const int vertexDataSize = 4 * 2 * 3 * 3;
+    float vertexData[vertexDataSize];
+    unsigned int vertexBufId;
+    Shader maskShader;
+
+    void putVertexData(bool update);
 };
 
 
