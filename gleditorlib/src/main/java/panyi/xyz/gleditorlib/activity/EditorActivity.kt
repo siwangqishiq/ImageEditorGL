@@ -4,17 +4,15 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.Matrix
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.widget.Button
 import android.widget.RadioGroup
-import android.widget.TextView
-
 import androidx.appcompat.app.AppCompatActivity
+import panyi.xyz.gleditorlib.IEditorModeChangeListener
 import panyi.xyz.gleditorlib.MainView
-import panyi.xyz.gleditorlib.NativeBridge
 import panyi.xyz.gleditorlib.R
 import panyi.xyz.gleditorlib.util.LogUtil
 import java.io.File
@@ -23,7 +21,8 @@ import java.io.IOException
 
 
 /**
- *  just for fun
+ *  EditorActivity base opengl es 3.0
+ *
  *
  */
 class EditorActivity : AppCompatActivity() {
@@ -43,6 +42,8 @@ class EditorActivity : AppCompatActivity() {
 
     private lateinit var operatePanel : RadioGroup
 
+    private lateinit var clipBtn : Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editor)
@@ -57,6 +58,11 @@ class EditorActivity : AppCompatActivity() {
             exportProcessedBitmap()
         }
 
+        clipBtn = findViewById<Button>(R.id.do_clip_btn)
+        clipBtn.setOnClickListener {
+            mainView.doClip()
+        }
+
         mainView = findViewById(R.id.editor_view)
         fileData = intent.getStringExtra(INTENT_DATA)?:""
         val path = fileData
@@ -66,26 +72,47 @@ class EditorActivity : AppCompatActivity() {
 
         operatePanel.setOnCheckedChangeListener { group, checkedId ->
                 when (checkedId) {
-                    R.id.op_idle -> mainView.setIdleMode()
-                    R.id.op_mosaic->mainView.setMosaicMode()
-                    R.id.op_paint->mainView.setPaintMode()
-                    R.id.op_clip->mainView.setClipMode()
+                    R.id.op_idle -> {
+                        mainView.setIdleMode()
+                        clipBtn.visibility = View.GONE
+                    }
+                    R.id.op_mosaic->{
+                        mainView.setMosaicMode()
+                        clipBtn.visibility = View.GONE
+                    }
+                    R.id.op_paint->{
+                        mainView.setPaintMode()
+                        clipBtn.visibility = View.GONE
+                    }
+                    R.id.op_clip->{
+                        mainView.setClipMode()
+                        clipBtn.visibility = View.VISIBLE
+                    }
                 }//end when
         }
 
         findViewById<View>(R.id.reset_btn).setOnClickListener {
             mainView.resetImage()
         }
+
+        Handler().postDelayed({
+            mainView.setModeChangeListener(object : IEditorModeChangeListener{
+                override fun onModeChanged() {
+                    LogUtil.d(TAG , "mode changed!! ${mainView.currentMode()}")
+                }
+            })
+        },2000)
+
     }
 
     fun exportProcessedBitmap(){
-        val bitWidth = NativeBridge.originImageWidth()
-        val bitHeight = NativeBridge.originImageHeight()
+        val bitWidth = mainView.bridge?.originImageWidth()?:1
+        val bitHeight = mainView.bridge?.originImageHeight()?:1
 
         LogUtil.d(TAG , "export image size: $bitWidth , $bitHeight ")
         mainView.queueEvent{
             val outputBitmap = Bitmap.createBitmap(bitWidth , bitHeight , Bitmap.Config.ARGB_8888)
-            val result = NativeBridge.exportBitmap(outputBitmap)
+            val result = mainView.bridge?.exportBitmap(outputBitmap)?:-1
             if(result < 0){
                 LogUtil.d(TAG , "bitmap copy error")
                 return@queueEvent
@@ -101,7 +128,7 @@ class EditorActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        NativeBridge.onDestroy()
+        mainView.bridge?.onDestroy()
         super.onBackPressed()
     }
 

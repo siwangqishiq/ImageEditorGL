@@ -10,6 +10,10 @@ import panyi.xyz.gleditorlib.util.LogUtil
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
+interface IEditorModeChangeListener{
+    fun onModeChanged()
+}
+
 class MainView : GLSurfaceView, GLSurfaceView.Renderer {
     companion object{
         const val TAG:String = "MainView"
@@ -18,7 +22,15 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
     constructor(context : Context, attr : AttributeSet?) :super(context , attr)
     constructor(context : Context) :super(context , null)
 
+    var bridge : NativeBridge?=null
+
+    var path : String?= null
+
+//    //模式改变 监听
+//    var modeChangeListener : IEditorModeChangeListener?=null
+
     init {
+        bridge = NativeBridge()
         LogUtil.d(TAG,"MainView init")
         setEGLContextClientVersion(3)
         setEGLConfigChooser(8,8 ,8 , 8, 16 , 0)
@@ -28,12 +40,16 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
         super.queueEvent(r)
     }
 
+    fun setModeChangeListener(listener: IEditorModeChangeListener?){
+        queueEvent {
+            bridge?.setCallback(listener)
+        }
+    }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         LogUtil.d(TAG , "measure width height $measuredWidth $measuredHeight");
     }
-
-    var path : String?= null
 
     override fun onTouchEvent(event: MotionEvent) : Boolean{
         // LogUtil.d(TAG , "point count ${event.pointerCount}")
@@ -63,27 +79,27 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
             y = measuredHeight - event.y
         }
 //        requestRender()
-        return NativeBridge.onTouch(event.actionMasked , x, y, x2 , y2)
+        return bridge?.onTouch(event.actionMasked , x, y, x2 , y2)?:false
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         LogUtil.d(TAG,"MainView onSurfaceCreated")
-        NativeBridge.init(context.assets)
+        bridge?.init(context.assets)
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         LogUtil.d(TAG,"MainView onSurfaceChanged $width x $height")
-        NativeBridge.onResize(width, height)
+        bridge?.onResize(width, height)
 
         val imgBitmap = readImageBitmap(path!!)
-        NativeBridge.setImageBitmap(imgBitmap)
+        bridge?.setImageBitmap(imgBitmap)
 
-        NativeBridge.onInit()
+        bridge?.onInit()
     }
 
     override fun onDrawFrame(gl: GL10?) {
         // LogUtil.d(TAG,"MainView onDrawFrame")
-        NativeBridge.onRender()
+        bridge?.onRender()
     }
 
     fun setContent(path : String , imgWidth : Int  , imgHeight : Int , bitmap : Bitmap?){
@@ -99,20 +115,27 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
     }
 
     fun setPaintMode(){
-        queueEvent { NativeBridge.setPaintMode() }
+        queueEvent { bridge?.setPaintMode() }
     }
 
     fun setIdleMode(){
-        queueEvent{NativeBridge.setIdleMode()}
+        queueEvent{bridge?.setIdleMode()}
     }
 
     fun setMosaicMode(){
-        queueEvent { NativeBridge.setMosaicMode() }
+        queueEvent { bridge?.setMosaicMode() }
     }
 
     fun setClipMode() {
-      queueEvent{ NativeBridge.setClipMode() }
+      queueEvent{ bridge?.setClipMode() }
     }
 
-    fun resetImage() = NativeBridge.resetImage()
+    fun resetImage() = bridge?.resetImage()
+
+    //裁剪
+    fun doClip(){
+        queueEvent{ bridge?.doClip() }
+    }
+
+    fun currentMode() :Int = bridge?.currentMode()?:-1
 }

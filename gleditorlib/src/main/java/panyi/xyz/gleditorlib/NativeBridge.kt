@@ -1,6 +1,5 @@
 package panyi.xyz.gleditorlib
 
-import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.Bitmap
 
@@ -8,10 +7,12 @@ import android.graphics.Bitmap
  *  java -> c++
  *
  */
-object NativeBridge {
+class NativeBridge {
     init {
         System.loadLibrary("imageeditorgl")
     }
+
+//    var modeChangeListener : IEditorModeChangeListener?=null
 
     external fun init(assetManager: AssetManager)
 
@@ -37,6 +38,8 @@ object NativeBridge {
 
     external fun originImageHeight() : Int
 
+    external fun currentMode() : Int
+
     external fun setPaintMode()
 
     external fun setMosaicMode()
@@ -47,4 +50,7 @@ object NativeBridge {
 
     external fun resetImage()
 
+    external fun doClip()
+
+    external fun setCallback(listener : IEditorModeChangeListener?)
 }

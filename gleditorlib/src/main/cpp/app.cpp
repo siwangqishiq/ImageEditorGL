@@ -584,6 +584,20 @@ void App::changeMode(Mode newMode) {
     if(mode == CLIP){
         resetImage();
     }
+
+    //callback
+    if(modeChangeListener != nullptr && env != nullptr){
+        Logi("change mode callback start");
+        jclass clazz = env->FindClass("panyi/xyz/gleditorlib/IEditorModeChangeListener");
+//        jclass clazz = env->GetObjectClass(modeChangeListener);
+        Logi("change mode callback start2");
+        jmethodID java_method_id = env->GetMethodID(clazz , "onModeChanged" , "()V");
+        Logi("change mode callback start3");
+//        jobject listenObj = env->NewGlobalRef(modeChangeListener);
+        Logi("change mode callback start4");
+        env->CallVoidMethod(modeChangeListener , java_method_id);
+        Logi("change mode callback end");
+    }
 }
 
 void App::resetImage(){
@@ -711,6 +725,10 @@ void App::scaleImageInView(float scaleValue) {
 //    auto realLimitLeftBottom = viewportScaleMatrix * limitLeftBottomPoint;
 //    auto realLimitRightTop = viewportScaleMatrix * limitRightTopPoint;
 //    Logi("limit %f , %f    -    %f , %f" , realLimitLeftBottom.x , realLimitLeftBottom.y , realLimitRightTop.x , realLimitRightTop.y);
+}
+
+void App::doClip(){
+    Logi("do Clip!");
 }
 
 

@@ -44,6 +44,8 @@ class App{
 public:
     JNIEnv *env = nullptr;
 
+    jobject modeChangeListener = nullptr;
+
     int viewWidth;
     int viewHeight;
 
@@ -94,6 +96,9 @@ public:
     void restorePreMode();
     //重置
     void resetImage();
+
+    //实施裁剪
+    void doClip();
 
     //屏幕坐标点 转为世界坐标点
     glm::vec2 convertScreenToWorld(float _x , float _y);

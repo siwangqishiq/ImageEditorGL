@@ -157,3 +157,30 @@ Java_panyi_xyz_gleditorlib_NativeBridge_setClipMode(JNIEnv *env, jobject thiz) {
         app->changeMode(Mode::CLIP);
     }
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_panyi_xyz_gleditorlib_NativeBridge_doClip(JNIEnv *env, jobject thiz) {
+    if(app != nullptr){
+        app->doClip();
+    }
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_panyi_xyz_gleditorlib_NativeBridge_currentMode(JNIEnv *env, jobject thiz) {
+    if(app != nullptr){
+        return app->mode;
+    }
+    return -1;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_panyi_xyz_gleditorlib_NativeBridge_setCallback(JNIEnv *env, jobject thiz, jobject listener) {
+    if(app != nullptr){
+        Logi("set mode change listener");
+        app->modeChangeListener = env->NewGlobalRef(listener);
+        env->DeleteLocalRef(listener);
+    }
+}
