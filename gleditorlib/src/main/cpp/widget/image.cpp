@@ -3,11 +3,11 @@
 //
 
 #include "image.h"
-#include "log.h"
+#include "../util/log.h"
 #include <GLES3/gl3.h>
 #include <GLES2/gl2ext.h>
 #include <android/bitmap.h>
-#include "shader.h"
+#include "../util/shader.h"
 
 void Image::onInit() {
     createShader();

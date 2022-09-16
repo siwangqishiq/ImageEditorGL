@@ -8,15 +8,15 @@ add_library( # Sets the name of the library.
         imageeditorgl
         SHARED
         editor_lib.cpp
-        shader.cpp
-        stb_image.cpp
-        math.hpp
+        util/shader.cpp
+        util/stb_image.cpp
+        util/math.hpp
         app.cpp
-        image.cpp
-        paint.cpp
-        origin_image.cpp
-        mosaic.cpp
-        clip.cpp
+        widget/image.cpp
+        widget/paint.cpp
+        widget/origin_image.cpp
+        widget/mosaic.cpp
+        widget/clip.cpp
         )
 
 find_library(opengl-lib GLESv3)

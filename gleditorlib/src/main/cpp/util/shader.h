@@ -5,7 +5,7 @@
 
 #include <GLES3/gl3.h>
 #include <string>
-#include "glm/glm.hpp"
+#include "../glm/glm.hpp"
 #include <unordered_map>
 #include <map>
 #include "log.h"

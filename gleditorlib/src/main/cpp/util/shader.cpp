@@ -4,7 +4,7 @@
 
 #include "shader.h"
 #include <fstream>
-#include "glm/gtc/type_ptr.hpp"
+#include "../glm/gtc/type_ptr.hpp"
 #include "log.h"
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>

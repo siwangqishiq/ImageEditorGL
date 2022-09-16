@@ -7,15 +7,15 @@
 #include <iostream>
 #include <string>
 
-#include "gl.h"
+#include "util/gl.h"
 #include <jni.h>
-#include "shader.h"
-#include "paint.h"
-#include "mosaic.h"
-#include "image.h"
-#include "origin_image.h"
-#include "mosaic.h"
-#include "clip.h"
+#include "util/shader.h"
+#include "widget/paint.h"
+#include "widget/mosaic.h"
+#include "widget/image.h"
+#include "widget/origin_image.h"
+#include "widget/mosaic.h"
+#include "widget/clip.h"
 #include <memory>
 #include <deque>
 

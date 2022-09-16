@@ -3,11 +3,11 @@
 //
 
 #include "paint.h"
-#include "log.h"
+#include "../util/log.h"
 
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "app.h"
+#include "../glm/glm.hpp"
+#include "../glm/gtc/matrix_transform.hpp"
+#include "../app.h"
 
 void Paint::onInit() {
     Logi("paint init start");

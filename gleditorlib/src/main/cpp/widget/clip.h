@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "glm/vec3.hpp"
+#include "../glm/vec3.hpp"
 #include <vector>
-#include "shader.h"
+#include "../util/shader.h"
 
 class App;
 class RectMaskWidget;

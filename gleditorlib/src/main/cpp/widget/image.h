@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "shader.h"
+#include "../util/shader.h"
 #include "jni.h"
-#include "app.h"
+#include "../app.h"
 
 class App;
 

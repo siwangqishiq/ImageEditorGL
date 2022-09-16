@@ -4,9 +4,9 @@
 #pragma once
 
 #include <vector>
-#include "common.h"
-#include "glm/ext/matrix_float3x3.hpp"
-#include "shader.h"
+#include "../util/common.h"
+#include "../glm/ext/matrix_float3x3.hpp"
+#include "../util/shader.h"
 
 enum PaintMode{//绘制模式
     Point,

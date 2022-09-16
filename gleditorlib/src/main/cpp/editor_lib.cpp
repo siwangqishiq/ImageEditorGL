@@ -1,9 +1,9 @@
 #include <jni.h>
 #include <string>
 #include <android/bitmap.h>
-#include "log.h"
+#include "util/log.h"
 #include "app.h"
-#include "common.h"
+#include "util/common.h"
 
 static App *app = nullptr;
 

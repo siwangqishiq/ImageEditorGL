@@ -3,10 +3,10 @@
 //
 
 #include "app.h"
-#include "log.h"
+#include "util/log.h"
 #include "glm/matrix.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-#include "math.hpp"
+#include "util/math.hpp"
 #include <android/bitmap.h>
 #include <memory>
 

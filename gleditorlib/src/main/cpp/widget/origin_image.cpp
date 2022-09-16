@@ -3,8 +3,8 @@
 //
 
 #include "origin_image.h"
-#include "log.h"
-#include "gl.h"
+#include "../util/log.h"
+#include "../util/gl.h"
 
 void OriginImage::init(int w, int h) {
     imgWidth = w;

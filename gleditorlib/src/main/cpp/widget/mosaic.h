@@ -5,7 +5,7 @@
 #pragma once
 
 #include "paint.h"
-#include "log.h"
+#include "../util/log.h"
 
 class Mosaic : public Paint {
 public:

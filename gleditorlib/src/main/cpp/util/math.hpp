@@ -4,8 +4,8 @@
 //
 #pragma once
 
-#include "glm/common.hpp"
-#include "glm/matrix.hpp"
+#include "../glm/common.hpp"
+#include "../glm/matrix.hpp"
 
 //构造缩放矩阵
 glm::mat3 math_scale_mat3(float scaleX , float scaleY){

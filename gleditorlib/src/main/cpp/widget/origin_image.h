@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "glm/matrix.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "app.h"
+#include "../glm/matrix.hpp"
+#include "../glm/gtc/matrix_transform.hpp"
+#include "../app.h"
 
 class OriginImage {
 public:

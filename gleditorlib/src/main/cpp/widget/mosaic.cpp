@@ -3,7 +3,7 @@
 //
 
 #include "mosaic.h"
-#include "app.h"
+#include "../app.h"
 
 void Mosaic::createShader() {
     Logi("mosaic create shader!");

@@ -3,7 +3,7 @@
 //
 
 #include "clip.h"
-#include "app.h"
+#include "../app.h"
 
 void ClipWidget::onInit() {
     leftTopPoint.pos = glm::vec3(appContext->offsetX , appContext->offsetY + appContext->heightInView, 1.0f);
