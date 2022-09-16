@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {//end class
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == REQUEST_CODE_EDITOR){
+        if(requestCode == REQUEST_CODE_EDITOR && data?.hasExtra("path")?:false){
             val editorImagePath = data?.getStringExtra("path")
             Glide.with(this).load(File(editorImagePath)).into(findViewById(R.id.preview))
         }

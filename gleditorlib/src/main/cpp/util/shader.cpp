@@ -227,18 +227,23 @@ Shader ShaderManager::fetchShaderByPath(std::string shaderName , std::string ver
         Logi("no found %s , create a new shader" , shaderName.c_str());
         Shader shader = Shader::buildGPUProgramAssetFile(vertexPath , fragPath);
         shaderMap[shaderName] = shader;
+    }else{
+        Logi("has found %s , reuse shader" , shaderName.c_str());
     }
-
     return shaderMap[shaderName];
 }
 
 void ShaderManager::clear() {
+    Logi("shader manager clear");
+
     for(auto pair : shaderMap){
         Shader shader = pair.second;
         glDeleteShader(shader.programId);
     }
 
+    Logi("shader map size %d" , shaderMap.size());
     shaderMap.clear();
+    Logi("shader map size after clear %d" , shaderMap.size());
 }
 
 ShaderManager& ShaderManager::getInstance() {

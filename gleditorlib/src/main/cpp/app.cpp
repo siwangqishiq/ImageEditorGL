@@ -374,9 +374,10 @@ bool App::handleActionEvent(EventMessage msg) {
 }
 
 void App::exitApp() {
-    EventMessage msg(EVENT_EXIT);
-    messageQueue.push_back(msg);
+//    EventMessage msg(EVENT_EXIT);
+//    messageQueue.push_back(msg);
     Logi("exitApp event");
+    onDestroy();
 }
 
 int App::exportBitmap(jobject outputBitmap) {

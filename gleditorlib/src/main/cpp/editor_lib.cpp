@@ -5,7 +5,7 @@
 #include "app.h"
 #include "util/common.h"
 
-static App *app = nullptr;
+App *app = nullptr;
 
 AAssetManager *mAssetManager;
 

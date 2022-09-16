@@ -101,7 +101,7 @@ class EditorActivity : AppCompatActivity() {
                     LogUtil.d(TAG , "mode changed!! ${mainView.currentMode()}")
                 }
             })
-        },2000)
+        },1000)
 
     }
 
@@ -125,11 +125,6 @@ class EditorActivity : AppCompatActivity() {
                 finish()
             }
         }
-    }
-
-    override fun onBackPressed() {
-        mainView.bridge?.onDestroy()
-        super.onBackPressed()
     }
 
     private fun saveBitmap(bitmap:Bitmap, ctx:Context) : String? {
@@ -159,4 +154,10 @@ class EditorActivity : AppCompatActivity() {
             return null
         }
     }
-}
+
+    override fun onDestroy() {
+        mainView.onDestroy()
+        super.onDestroy()
+    }
+
+}//end class

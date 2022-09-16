@@ -138,4 +138,8 @@ class MainView : GLSurfaceView, GLSurfaceView.Renderer {
     }
 
     fun currentMode() :Int = bridge?.currentMode()?:-1
+
+    fun onDestroy(){
+        bridge?.onDestroy()
+    }
 }
