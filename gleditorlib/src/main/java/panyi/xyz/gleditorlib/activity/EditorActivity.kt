@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.Button
 import android.widget.RadioGroup
@@ -95,10 +96,17 @@ class EditorActivity : AppCompatActivity() {
             mainView.resetImage()
         }
 
-        Handler().postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
             mainView.setModeChangeListener(object : IEditorModeChangeListener{
                 override fun onModeChanged() {
-                    LogUtil.d(TAG , "mode changed!! ${mainView.currentMode()}")
+                    runOnUiThread{
+                        LogUtil.d(TAG , "mode changed!! ${mainView.currentMode()}")
+                        when(mainView.currentMode()){
+                            0,1,2->{
+                                operatePanel.check(R.id.op_idle)
+                            }
+                        }
+                    }
                 }
             })
         },1000)

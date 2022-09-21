@@ -6,12 +6,7 @@
 #include "../app.h"
 
 void ClipWidget::onInit() {
-    leftTopPoint.pos = glm::vec3(appContext->offsetX , appContext->offsetY + appContext->heightInView, 1.0f);
-    rightTopPoint.pos = glm::vec3(appContext->offsetX + appContext->widthInView ,
-                                  appContext->offsetY + appContext->heightInView , 1.0f);
-    leftBottomPoint.pos = glm::vec3(appContext->offsetX , appContext->offsetY, 1.0f);
-    rightBottomPoint.pos = glm::vec3(appContext->offsetX + appContext->widthInView ,
-                                     appContext->offsetY , 1.0f);
+    initControlPointPos();
 
     unsigned int buf[1];
     glGenBuffers(1 , buf);
@@ -166,6 +161,71 @@ void ClipWidget::onActionDown(float _x,float _y) {
 
 void ClipWidget::onActionUp(float _x, float _y) {
     currentSelectedPoint = nullptr;
+}
+
+void ClipWidget::doClipAction(){
+    Logi("clip widget start clip");
+
+    auto leftTop = appContext->convertScreenToWorld(leftTopPoint.pos.x , leftTopPoint.pos.y);
+    auto rightTop = appContext->convertScreenToWorld(rightTopPoint.pos.x , rightTopPoint.pos.y);
+    auto leftBottom = appContext->convertScreenToWorld(leftBottomPoint.pos.x , leftBottomPoint.pos.y);
+    auto rightBottom = appContext->convertScreenToWorld(rightBottomPoint.pos.x , rightBottomPoint.pos.y);
+
+    int clipImageWidth = rightTop.x - leftTop.x;
+    int clipImageHeight = leftTop.y - leftBottom.y;
+    int clipImageOffsetX = leftBottomPoint.pos.x;
+    int clipImageOffsetY = leftBottomPoint.pos.y;
+
+    GLenum errorCode0 = glGetError();
+    Logi("clip error code = %d" , errorCode0);
+
+    //1. 生成裁剪后的纹理image
+    auto frameBufId = appContext->originImage->frameBufferId;
+    glBindFramebuffer(GL_FRAMEBUFFER , frameBufId);
+
+    GLenum errorCode1 = glGetError();
+    Logi("clip glBindFramebuffer error code = %d" , errorCode1);
+
+    GLuint textureIds[1];
+    glGenTextures(1 , textureIds);
+    Logi("clip glGenTextures error code = %d" , glGetError());
+    unsigned int clipTextureId = textureIds[0];
+    glBindTexture(GL_TEXTURE_2D , clipTextureId);
+    glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER , GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_MAG_FILTER , GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_WRAP_S , GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_WRAP_T , GL_CLAMP_TO_EDGE);
+    Logi("clip glTexParameterf error code = %d" , glGetError());
+
+    Logi("clip clipImageWidth = %d clipImageHeight = %d" , clipImageWidth , clipImageHeight);
+    int format = appContext->baseImage->textureFormat;
+    glTexImage2D(GL_TEXTURE_2D , 0 , format, clipImageWidth , clipImageHeight ,
+                 0 , format , GL_UNSIGNED_BYTE ,
+                 nullptr);
+    Logi("clip glTexImage2D error code = %d" , glGetError());
+    Logi("clip clipImageOffsetX = %d clipImageOffsetY = %d" , clipImageOffsetX , clipImageOffsetY);
+    glCopyTexImage2D(GL_TEXTURE_2D ,0 , format ,
+                     clipImageOffsetX , clipImageOffsetY ,
+                     clipImageWidth , clipImageHeight , 0);
+//    glCopyTexSubImage2D(GL_TEXTURE_2D , 0 , 0 , 0 ,
+//                        clipImageOffsetX, clipImageOffsetY, clipImageWidth , clipImageHeight);
+    Logi("clip glCopyTexSubImage2D error code = %d" , glGetError());
+    glBindFramebuffer(GL_FRAMEBUFFER , 0);
+
+    auto contentTextureId = appContext->originImage->contentTextureId;
+    //2. 设置此image为  app  的底图 并重新init
+    appContext->resetBaseImage(contentTextureId , clipImageWidth , clipImageHeight);
+    //3. 切换idle状态
+    appContext->changeMode(Mode::IDLE);
+}
+
+void ClipWidget::initControlPointPos() {
+    leftTopPoint.pos = glm::vec3(appContext->offsetX , appContext->offsetY + appContext->heightInView, 1.0f);
+    rightTopPoint.pos = glm::vec3(appContext->offsetX + appContext->widthInView ,
+                                  appContext->offsetY + appContext->heightInView , 1.0f);
+    leftBottomPoint.pos = glm::vec3(appContext->offsetX , appContext->offsetY, 1.0f);
+    rightBottomPoint.pos = glm::vec3(appContext->offsetX + appContext->widthInView ,
+                                     appContext->offsetY , 1.0f);
 }
 
 void RectMaskWidget::onInit(){

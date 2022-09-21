@@ -57,9 +57,9 @@ public:
     //记录之前的状态
     Mode preMode = IDLE;
 
-    std::shared_ptr<OriginImage> originImage; //原始待编辑的图片
+    std::shared_ptr<OriginImage> originImage; //真正的绘制Image 操作均绘制到此Image上
 
-    std::shared_ptr<Image> baseImage; //真正的绘制Image 操作均绘制到此Image上
+    std::shared_ptr<Image> baseImage;  //原始待编辑的图片
 
     //绘制组件集合
     std::vector<std::shared_ptr<Paint>> paintList = std::vector<std::shared_ptr<Paint>>();
@@ -83,6 +83,9 @@ public:
     bool handleActionEvent(EventMessage msg);
 
     void setImageBitmap(JNIEnv *env , jobject image_bitmap);
+
+    //重置底编辑图片  用于裁剪操作之后
+    void resetBaseImage(unsigned int textureId , int textureWidth , int textureHeight);
 
     //主动退出应用
     void exitApp();

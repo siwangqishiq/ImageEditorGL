@@ -23,7 +23,7 @@ vec3 mosaicEffect(){
         for(int j = bottomIndex; j<= topIndex ;j++){
             float x = float(i) * mosaicSize;
             float y = float(j) * mosaicSize;
-            vec2 uv = vec2(x / originImageWidth ,1.0f - y / originImageHeight);
+            vec2 uv = vec2(x / originImageWidth , y / originImageHeight);
             vec4 originColor = texture(baseImageTexture , uv);
 
             colorSum = colorSum + originColor.rgb;

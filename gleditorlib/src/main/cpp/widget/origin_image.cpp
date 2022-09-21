@@ -116,5 +116,9 @@ void OriginImage::resetNormalMatrix(int width , int height) {
     Logi("normalMatrix[0][0] = %f , normalMatrix[1][1] = %f" , normalMatrix[0][0] , normalMatrix[1][1]);
 }
 
+OriginImage::~OriginImage() {
+    destroy();
+}
+
 
 

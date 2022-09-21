@@ -39,6 +39,8 @@ public:
 
     void resize();
 
+    void initControlPointPos();
+
     void onActionDown(float _x,float _y);
 
     //move
@@ -51,6 +53,10 @@ public:
 
     //背景
     std::shared_ptr<RectMaskWidget> rectMaskWidget;
+
+    void doClipAction();
+
+    void updateControlPointToBuf(bool update);
 private:
     App *appContext;
 
@@ -68,8 +74,6 @@ private:
     unsigned int controlPointBufId;
 
     Shader clipControlShader;
-
-    void updateControlPointToBuf(bool update);
 
     void limitMovePointAndSet(float _x ,float _y);
 };

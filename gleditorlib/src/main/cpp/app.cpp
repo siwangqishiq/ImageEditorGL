@@ -30,18 +30,18 @@ void App::onInit(JNIEnv *env) {
     ShaderManager::getInstance();
     createShader();
 
+    //重置归一化矩阵
+    resetNormalMatrix(viewWidth , viewHeight);
+
     glViewport(0 , 0, viewWidth , viewHeight);
     glClearColor(0.0f , 0.0f , 0.0f , 1.0f);
     glEnable(GL_DEPTH);
 
     baseImage->onInit();
-
     imageOriginWidth = static_cast<float>(baseImage->imgWidth);
     imageOriginHeight = static_cast<float>(baseImage->imgHeight);
     originImage->init(imageOriginWidth , imageOriginHeight);
 
-    //重置归一化矩阵
-    resetNormalMatrix(viewWidth , viewHeight);
     calculateFitViewTransMatrix();
 
     x = 0.0f;
@@ -67,6 +67,7 @@ void App::onRender() {
     originImage->renderToFrameBuffer();
     glBindFramebuffer(GL_FRAMEBUFFER , 0);
 
+
     //将离屏缓冲区内容作为纹理 渲染到屏幕
     glViewport(0 , 0, viewWidth , viewHeight);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -79,8 +80,8 @@ void App::onRender() {
 }
 
 void App::onDestroy() {
-    originImage->destroy();
-    baseImage->onDestroy();
+//    originImage->destroy();
+//    baseImage->onDestroy();
 
     for(auto &pPaint : paintList){
         pPaint->onDestroy();
@@ -591,11 +592,8 @@ void App::changeMode(Mode newMode) {
         Logi("change mode callback start");
         jclass clazz = env->FindClass("panyi/xyz/gleditorlib/IEditorModeChangeListener");
 //        jclass clazz = env->GetObjectClass(modeChangeListener);
-        Logi("change mode callback start2");
         jmethodID java_method_id = env->GetMethodID(clazz , "onModeChanged" , "()V");
-        Logi("change mode callback start3");
 //        jobject listenObj = env->NewGlobalRef(modeChangeListener);
-        Logi("change mode callback start4");
         env->CallVoidMethod(modeChangeListener , java_method_id);
         Logi("change mode callback end");
     }
@@ -730,6 +728,31 @@ void App::scaleImageInView(float scaleValue) {
 
 void App::doClip(){
     Logi("do Clip!");
+    if(clipWidget != nullptr){
+        clipWidget->doClipAction();
+    }
+}
+
+void App::resetBaseImage(unsigned int textureId , int textureWidth, int textureHeight) {
+    auto prevBaseImage = baseImage;
+    auto prevOriginImage = originImage;
+    mosaicList.clear();
+    paintList.clear();
+
+    clipWidget->initControlPointPos();
+    clipWidget->updateControlPointToBuf(true);
+
+//    baseImage = std::make_shared<Image>(this);
+//    originImage = std::make_shared<OriginImage>(this);
+
+//    baseImage->resetNewTexture(prevBaseImage->textureId , prevBaseImage->imgWidth , prevBaseImage->imgHeight);
+    baseImage->resetNewTexture(textureId , textureWidth , textureHeight);
+//    originImage->init(baseImage->imgWidth , baseImage->imgHeight);
+//
+//    imageOriginWidth = textureWidth;
+//    imageOriginHeight = textureHeight;
+//    updateVertexData(0 , 0 , imageOriginWidth , imageOriginHeight);
+//    initVertex();
 }
 
 

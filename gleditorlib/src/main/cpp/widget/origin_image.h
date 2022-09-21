@@ -26,6 +26,8 @@ public:
     unsigned int renderBufferId;
     unsigned int contentTextureId;
 
+    ~OriginImage();
+
 private:
     App *appContext;
     glm::mat3 normalMatrix = glm::mat3(1.0f);//绘制时归一化矩阵

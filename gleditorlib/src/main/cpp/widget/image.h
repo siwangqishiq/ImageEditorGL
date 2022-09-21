@@ -20,9 +20,13 @@ public:
 
     void onInit();
 
+    void resetNewTexture(unsigned int newTextureId,int textureWidth , int textureHeight);
+
     void render(glm::mat3 &normalMatrix);
 
     void onDestroy();
+
+    ~Image();
 
     int imgWidth;
     int imgHeight;
@@ -31,6 +35,9 @@ public:
     float w = 1.0f;
     float h = 1.0f;
     unsigned int textureId;
+
+    int textureFormat = GL_RGBA;
+
 private:
     App *appContext;
     Shader shader;

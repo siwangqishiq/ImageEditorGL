@@ -23,6 +23,16 @@ void Image::onInit() {
     glBindBuffer(GL_ARRAY_BUFFER , 0);
 }
 
+void Image::resetNewTexture(unsigned int newTextureId,int textureWidth , int textureHeight) {
+    Logi("reset new image texture");
+
+    textureId = newTextureId;
+//    imgWidth = textureWidth;
+//    imgHeight = textureHeight;
+    Logi("reset new image texture textureId  = %d , %d , %d" , textureId , imgWidth , imgHeight);
+//    resetPositionData();
+}
+
 void Image::render(glm::mat3 &normalMatrix) {
 //    Logi("Image normal : %f , %f , %f" ,normalMatrix[0][0],normalMatrix[0][1],normalMatrix[0][2]);
 //    Logi("Image normal : %f , %f , %f" ,normalMatrix[1][0],normalMatrix[1][1],normalMatrix[1][2]);
@@ -130,26 +140,40 @@ void Image::loadTextureFromImageBitmap(JNIEnv *env) {
         AndroidBitmap_unlockPixels(env , imageBitmap);
         return;
     }
-    AndroidBitmap_unlockPixels(env , imageBitmap);
 
-    resetPositionData();
+    //做垂直翻转
+    int newWidth = info.width;
+    int newHeight = info.height;
+    const auto pixelsSize = newWidth * newHeight;
+    uint32_t *newBitmapPixels = new uint32_t[pixelsSize];
+    int whereToGet = 0;
+    for (int y = 0; y < newHeight; ++y) {
+        for (int x = 0; x < newWidth; x++) {
+            uint32_t pixel = ((uint32_t *) dataBuf)[whereToGet++];
+            newBitmapPixels[newWidth * (newHeight - 1 - y) + x] = pixel;
+        }
+    }
+    AndroidBitmap_unlockPixels(env , imageBitmap);
 
     GLuint textureIds[1];
     glGenTextures(1 , textureIds);
     textureId = textureIds[0];
 
-    glBindTexture(GL_TEXTURE_2D , this->textureId);
+    glBindTexture(GL_TEXTURE_2D , textureId);
     glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER , GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_MAG_FILTER , GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_WRAP_S , GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_WRAP_T , GL_CLAMP_TO_EDGE);
 
-    int format = GL_RGBA;
+    textureFormat = GL_RGBA;
     Logi("send texture to GPU");
-    glTexImage2D(GL_TEXTURE_2D, 0, format, imgWidth, imgHeight, 0, format, GL_UNSIGNED_BYTE, dataBuf);
+    glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, imgWidth, imgHeight, 0, textureFormat, GL_UNSIGNED_BYTE, newBitmapPixels);
     Logi("send GPU success!");
+    delete newBitmapPixels;
 
     glBindTexture(GL_TEXTURE_2D , 0);
+
+    resetPositionData();
 }
 
 void Image::onDestroy() {
@@ -165,3 +189,9 @@ void Image::onDestroy() {
 void Image::setImageBitmap(JNIEnv *env ,jobject image_bitmap) {
     imageBitmap = env->NewGlobalRef(image_bitmap);
 }
+
+Image::~Image() {
+    onDestroy();
+}
+
+
