@@ -8,17 +8,16 @@
 
 ### 功能
 - 涂鸦
+
 ![涂鸦](https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/paint.webp "Paint")
 
 - 马赛克
-<video id="video" controls="" width="230" >
-      <source id="mosaic_id" src="https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/mosaic.webp" type="video/mp4">
-</video>
+
+![马赛克](https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/mosaic.webp "Mosaic")
 
 - 裁剪
-<video id="video" controls="" width="230" >
-      <source id="clip_id" src="https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/clip.webp" type="video/mp4">
-</video>
+
+![裁剪](https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/clip.webp "Clip")
 
 ### 后续计划
     1.添加文字
