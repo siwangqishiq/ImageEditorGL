@@ -49,11 +49,6 @@ class EditorActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editor)
 
-        val btn = findViewById<Button>(R.id.complete_btn)
-        btn.setOnClickListener{
-            onBackPressed()
-        }
-
         val exportBtn = findViewById<Button>(R.id.export_btn)
         exportBtn.setOnClickListener{
             exportProcessedBitmap()

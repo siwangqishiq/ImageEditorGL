@@ -69,13 +69,6 @@
                 />
 
             <Button
-                android:id="@+id/complete_btn"
-                android:text="@string/complete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
-
-            <Button
                 android:id="@+id/reset_btn"
                 android:text="@string/reset"
                 android:layout_width="wrap_content"
