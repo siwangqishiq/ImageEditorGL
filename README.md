@@ -8,9 +8,11 @@
 
 ### 功能
 - 涂鸦
+```HTML
 <video id="video" controls="" width="230" >
       <source id="tuya_id" src="https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/tuya.mp4" type="video/mp4">
 </video>
+```
 
 - 马赛克
 <video id="video" controls="" width="230" >
