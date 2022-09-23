@@ -44,11 +44,7 @@ void App::onInit(JNIEnv *env) {
 
     calculateFitViewTransMatrix();
 
-    x = 0.0f;
-    y = 0.0f;
-    w = imageOriginWidth;
-    h = imageOriginHeight;
-    updateVertexData(x , y , w , h);
+    updateVertexData(x , y , imageOriginWidth , imageOriginHeight);
     initVertex();
 }
 
@@ -736,15 +732,17 @@ void App::resetBaseImage(unsigned int textureId , int textureWidth, int textureH
     mosaicList.clear();
     paintList.clear();
 
-    clipWidget->initControlPointPos();
-    clipWidget->updateControlPointToBuf(true);
-
     imageOriginWidth = textureWidth;
     imageOriginHeight = textureHeight;
     baseImage->resetNewTexture(textureId , textureWidth , textureHeight);
+    originImage->init(imageOriginWidth , imageOriginHeight);
 
-    updateVertexData(x , y , imageOriginWidth , imageOriginHeight);
     calculateFitViewTransMatrix();
+    updateVertexData(x , y , imageOriginWidth , imageOriginHeight);
+    initVertex();
+
+    clipWidget->initControlPointPos();
+    clipWidget->updateControlPointToBuf(true);
 }
 
 

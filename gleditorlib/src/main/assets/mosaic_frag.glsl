@@ -33,11 +33,17 @@ vec3 mosaicEffect(){
     return vec3(colorSum.r / float(count) , colorSum.g / float(count) ,  colorSum.b / float(count));
 }
 
+vec3 mosaicEffectSimple(){
+    vec2 uv = vec2(originCoord.x / originImageWidth , originCoord.y / originImageHeight);
+    vec4 originColor = texture(baseImageTexture , uv);
+    return originColor.rgb;
+}
+
 void main(){
 //    vec2 mosaicPoint = mosaicEffect();
 //    vec2 uv = vec2(mosaicPoint.x / originImageWidth ,1.0f - mosaicPoint.y / originImageHeight);
 //    vec4 originColor = texture(baseImageTexture , uv);
 //    outColor = originColor;
 //    outColor = vec4(1.0f , 0.0f ,0.0f , 1.0f);
-    outColor = vec4(mosaicEffect() , 1.0f);
+    outColor = vec4(mosaicEffectSimple() , 1.0f);
 }
