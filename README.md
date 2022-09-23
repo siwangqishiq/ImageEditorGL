@@ -8,20 +8,16 @@
 
 ### 功能
 - 涂鸦
-```HTML
-<video id="video" controls="" width="230" >
-      <source id="tuya_id" src="https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/tuya.mp4" type="video/mp4">
-</video>
-```
+![涂鸦](https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/paint.webp "Paint")
 
 - 马赛克
 <video id="video" controls="" width="230" >
-      <source id="mosaic_id" src="https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/mosaic.mp4" type="video/mp4">
+      <source id="mosaic_id" src="https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/mosaic.webp" type="video/mp4">
 </video>
 
 - 裁剪
 <video id="video" controls="" width="230" >
-      <source id="clip_id" src="https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/clip.mp4" type="video/mp4">
+      <source id="clip_id" src="https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/clip.webp" type="video/mp4">
 </video>
 
 ### 后续计划
