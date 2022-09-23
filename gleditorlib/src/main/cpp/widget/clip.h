@@ -76,6 +76,9 @@ private:
     Shader clipControlShader;
 
     void limitMovePointAndSet(float _x ,float _y);
+
+    //创建裁剪后的纹理
+    unsigned int createClipTexture(int offsetX, int offsetY , int width , int height);
 };
 
 class RectMaskWidget{

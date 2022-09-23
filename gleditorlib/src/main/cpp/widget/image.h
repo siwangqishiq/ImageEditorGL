@@ -13,6 +13,7 @@
 
 class App;
 
+//被编辑的底图
 class Image {
     friend class App;
 public:

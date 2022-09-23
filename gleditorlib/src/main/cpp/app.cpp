@@ -608,7 +608,6 @@ void App::resetImage(){
 }
 
 void App::resetTransMatrix() {
-
     //变换矩阵重置
     worldToScreenMatrix = viewportMoveMatrix * viewportScaleMatrix  * scaleMatrix;
     screenToWorldMatrix = glm::inverse(worldToScreenMatrix);
@@ -734,25 +733,18 @@ void App::doClip(){
 }
 
 void App::resetBaseImage(unsigned int textureId , int textureWidth, int textureHeight) {
-    auto prevBaseImage = baseImage;
-    auto prevOriginImage = originImage;
     mosaicList.clear();
     paintList.clear();
 
     clipWidget->initControlPointPos();
     clipWidget->updateControlPointToBuf(true);
 
-//    baseImage = std::make_shared<Image>(this);
-//    originImage = std::make_shared<OriginImage>(this);
-
-//    baseImage->resetNewTexture(prevBaseImage->textureId , prevBaseImage->imgWidth , prevBaseImage->imgHeight);
+    imageOriginWidth = textureWidth;
+    imageOriginHeight = textureHeight;
     baseImage->resetNewTexture(textureId , textureWidth , textureHeight);
-//    originImage->init(baseImage->imgWidth , baseImage->imgHeight);
-//
-//    imageOriginWidth = textureWidth;
-//    imageOriginHeight = textureHeight;
-//    updateVertexData(0 , 0 , imageOriginWidth , imageOriginHeight);
-//    initVertex();
+
+    updateVertexData(x , y , imageOriginWidth , imageOriginHeight);
+    calculateFitViewTransMatrix();
 }
 
 

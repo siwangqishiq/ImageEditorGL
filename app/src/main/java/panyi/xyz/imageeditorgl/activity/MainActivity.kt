@@ -5,15 +5,12 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import panyi.xyz.gleditorlib.activity.EditorActivity
 import panyi.xyz.imageeditorgl.R
 import panyi.xyz.imageeditorgl.model.SelectFileItem
-import panyi.xyz.imageeditorgl.model.UserViewModel
 import java.io.File
 
 /**
@@ -45,9 +42,6 @@ class MainActivity : AppCompatActivity() {//end class
                 pickImageContent.launch(1)
             }
         }
-
-        val userModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        userModel.pullData()
     }
 
     /**
@@ -59,7 +53,7 @@ class MainActivity : AppCompatActivity() {//end class
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == REQUEST_CODE_EDITOR && data?.hasExtra("path")?:false){
+        if(requestCode == REQUEST_CODE_EDITOR && data?.hasExtra("path") == true){
             val editorImagePath = data?.getStringExtra("path")
             Glide.with(this).load(File(editorImagePath)).into(findViewById(R.id.preview))
         }

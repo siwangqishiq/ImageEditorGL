@@ -27,10 +27,10 @@ void Image::resetNewTexture(unsigned int newTextureId,int textureWidth , int tex
     Logi("reset new image texture");
 
     textureId = newTextureId;
-//    imgWidth = textureWidth;
-//    imgHeight = textureHeight;
+    imgWidth = textureWidth;
+    imgHeight = textureHeight;
     Logi("reset new image texture textureId  = %d , %d , %d" , textureId , imgWidth , imgHeight);
-//    resetPositionData();
+    resetPositionData();
 }
 
 void Image::render(glm::mat3 &normalMatrix) {
@@ -111,6 +111,10 @@ void Image::updateVertexData() {
         Logi("vertexData : %f,%f,%f,%f,%f" , vertexData[5 * i + 0] , vertexData[5 * i + 1] , vertexData[5 * i + 2],
              vertexData[5 * i + 3],vertexData[5 * i + 4]);
     }
+
+    glBindBuffer(GL_ARRAY_BUFFER , vbo);
+    glBufferData(GL_ARRAY_BUFFER ,  6 *5 * sizeof(float) , vertexData , GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER , 0);
 }
 
 void Image::resetPositionData() {
