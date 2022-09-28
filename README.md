@@ -8,13 +8,13 @@
 
 ### 功能
 - 涂鸦
-<img width="300" src="https://i.imgtg.com/2022/09/28/mTtDP.webp">
+<img width="300" src="https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/paint.webp">
 
 - 马赛克
-<img width="300" src="https://i.imgtg.com/2022/09/28/mTRn6.webp">
+<img width="300" src="https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/mosaic.webp">
 
 - 裁剪
-<img width="300" src="https://i.imgtg.com/2022/09/28/mT48b.webp">
+<img width="300" src="https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/clip.webp">
 
 ### 后续计划
     1.添加文字
