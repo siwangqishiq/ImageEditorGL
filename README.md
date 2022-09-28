@@ -9,15 +9,15 @@
 ### 功能
 - 涂鸦
 
-![涂鸦](https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/paint.webp "Paint")
+![涂鸦](https://s3.bmp.ovh/imgs/2022/09/28/4734d55f9912ddd8.webp "Paint")
 
 - 马赛克
 
-![马赛克](https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/mosaic.webp "Mosaic")
+![马赛克](https://s3.bmp.ovh/imgs/2022/09/28/2c23c9e1e60b065f.webp "Mosaic")
 
 - 裁剪
 
-![裁剪](https://github.com/siwangqishiq/ImageEditorGL/blob/master/media/clip.webp "Clip")
+![裁剪](https://s3.bmp.ovh/imgs/2022/09/28/e271c94d8c36bb67.webp "Clip")
 
 ### 后续计划
     1.添加文字
