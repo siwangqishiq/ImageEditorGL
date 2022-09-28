@@ -8,16 +8,13 @@
 
 ### 功能
 - 涂鸦
-
-![涂鸦](https://i.imgtg.com/2022/09/28/mTtDP.webp "Paint")
+<img width="300" src="https://i.imgtg.com/2022/09/28/mTtDP.webp">
 
 - 马赛克
-
-![马赛克](https://i.imgtg.com/2022/09/28/mTRn6.webp "Mosaic")
+<img width="300" src="https://i.imgtg.com/2022/09/28/mTRn6.webp">
 
 - 裁剪
-
-![裁剪](https://i.imgtg.com/2022/09/28/mT48b.webp "Clip")
+<img width="300" src="https://i.imgtg.com/2022/09/28/mT48b.webp">
 
 ### 后续计划
     1.添加文字
